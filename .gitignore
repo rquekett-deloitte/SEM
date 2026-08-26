@@ -1,0 +1,10 @@
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+
+# Local renv package and staging directories
+renv/library/
+renv/staging/
+renv/local/
+renv/cellar/
