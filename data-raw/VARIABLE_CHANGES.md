@@ -116,6 +116,10 @@ Tprl/Ytsf/Lpar/Lwge/PconsExrent/Rcash equations and the explicit `Ustar`
 NAIRU in Lavh. Standardising would change estimation results, so both are
 retained and documented.
 
+This treatment was superseded on 2026-08-26: `LurHpf` is now the NAIRU in
+both estimation and forecast equations, and `Ustar` is no longer a scenario
+input.
+
 ## Forecast integration fixes (2026-08-17)
 
 - `DumGst` was renamed `ShockGst`; it is a continuous COVID tax correction,
@@ -124,6 +128,8 @@ retained and documented.
   `GovDefAnnualBalance` because it carries an annual surplus-positive balance.
   The simulation converts it to canonical quarterly deficit-positive `GovDef`
   at the database boundary.
+  This treatment was superseded on 2026-08-26 by the endogenous fiscal-flow
+  identity documented in `VARIABLES.md`.
 - The forecast is fixed at 2025Q1 after the 2024Q4 conditioning observation.
   Later rows reproduce the binding coefficient vintage and support historical
   comparison, but are excluded from forecast latent states, residuals,

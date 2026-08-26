@@ -41,7 +41,7 @@ mdl_equations <- function() { c(
 
 "Lwge = Lwge[1]*EXP( Lwge_Int + Lwge_c2*((LOG(Ppcd[3])-LOG(Ppcd[4]))-(LOG(PpcdHpf)-LOG(PpcdHpf[1]))) + Lwge_c3*(Lur-LurHpf)/Lur + Lwge_c4*(Lur-Lur[1]) + Lwge_c5*(Lur[1]-Lur[2]) + (LOG(PpcdHpf)-LOG(PpcdHpf[1])) )",
 
-"Pcpi = Pcpi[1]*EXP( Pcpi_c1 + Pcpi_c2*(LOG(Pcpi[1]/100) - LOG(Ppcd[1]) - Pcpi_c3*Trend[1]) + Pcpi_c4*(LOG(Ppcd)-LOG(Ppcd[1])) + Pcpi_c6*Dum1975q3 + Pcpi_c7*Dum1976q4 + Pcpi_c8*Dum2020q2 )",
+"Pcpi = Pcpi[1]*EXP( Pcpi_c1 + Pcpi_c2*(LOG(Pcpi[1]/100) - LOG(Ppcd[1]) - Pcpi_c3*Trend[1]) + Pcpi_c4*(LOG(Ppcd)-LOG(Ppcd[1])) + Pcpi_c6*Dum1975q3 + Pcpi_c7*Dum1976q4 + Pcpi_c8*Dum2020q2 + PcpiBoundary )",
 
 "Piret = Pgdp*EXP( Piret_Int + Piret_c3*TrendPiret )",
 
@@ -61,7 +61,7 @@ mdl_equations <- function() { c(
 
 "Ygdw = Ygdw[1]*EXP( Ygdw_c1 + Ygdw_c2*(LOG(Ygdw[1]) - LOG(CprHpf[1]*Ppcd[1]) - Ygdw_c3*Trend) + Ygdw_c4*((LOG(CprHpf)-LOG(CprHpf[1]))+(LOG(Ppcd)-LOG(Ppcd[1]))) )",
 
-"Lhrs = EXP( Lhrs_c1*(Lhrs_c2 + (LOG(Ygdp)-LOG(KTotal[1])) + Lhrs_c4*Trend + Lhrs_c5*(Ygdp-YgdpHpf)/YgdpHpf + Lhrs_c6*(LOG(Lwge)-LOG(ABS(Pgdp))) + Lhrs_c7*(LOG(Lwge[1])-LOG(Pgdp[1])) - (LOG(Lhrs[1])-LOG(KTotal[2]))) + Lhrs_c8*Dum2020q2 + Lhrs_c9*Dum2020q3 + LOG(Lhrs[1]) + LOG(KTotal[1]) - LOG(KTotal[2]) )",
+"Lhrs = EXP( Lhrs_c1*(Lhrs_c2 + (LOG(Ygdp)-LOG(KTotal[1])) + Lhrs_c4*Trend + Lhrs_c5*(Ygdp-YgdpHpf)/YgdpHpf + Lhrs_c6*(LOG(Lwge)-LOG(ABS(Pgdp))) + Lhrs_c7*(LOG(Lwge[1])-LOG(Pgdp[1])) - (LOG(Lhrs[1])-LOG(KTotal[2]))) + Lhrs_c8*Dum2020q2 + Lhrs_c9*Dum2020q3 + LOG(Lhrs[1]) + LOG(KTotal[1]) - LOG(KTotal[2]) + LhrsBoundary )",
 
 "PhouseSa = PhouseSa[1]*EXP( Phouse_c1 + Phouse_c2*((LOG(PhouseSa[1])-LOG(Pcpi[1])) - Phouse_c3*Trend - Phouse_c4*LOG(Lhh[1]/KDwell[1])) + Phouse_c5*(LOG(Pcpi)-LOG(Pcpi[1])) + Phouse_c6*(Rmort[1]-Rmort[2]) + Phouse_c7*(LOG(PhouseSa[1])-LOG(PhouseSa[2])) + Phouse_c8*(LOG(PhouseSa[2])-LOG(PhouseSa[3])) )",
 
@@ -79,7 +79,7 @@ mdl_equations <- function() { c(
 
 "GovDebt = GovDebt[1] + GovDef + GovDebt_x*R10y[5]*GovDebt[1]",
 
-"PcpiRent = PcpiRent[1]*EXP( PcpiRent_c1 + PcpiRent_c2*(LOG(PcpiRent[1])-LOG(PhouseHpf[1])-PcpiRent_c4*RmortRealHpf[1]) + PcpiRent_c5*Lnom/1000 + PcpiRent_c6*(LOG(Lwge)-LOG(Lwge[1])) + PcpiRent_c7*(LOG(Lwge[1])-LOG(Lwge[2])) + PcpiRent_c8*(LOG(PcpiRent[1])-LOG(PcpiRent[2])) )",
+"PcpiRent = PcpiRent[1]*EXP( PcpiRent_c1 + PcpiRent_c2*(LOG(PcpiRent[1])-LOG(PhouseHpf[1])-PcpiRent_c4*RmortRealHpf[1]) + PcpiRent_c5*Lnom/1000 + PcpiRent_c6*(LOG(Lwge)-LOG(Lwge[1])) + PcpiRent_c7*(LOG(Lwge[1])-LOG(Lwge[2])) + PcpiRent_c8*(LOG(PcpiRent[1])-LOG(PcpiRent[2])) + PcpiRentBoundary )",
 
 "Inonmin = Inonmin[1]*EXP( Inonmin_Int + Inonmin_c2*(LOG(Inonmin[1])-LOG(Ygne[1])+0.6*LOG(CostCap[1])+(LOG(Pinonmin[1])-LOG(Pgne[1]))) + Inonmin_c5*(LOG(Ygne)-LOG(Ygne[1])) + Inonmin_c6*(LOG(Ygne[1])-LOG(Ygne[2])) + Inonmin_c7*(LOG(Ygne[2])-LOG(Ygne[3])) + Inonmin_c8*(LOG(Ygne[3])-LOG(Ygne[4])) + Inonmin_c9*(LOG(Inonmin[1])-LOG(Inonmin[2])) + Inonmin_c10*Dum2012q4 + Inonmin_c11*(LOG(Pinonmin)-LOG(Pinonmin[1])) )",
 
@@ -103,7 +103,7 @@ mdl_equations <- function() { c(
 
 "Mtot = Mtot[1]*EXP( Mtot_c1 + Mtot_c2*(LOG(Mtot[1]) - LOG(Ygne[1]) - Mtot_c3*(Pmgs[1]*100/Pgne[1])) + Mtot_c4*(LOG(Ygne)-LOG(Ygne[1])) + Mtot_c5*(LOG(Ygne[1])-LOG(Ygne[2])) + Mtot_c6*((Pmgs/Pgne)-(Pmgs[1]/Pgne[1])) )",
 
-"R90d = R90d[1] + Rcash_c1*(RcashA + (Pcpi/Pcpi[4]-1) + Rcash_c2*(Lur-LurHpf) + Rcash_c3*D93*(Pcpi/Pcpi[4]-1-0.025) - R90d[1]) + Rcash_c4*(Lur-Lur[1])",
+"R90d = R90d[1] + Rcash_c1*(RcashA + (Pcpi/Pcpi[4]-1) + Rcash_c2*(Lur-LurHpf) + Rcash_c3*D93*(Pcpi/Pcpi[4]-1-0.025) - R90d[1]) + Rcash_c4*(Lur-Lur[1]) + RcashBoundary",
 
 "R10y = R10y[1] + R10y_Int + R10y_d_rat*(Rstar + InflExp - R10y[1]) + R10y_d_r90*(R90d - R10y[1])"
 ) }
@@ -111,13 +111,16 @@ mdl_equations <- function() { c(
 # ---- identities -----------------------------------------------------------------
 
 mdl_identities <- function() { c(
-"GapAvh = (Lur - Ustar/100)/Lur",
+"GapAvh = (Lur - LurHpf)/Lur",
 "Ivt = IvtFar + IvtNonfarm",
 "Iotc = RatioIotc*Idwell",
 "Xagr = ShareXagr*Ygdp",
 "Xtot = Xmin + Xagr + Xoth + Xsvc + ResidXtot",
 "CprNom = Ppcd*Cpr",
 "CgovNom = Pgov*Cgov",
+"Ttot = Tpit + Tcit + Tgst + Tprl + Toth",
+"FiscalCovered = CgovNom + Pinonmin*(Igov + Ipubent) + Ytsf - Ttot",
+"GovDef = GovDef[1] + FiscalFlowPassThrough*(FiscalCovered-FiscalCovered[1])/1000",
 "IdwellNom = Pidwell*Idwell",
 "IotcNom = Piret*Iotc",
 "IminNom = Pimin*Imin",
@@ -175,9 +178,6 @@ mdl_identities <- function() { c(
 "Pulc = Pulc[1]*(Lwge/Lwge[1])*(Ygdp/Ygdp[1])^(-1)*(Lemp/Lemp[1])",
 "UlcDom = LOG(Pulc) + 0.002764*((1-BsC2)/BsC2)*Trend",
 "UlcExp = LOG(Pulc) - 0.002764*Trend",
-"YgdpHpf = YgdpHpf[1]*GrowthYgdpHpf",
-"CprHpf = CprHpf[1]*GrowthCprHpf",
-"PhouseHpf = PhouseHpf[1]*GrowthPhouseHpf",
 "RmortRealHpf = RmortRealHpf[1]",
 "LparHpf = LparHpf[1]",
 "PpcdHpf = PpcdHpf[1]*GrowthPpcdHpf",
@@ -264,7 +264,7 @@ mdl_shock_contract <- function() {
   )
   exogenous <- mdl_exogenous_contract()$model_variable
   exogenous_additive <- c(
-    "Ustar", "GovDef", "IvtFar", "Fr10yUs", "Fr10yJp", "Fr10yDe", "Fr10yUk"
+    "IvtFar", "Fr10yUs", "Fr10yJp", "Fr10yDe", "Fr10yUk"
   )
   exogenous_shocks <- tibble::tibble(
     variable = exogenous,
@@ -361,6 +361,7 @@ mdl_parameters <- function(model) {
       params[[paste0(pre, "_", key)]] <- as.numeric(co[[k]])
     }
   }
+  for (k in names(RCASH_IMPOSED)) params[[paste0("Rcash_", k)]] <- RCASH_IMPOSED[[k]]
   params
 }
 
@@ -372,6 +373,7 @@ aux_regressors <- function(model, data) {
                     LavhDum1 = rep(0, n), RcashA = NA_real_,
                     RstarFiltered = NA_real_)
   cf <- model$fits$Rcash$par
+  cf[names(RCASH_IMPOSED)] <- RCASH_IMPOSED
   Q <- exp(2 * cf[["log_sig_state"]]); H <- exp(2 * cf[["log_sig_obs"]])
   rc <- data %>%
     mutate(inf = Pcpi / lag(Pcpi, 4) - 1, dr = R90d - lag(R90d),
@@ -411,11 +413,9 @@ mdl_exogenous_contract <- function() {
     ~forecast_column,       ~model_variable, ~units,                                      ~extension_policy,
     "Lpop",                 "Lpop",          "thousand persons",                         "official annual components; quarterly interpolation; two-quarter terminal extension",
     "Lpop15Plus",           "Lpop15Plus",    "thousand persons aged 15 and over",        "official projected 15-plus share applied to Lpop; two-quarter terminal share hold",
-    "Ustar",                "Ustar",         "percent",                                  "interpolate official current and long-run estimates; hold terminal estimate",
     "Cgov",                 "Cgov",          "quarterly chain-volume $m",                 "apply official aggregate public-demand growth; constant real per capita after source horizon",
     "Igov",                 "Igov",          "quarterly chain-volume $m",                 "apply official aggregate public-demand growth; constant real per capita after source horizon",
     "Ipubent",              "Ipubent",       "quarterly chain-volume $m",                 "apply official aggregate public-demand growth; constant real per capita after source horizon",
-    "GovDefAnnualBalance",  "GovDef",        "annual $bn; surplus positive",               "convert to quarterly deficit-positive; converge to zero after source horizon",
     "IvtFar",               "IvtFar",        "quarterly chain-volume $m",                 "zero neutral closure",
     "Lnom",                 "Lnom",          "thousand persons per quarter",              "official annual total divided by four; two-quarter terminal carry",
     "IntStu",               "IntStu",        "new international student enrolments",      "apply official current-data trend below policy ceiling; hold",
@@ -429,6 +429,15 @@ mdl_exogenous_contract <- function() {
     "Fr10yJp",              "Fr10yJp",       "decimal annual rate",                       "official annual forecast; hold terminal rate",
     "Fr10yDe",              "Fr10yDe",       "decimal annual rate",                       "official annual forecast; hold terminal rate",
     "Fr10yUk",              "Fr10yUk",       "decimal annual rate",                       "official annual forecast; hold terminal rate"
+  )
+}
+
+mdl_realtime_hpf_contract <- function() {
+  tibble::tribble(
+    ~model_variable, ~source_variable,
+    "YgdpHpf",       "Ygdp",
+    "CprHpf",        "Cpr",
+    "PhouseHpf",     "PhouseSa"
   )
 }
 
@@ -473,7 +482,9 @@ build_ts_database <- function(data, exo, model, shocks, origin = forecast_origin
   }
 
   # history for model-only series (defined by identities in the forecast)
-  db$GapAvh <- mk(as.numeric(data$Lur - data$Ustar / 100) / as.numeric(data$Lur))
+  db$GapAvh <- mk(as.numeric(data$Lur - data$LurHpf) / as.numeric(data$Lur))
+  db$FiscalCovered <- mk(as.numeric(data$CgovNom + data$Pinonmin *
+    (data$Igov + data$Ipubent) + data$Ytsf - data$Ttot))
   db$XsvcNom <- mk(as.numeric(data$XtotNom - data$XminNom - data$XagrNom - data$XothNom))
   db$YgovIvtNom <- mk(as.numeric(data$YgdpNom + data$MtotNom - data$CprNom -
     data$CgovNom - data$IdwellNom - data$IotcNom - data$IminNom -
@@ -523,7 +534,6 @@ build_ts_database <- function(data, exo, model, shocks, origin = forecast_origin
       stop("Incomplete forecast-quarter path for ", source_name)
     }
     use <- !is.na(vals) & exo$date >= origin
-    if (source_name == "GovDefAnnualBalance") vals <- -vals / 4
     x[iexo[use]] <- vals[use]
     db[[target_name]] <- ts(fill_path(x, target_name), start = start, frequency = 4)
   }
@@ -593,6 +603,51 @@ build_ts_database <- function(data, exo, model, shocks, origin = forecast_origin
   db$RcashA <- ts(ra, start = start, frequency = 4)
   db$BsC2 <- ts(rep(model$bs_c2, n), start = start, frequency = 4)
 
+  # Recent outcomes extend beyond several coefficient-estimation windows.
+  # Carry each final observed equation residual into the forecast and fade it.
+  params <- mdl_parameters(model)
+  i <- nh
+  pcpi_fitted <- params$Pcpi_c1 +
+    params$Pcpi_c2 * (log(data$Pcpi[i - 1] / 100) - log(data$Ppcd[i - 1]) -
+                        params$Pcpi_c3 * data$trend[i - 1]) +
+    params$Pcpi_c4 * (log(data$Ppcd[i]) - log(data$Ppcd[i - 1]))
+  pcpi_residual <- log(data$Pcpi[i] / data$Pcpi[i - 1]) - pcpi_fitted
+  rent_fitted <- params$PcpiRent_c1 +
+    params$PcpiRent_c2 * (log(data$PcpiRent[i - 1]) -
+      log(data$PhouseHpf[i - 1]) - params$PcpiRent_c4 * data$RmortRealHpf[i - 1]) +
+    params$PcpiRent_c5 * data$Lnom[i] / 1000 +
+    params$PcpiRent_c6 * (log(data$Lwge[i]) - log(data$Lwge[i - 1])) +
+    params$PcpiRent_c7 * (log(data$Lwge[i - 1]) - log(data$Lwge[i - 2])) +
+    params$PcpiRent_c8 * (log(data$PcpiRent[i - 1]) - log(data$PcpiRent[i - 2]))
+  rent_residual <- log(data$PcpiRent[i] / data$PcpiRent[i - 1]) - rent_fitted
+  inflation <- data$Pcpi[i] / data$Pcpi[i - 4] - 1
+  rcash_fitted <- RCASH_IMPOSED[["c1"]] *
+    (aux$RcashA[i] + inflation + RCASH_IMPOSED[["c2"]] *
+       (data$Lur[i] - data$LurHpf[i]) + RCASH_IMPOSED[["c3"]] * data$d93[i] *
+       (inflation - 0.025) - data$R90d[i - 1]) +
+    RCASH_IMPOSED[["c4"]] * (data$Lur[i] - data$Lur[i - 1])
+  rcash_residual <- data$R90d[i] - data$R90d[i - 1] - rcash_fitted
+  z_lhrs <- log(data$Lhrs) - log(dplyr::lag(data$KTotal))
+  lhrs_observed <- z_lhrs - dplyr::lag(z_lhrs)
+  lhrs_fitted <- params$Lhrs_c1 *
+    (params$Lhrs_c2 + log(data$Ygdp) - log(dplyr::lag(data$KTotal)) +
+       params$Lhrs_c4 * data$trend +
+       params$Lhrs_c5 * (data$Ygdp - data$YgdpHpf) / data$YgdpHpf +
+       params$Lhrs_c6 * (log(data$Lwge) - log(data$Pgdp)) +
+       params$Lhrs_c7 * (log(dplyr::lag(data$Lwge)) -
+                           log(dplyr::lag(data$Pgdp))) -
+       (log(dplyr::lag(data$Lhrs)) - log(dplyr::lag(data$KTotal, 2)))) +
+    params$Lhrs_c8 * data$dum_2020q2 + params$Lhrs_c9 * data$dum_2020q3
+  lhrs_residual <- lhrs_observed[i] - lhrs_fitted[i]
+  boundary_path <- function(residual, persistence = 0.9) {
+    ts(c(rep(0, nh), residual * persistence^seq.int(0, n - nh - 1L)),
+       start = start, frequency = 4)
+  }
+  db$PcpiBoundary <- boundary_path(pcpi_residual)
+  db$PcpiRentBoundary <- boundary_path(rent_residual)
+  db$RcashBoundary <- boundary_path(rcash_residual)
+  db$LhrsBoundary <- boundary_path(lhrs_residual)
+
   # carried residuals / factors / held parameters (constant series).
   # Each is computed at the last row where ALL its inputs are observed, so
   # series with different end dates align properly.
@@ -631,6 +686,13 @@ build_ts_database <- function(data, exo, model, shocks, origin = forecast_origin
   resid_pgne <- v("Pgne")[i] - 100 * gne_nom[i] / sumgne[i]
   i <- last_common(v("Wfor"), v("YgdpNom")); ratio_wfor <- v("Wfor")[i] / v("YgdpNom")[i]
   i <- last_common(v("Lhh"), v("Lpop")); ratio_lhh <- v("Lhh")[i] / v("Lpop")[i]
+  fiscal_covered <- v("CgovNom") + v("Pinonmin") * (v("Igov") + v("Ipubent")) +
+    v("Ytsf") - v("Ttot")
+  fiscal_sample <- data$date >= as.Date("2004-03-01") &
+    is.finite(v("GovDef")) & is.finite(fiscal_covered)
+  deficit_change <- diff(v("GovDef")[fiscal_sample])
+  covered_change <- diff(fiscal_covered[fiscal_sample] / 1000)
+  fiscal_pass_through <- sum(deficit_change * covered_change) / sum(covered_change^2)
   mean8 <- function(nm) { x <- v(nm); mean(tail(x[!is.na(x)], 8)) }
   hold_last <- function(nm) { x <- v(nm); tail(x[!is.na(x)], 1) }
   trend_growth <- function(nm) {
@@ -657,9 +719,7 @@ build_ts_database <- function(data, exo, model, shocks, origin = forecast_origin
     RatioIotc = iotc_r,
     RatioWfor = ratio_wfor,
     RatioLhh = ratio_lhh,
-    GrowthYgdpHpf = trend_growth("YgdpHpf"),
-    GrowthCprHpf = trend_growth("CprHpf"),
-    GrowthPhouseHpf = trend_growth("PhouseHpf"),
+    FiscalFlowPassThrough = fiscal_pass_through,
     GrowthPpcdHpf = trend_growth("PpcdHpf"),
     RateKMinDep = mean8("KMinDepRate"),
     RateKNbizDep = mean8("KNbizDepRate"),
@@ -769,64 +829,82 @@ parse_shocks_csv <- function(path = "data-raw/shocks.csv",
 run_bimets_forecast <- function(data, model, exo, shocks, origin = forecast_origin(data),
                                 horizon = as.Date("2036-12-01"),
                                 convergence = 1e-6, iterlimit = 1000,
+                                hpf_convergence = 1e-5, hpf_iterlimit = 12,
                                 show_progress = TRUE) {
   started_at <- Sys.time()
   if (show_progress) message("BIMETS: loading model")
   mdl <- LOAD_MODEL(modelText = mdl_text(model), quietly = TRUE)
   if (show_progress) message("BIMETS: building simulation database")
   db <- build_ts_database(data, exo, model, shocks, origin, horizon)
-  mdl <- LOAD_MODEL_DATA(model = mdl, modelData = db, quietly = TRUE)
-  # DYNAMIC keeps all lagged endogenous values on the simulated path while
-  # initializing each current quarter from the populated database. The model
-  # contains many log-level equations, so this positive scenario-based seed is
-  # required to keep intermediate simultaneous-solver iterates in their domain.
-  if (show_progress) {
-    message(
-      "BIMETS: simulating ", lubridate::year(origin), "Q",
-      lubridate::quarter(origin), " to ", lubridate::year(horizon), "Q",
-      lubridate::quarter(horizon)
-    )
+  forecast_dates <- seq(as.Date(origin), as.Date(horizon), by = "quarter")
+  all_dates <- seq(min(as.Date(data$date)), as.Date(horizon), by = "quarter")
+  contract <- mdl_realtime_hpf_contract()
+  date_index <- function(date) match(as.Date(date), all_dates)
+  series_at <- function(container, variable) {
+    hit <- which(tolower(names(container)) == tolower(variable))
+    if (length(hit) != 1L) stop("Expected one model series for ", variable)
+    container[[hit]]
   }
-  result <- SIMULATE(mdl,
-           TSRANGE = c(lubridate::year(origin), lubridate::quarter(origin),
-                       lubridate::year(horizon), lubridate::quarter(horizon)),
-           simType = "DYNAMIC", simAlgo = "GAUSS-SEIDEL",
-           simConvergence = convergence, simIterLimit = iterlimit,
-           quietly = !show_progress)
+  endpoint_weights <- function(n, lambda = 1600) {
+    D <- diff(diag(n), differences = 2)
+    endpoint <- numeric(n)
+    endpoint[n] <- 1
+    as.numeric(solve(diag(n) + lambda * crossprod(D), endpoint))
+  }
+  copy_period <- function(database, simulation, i) {
+    for (variable in names(simulation)) {
+      hit <- which(tolower(names(database)) == tolower(variable))
+      if (length(hit) == 1L) database[[hit]][i] <- as.numeric(simulation[[variable]])[[1]]
+    }
+    database
+  }
 
+  result <- NULL
+  for (date in forecast_dates) {
+    date <- as.Date(date, origin = "1970-01-01")
+    i <- date_index(date)
+    weights <- endpoint_weights(i)
+    operators <- lapply(seq_len(nrow(contract)), function(j) {
+      values <- as.numeric(db[[contract$source_variable[j]]])[seq_len(i)]
+      if (any(!is.finite(values))) stop("Non-finite HP-filter input")
+      c(intercept = sum(weights[-i] * values[-i]), slope = weights[i])
+    })
+    for (iteration in seq_len(hpf_iterlimit)) {
+      mdl <- LOAD_MODEL_DATA(model = mdl, modelData = db, quietly = TRUE)
+      result <- SIMULATE(
+        mdl,
+        TSRANGE = c(lubridate::year(date), lubridate::quarter(date),
+                    lubridate::year(date), lubridate::quarter(date)),
+        simType = "DYNAMIC", simAlgo = "GAUSS-SEIDEL",
+        simConvergence = convergence, simIterLimit = iterlimit, quietly = TRUE
+      )
+      candidate <- vapply(seq_len(nrow(contract)), function(j) {
+        value <- as.numeric(series_at(result$simulation, contract$source_variable[j]))[[1]]
+        operators[[j]][["intercept"]] + operators[[j]][["slope"]] * value
+      }, numeric(1))
+      previous <- vapply(contract$model_variable, function(variable) {
+        as.numeric(db[[variable]])[[i]]
+      }, numeric(1))
+      error <- max(abs(candidate - previous) / pmax(1, abs(candidate), abs(previous)))
+      for (j in seq_len(nrow(contract))) db[[contract$model_variable[j]]][i] <- candidate[j]
+      if (error < hpf_convergence) break
+      if (iteration == hpf_iterlimit) {
+        stop(
+          "Real-time HP filters did not converge in ", format(date),
+          "; final relative error = ", format(error, scientific = TRUE)
+        )
+      }
+    }
+    db <- copy_period(db, result$simulation, i)
+    if (show_progress && (date == origin || lubridate::quarter(date) == 4)) {
+      message("BIMETS: completed through ", lubridate::year(date), "Q", lubridate::quarter(date))
+    }
+  }
+  result$modelData <- db
+  result$simulation <- db[names(result$simulation)]
   if (show_progress) {
     elapsed <- round(as.numeric(difftime(Sys.time(), started_at, units = "secs")), 1)
     message("BIMETS: complete (", elapsed, " seconds)")
-    tryCatch({
-      report_dates <- seq(as.Date(origin), as.Date(horizon), by = "quarter")
-      report_dates <- report_dates[
-        report_dates == as.Date(origin) | lubridate::quarter(report_dates) == 4
-      ]
-      value_at <- function(variable, date, lag = 0L) {
-        target <- seq(as.Date(date), by = "-3 months", length.out = lag + 1L)[lag + 1L]
-        source <- if (target >= as.Date(origin)) result$simulation else result$modelData
-        as.numeric(stats::window(
-          source[[variable]],
-          start = c(lubridate::year(target), lubridate::quarter(target)),
-          end = c(lubridate::year(target), lubridate::quarter(target))
-        ))[[1]]
-      }
-      summary <- purrr::map_dfr(report_dates, function(date) {
-        tibble::tibble(
-          Quarter = paste0(lubridate::year(date), "Q", lubridate::quarter(date)),
-          `GDP growth` = 100 * (value_at("Ygdp", date) / value_at("Ygdp", date, 4) - 1),
-          Unemployment = 100 * value_at("Lur", date),
-          `90-day rate` = 100 * value_at("R90d", date),
-          `CPI inflation` = 100 * (value_at("Pcpi", date) / value_at("Pcpi", date, 4) - 1)
-        )
-      }) %>%
-        dplyr::mutate(dplyr::across(-Quarter, ~ sprintf("%.2f%%", .x)))
-      message("\nKey simulation values:")
-      print(summary, n = nrow(summary))
-    }, error = function(error) {
-      warning("Simulation completed, but the progress summary could not be displayed: ",
-              conditionMessage(error), call. = FALSE)
-    })
   }
   result
 }
