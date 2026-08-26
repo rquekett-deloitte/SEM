@@ -1,5 +1,7 @@
 library(tidyverse)
 
+RCASH_IMPOSED <- c(c1 = 0.3, c2 = -2, c3 = 1, c4 = -1)
+
 build_lhrs_frame <- function(data, end_date) {
   data %>%
     mutate(
@@ -213,7 +215,7 @@ frames$Xmin <- xmin
 
 # ---- Average hours worked (market sector) ---------------------------------------------
 lavh <- data %>%
-  mutate(gap = (Lur - Ustar / 100) / Lur, Lavh_q = LavhMkt) %>%
+  mutate(gap = (Lur - LurHpf) / Lur, Lavh_q = LavhMkt) %>%
   filter(date >= "1984-12-01", date <= "2023-09-01") %>%
   mutate(l_avh = lag(Lavh_q), l_gap = lag(gap), l_t98 = lag(trend_98))
 lavh_base <- nls(
@@ -291,7 +293,7 @@ pcpi <- data %>%
     l_tr = lag(trend),
     d_p  = dlog(Ppcd)
   ) %>%
-  filter(date >= "1974-12-01", date <= "2023-09-01")
+  filter(date >= "1974-12-01", date <= "2024-12-01")
 fits$Pcpi <- nls(
   y ~ c1 + c2 * (l_c - l_p - c3 * l_tr) + c4 * d_p +
       c6 * dum_1975q3 + c7 * dum_1976q4 + c8 * dum_2020q2,
@@ -582,7 +584,7 @@ prent <- data %>%
     nom  = Lnom / 1e3,
     d_w  = dlog(Lwge), d_w1 = lag(dlog(Lwge)),
     d_p1 = lag(dlog(PcpiRent))
-  ) %>% filter(date >= "2004-12-01", date <= "2024-06-01")
+  ) %>% filter(date >= "2004-12-01", date <= "2024-12-01")
 fits$PcpiRent <- nls(y ~ c1 + c2 * (ec_p - c4 * rm_h) + c5 * nom + c6 * d_w + c7 * d_w1 + c8 * d_p1,
     data = prent,
     start = list(c1 = -0.04, c2 = -0.04, c4 = 24, c5 = 0.03, c6 = -0.08, c7 = 0.10, c8 = 0.56))
@@ -764,6 +766,8 @@ fits$Mtot <- nls(
 frames$Mtot <- md
 
 # ---- Cash rate (state-space reaction function) ---------------------------------------------------------------------------
+# Emma/Martin specification: reaction coefficients are imposed; only the
+# latent-state and observation variances are estimated.
 rc <- data %>%
   mutate(inf = Pcpi / lag(Pcpi, 4) - 1,
          dr = R90d - lag(R90d),
@@ -774,8 +778,9 @@ rc <- data %>%
   select(date, dr, inf, gap, dlur, r_lag, d93)
 
 kalman_nll <- function(theta) {
-  c1 <- theta[1]; c2 <- theta[2]; c3 <- theta[3]; c4 <- theta[4]
-  Q  <- exp(2 * theta[5]); H <- exp(2 * theta[6])
+  c1 <- RCASH_IMPOSED[["c1"]]; c2 <- RCASH_IMPOSED[["c2"]]
+  c3 <- RCASH_IMPOSED[["c3"]]; c4 <- RCASH_IMPOSED[["c4"]]
+  Q  <- exp(2 * theta[1]); H <- exp(2 * theta[2])
   a <- 0; P <- 100
   ll <- 0
   for (i in seq_len(nrow(rc))) {
@@ -796,14 +801,17 @@ kalman_nll <- function(theta) {
   -ll
 }
 
-opt <- optim(c(0.055, -3.84, -0.47, -0.70, log(0.3), log(0.3)),
-             kalman_nll, method = "BFGS", control = list(maxit = 300))
-names(opt$par) <- c("c1", "c2", "c3", "c4", "log_sig_state", "log_sig_obs")
-# Standard errors from the numerical Hessian of the negative log-likelihood.
-opt$std_error <- tryCatch(
-  sqrt(diag(solve(optimHess(opt$par, kalman_nll)))),
-  error = function(e) rep(NA_real_, length(opt$par))
+variance_fit <- optim(c(log(0.3), log(0.3)), kalman_nll, method = "BFGS",
+                      control = list(maxit = 300))
+names(variance_fit$par) <- c("log_sig_state", "log_sig_obs")
+variance_se <- tryCatch(
+  sqrt(diag(solve(optimHess(variance_fit$par, kalman_nll)))),
+  error = function(e) rep(NA_real_, length(variance_fit$par))
 )
+opt <- variance_fit
+opt$par <- c(RCASH_IMPOSED, variance_fit$par)
+opt$std_error <- c(stats::setNames(rep(NA_real_, 4), names(RCASH_IMPOSED)),
+                   stats::setNames(variance_se, names(variance_fit$par)))
 fits$Rcash <- opt
 
 # RTS smoother pass to recover the smoothed neutral rate (Rstar)

@@ -97,7 +97,8 @@ extract_forecast <- function(simulated_model, origin, horizon) {
 
   endogenous <- unique(c(model_lhs(mdl_equations()), model_lhs(mdl_identities())))
   scenario <- unique(mdl_exogenous_contract()$model_variable)
-  variables <- unique(c(endogenous, scenario))
+  realtime_hpf <- unique(mdl_realtime_hpf_contract()$model_variable)
+  variables <- unique(c(endogenous, scenario, realtime_hpf))
   values <- variables %>%
     purrr::map(function(variable) {
       source <- if (variable %in% endogenous) simulation else database

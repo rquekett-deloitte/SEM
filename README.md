@@ -70,8 +70,8 @@ Shock units follow each equation or exogenous series specification. Most
 columns are log innovations, so `log(1.20)` applies a 20 per cent increase. The
 behavioural columns `LavhMkt`, `Lpar`, `Rmort`, `Whh`, `GovDebt`, `R90d` and
 `R10y` are additive in their model units, and `Ynli` is additive to its modelled
-income ratio. The exogenous columns `Ustar`, `GovDef`, `IvtFar`, `Fr10yUs`,
-`Fr10yJp`, `Fr10yDe` and `Fr10yUk` are also additive; other exogenous columns,
+income ratio. The exogenous columns `IvtFar`, `Fr10yUs`, `Fr10yJp`, `Fr10yDe`
+and `Fr10yUk` are also additive; other exogenous columns,
 including `Fpoil`, are log shocks. Shocks feed through the dynamic simultaneous
 model and can therefore persist beyond the quarter in which they are entered.
 

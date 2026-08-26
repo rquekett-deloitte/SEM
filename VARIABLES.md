@@ -185,7 +185,7 @@ through 2026Q1 (some series are shorter). `date` is the quarter index.
 | PconsRent | CconsRentNom / CconsRent (rent implicit price deflator) |
 | Pgdp | YgdpNom / Ygdp |
 | Pgov | CgovNom / Cgov |
-| PhouseHpf | hp_filter(Phouse) |
+| PhouseHpf | hp_filter(PhouseSa) |
 | PhouseReal | PhouseSa / Pcpi |
 | PhouseSa | X-13ARIMA-SEATS seasonal adjustment of Phouse |
 | Pidwell | IdwellNom / Idwell |
@@ -228,21 +228,24 @@ only data through 2024Q4, preventing post-origin outcomes from entering the
 forecast state. Dummy variables `dum_*` are deterministic event indicators
 defined with the trends in R/calculate_estimation_data.R.
 
+The state-space neutral-rate model and forecast reaction function impose
+`c1 = 0.3`, `c2 = -2`, `c3 = 1` and `c4 = -1`; only the state and observation
+variances are estimated.
+
 ## Forecast input contract
 
 `R/forecast_model.R::mdl_exogenous_contract()` is the executable forecast-input
 contract. The permitted scenario columns are:
 
-`Lpop`, `Lpop15Plus`, `Ustar`, `Cgov`, `Igov`, `Ipubent`,
-`GovDefAnnualBalance`, `IvtFar`, `Lnom`, `IntStu`, `Fpcpi`, `Fpoil`, `Fpcom`,
+`Lpop`, `Lpop15Plus`, `Cgov`, `Igov`, `Ipubent`, `IvtFar`, `Lnom`, `IntStu`,
+`Fpcpi`, `Fpoil`, `Fpcom`,
 `Fpagr`, `FcGdp`, `FcPpp`, `Fr10yUs`, `Fr10yJp`, `Fr10yDe`, and `Fr10yUk`.
 
 Missing columns, unexpected columns, invalid dates, non-consecutive quarters,
 non-numeric cells, and blank forecast-quarter cells are errors.
-`GovDefAnnualBalance` is an annual $bn balance with surplus positive; it is
-converted once at the database boundary to canonical `GovDef` (quarterly $bn,
-deficit positive). There is no implicit last-actual carry in the production
-forecast path.
+`LurHpf` is the model's NAIRU in the forecast; it is no longer supplied as an
+exogenous `Ustar` path. `GovDef` is also endogenous. There is no implicit
+last-actual carry in the production forecast path.
 
 The forecast origin is fixed at `2025-03-01`. The simulation database admits
 actual observations only through `2024-12-01`; later observations remain
@@ -265,8 +268,14 @@ are explicit in `data-raw/exogenous_sources.csv`. In particular:
 - `Lpop15Plus` applies the Centre for Population's published 15+ population
   share to the latest `Lpop` path. This supplies the age-appropriate labour-
   force denominator while retaining the newer Budget NOM assumptions.
-- `GovDefAnnualBalance` uses the Budget accrual fiscal balance through 2029-30,
-  then an explicitly labelled convergence to zero by 2034-35.
+- `FiscalCovered = CgovNom + Pinonmin * (Igov + Ipubent) + Ytsf - Ttot`, where
+  `Ttot = Tpit + Tcit + Tgst + Tprl + Toth`. These covered flows explain only a
+  small share of historical changes in the official deficit because several
+  government receipts and expenses are absent from the model. `GovDef` is
+  therefore anchored to its latest observation and changes with
+  `FiscalFlowPassThrough * change(FiscalCovered) / 1000`. The pass-through is
+  estimated from quarterly data since 2004 rather than treating the incomplete
+  flow total as a full public-sector accounting identity.
 - `IvtFar = 0` is a neutral forecast closure informed by Treasury's zero total
   inventory contribution, not a claimed farm-inventory observation.
 - `IntStu` applies the Department of Education's published 6 per cent
@@ -306,13 +315,20 @@ estimated equation use the following explicit forecast closures:
   last-actual denominator or a constant total-population share.
 - `KOther` is held at its final observed level because no matching investment
   series exists in the authoritative inputs.
-- Historical `*Hpf` names retain the two-sided HP-filter definition. In the
-  forecast, level trends `YgdpHpf`, `CprHpf`, `PhouseHpf` and `PpcdHpf` grow
-  recursively at their trailing eight-quarter observed trend rates. Rate
-  trends `LparHpf`, `LurHpf`, `RmortRealHpf` and `InflExp` are held at their
-  final observed values. `Ustar` remains a separate NAIRU concept used only by
-  the `LavhMkt` unemployment gap.
+- Historical `*Hpf` names retain the two-sided HP-filter definition. In each
+  forecast quarter, the activity and asset-level trends `YgdpHpf`, `CprHpf`
+  and `PhouseHpf` are recalculated as HP-filter endpoints using data only up to
+  and including that quarter. The contemporaneous model and trend estimates
+  are iterated to convergence. Recursively filtering `PpcdHpf` and the rate
+  trends created a self-reinforcing wage-price loop, so `PpcdHpf` retains its
+  pre-forecast trend growth while `LparHpf`, `LurHpf`, `RmortRealHpf` and
+  `InflExp` retain their final observed HP-filter values. `LurHpf` is used as
+  the NAIRU consistently, including in the `LavhMkt` unemployment gap.
 - Historical event dummies and `ShockGst` are zero after the actual-data end.
+- The final observed residuals from the CPI, rent, market-hours and cash-rate equations decay
+  at 0.9 per quarter from 2025Q1. These equation-specific boundary corrections
+  bridge recent outcomes beyond the older estimation windows and vanish in the
+  long run.
 - The eight-variable simultaneous feedback block is solved by damped
   Gauss-Seidel with a 10 per cent update weight. At convergence the damped
   equation is algebraically identical to the original SEM equation. Log

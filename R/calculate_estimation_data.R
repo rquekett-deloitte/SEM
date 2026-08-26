@@ -2,6 +2,16 @@ library(tidyverse)
 library(readxl)
 library(seasonal)
 
+hp_filter <- function(x, lambda = 1600) {
+  ok <- which(is.finite(x))
+  n <- length(ok)
+  if (n < 3L) return(rep(NA_real_, length(x)))
+  D <- diff(diag(n), differences = 2)
+  out <- rep(NA_real_, length(x))
+  out[ok] <- solve(diag(n) + lambda * crossprod(D), x[ok])
+  out
+}
+
 # Prepare the estimation dataset from the authoritative workbook.
 # Returns a quarterly tibble covering the full input history; estimation and
 # forecast stages receive it in memory (nothing is written to disk).
@@ -13,15 +23,6 @@ library(seasonal)
 #   Annual or benchmark-frequency inputs are interpolated to quarterly IN
 #   PLACE under a single name (IntStu, K stocks, GovDebt, GovDef, Lhh).
 calculate_estimation_data <- function(path = "data-raw/Data.xlsx") {
-
-hp_filter <- function(x, lambda = 1600) {
-  ok <- which(!is.na(x))
-  n <- length(ok)
-  D <- diff(diag(n), differences = 2)
-  out <- rep(NA_real_, length(x))
-  out[ok] <- solve(diag(n) + lambda * crossprod(D), x[ok])
-  out
-}
 
 # X-13ARIMA-SEATS seasonal adjustment of a quarterly series in `data` order.
 # Operates on the contiguous observed span, returns NA elsewhere, and falls
@@ -153,7 +154,7 @@ data <- data %>%
     # ---- Trend measures ---------------------------------------------------------
     InflExp     = hp_filter(log(Pcpi / lag(Pcpi, 4))),
     CprHpf      = hp_filter(Cpr),
-    PhouseHpf   = hp_filter(Phouse),
+    PhouseHpf   = hp_filter(PhouseSa),
     LurHpf      = hp_filter(Lur),
     YgdpHpf     = hp_filter(Ygdp),
     RmortRealHpf = hp_filter(RmortReal),
