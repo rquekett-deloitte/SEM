@@ -1,5 +1,15 @@
 # Macro Scenario Model
 
+## Scenario Economic Model frontend
+
+Double-click `start_sem.cmd` to start the local API and React frontend,
+then open the Scenario Economic Model at `http://localhost:5173`. The launcher installs Node
+dependencies on first use and checks that both Node.js and R are available.
+
+Scenario runs are stored under `scenario-runs/<run-id>/` with their input
+snapshots, metadata, logs and forecast output. This directory is ignored by
+Git.
+
 The model has two production inputs:
 
 - `data-raw/Data.xlsx`
