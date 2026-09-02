@@ -97,6 +97,8 @@ purrr::iwalk(
   ~ readr::write_csv(.x, file.path("outputs", paste0(.y, ".csv")), na = "")
 )
 coefficient_comparison <- compare_coefficients(coefficients)
+invisible(audit_variable_usage(model_data))
+invisible(write_exogenous_assumptions(exogenous, origin))
 workbook_path <- build_results_workbook(
   forecast, model_data, coefficients
 )

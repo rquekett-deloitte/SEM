@@ -1,0 +1,123 @@
+variable,status,note,n_overlap,median_abs_pct_diff,mean_abs_pct_diff,max_abs_pct_diff,worst_quarter,verdict,n_new,new_end
+Lune,downloaded,1 series; overlap ends 2024-12-01,187,0.001,0.01,0.177,2024-09-01,source confirmed,6,2026-06-01
+Lhh,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+Lpar,downloaded,1 series; overlap ends 2024-12-01,187,0,0.001,0.012,2022-06-01,source confirmed,6,2026-06-01
+Pcpi,downloaded,1 series; overlap ends 2024-12-01,153,0,0.003,0.085,2020-12-01,source confirmed,6,2026-06-01
+Ygdp,downloaded,1 series; overlap ends 2024-12-01,202,0.005,0.01,0.081,2024-03-01,source confirmed,5,2026-03-01
+YgdpNom,downloaded,1 series; overlap ends 2024-12-01,202,0.006,0.014,0.114,2021-03-01,source confirmed,5,2026-03-01
+SavHh,downloaded,1 series; overlap ends 2024-12-01,202,0.024,0.26,7.864,2023-06-01,source confirmed,5,2026-03-01
+Cpr,downloaded,1 series; overlap ends 2024-12-01,202,0,0.002,0.041,2023-06-01,source confirmed,5,2026-03-01
+Idwell,downloaded,1 series; overlap ends 2024-12-01,202,0,0.004,0.181,2024-06-01,source confirmed,5,2026-03-01
+Iotc,downloaded,1 series; overlap ends 2024-12-01,202,0,0.011,0.353,2024-06-01,source confirmed,5,2026-03-01
+Ygne,downloaded,1 series; overlap ends 2024-12-01,202,0.001,0.004,0.052,2023-06-01,source confirmed,5,2026-03-01
+Xtot,downloaded,1 series; overlap ends 2024-12-01,202,0.069,0.087,0.405,2020-09-01,source confirmed,5,2026-03-01
+Mtot,downloaded,1 series; overlap ends 2024-12-01,202,0,0.008,0.26,2024-12-01,source confirmed,5,2026-03-01
+CprNom,downloaded,1 series; overlap ends 2024-12-01,202,0,0.002,0.031,2024-06-01,source confirmed,5,2026-03-01
+XtotNom,downloaded,1 series; overlap ends 2024-12-01,202,0.066,0.091,0.555,2024-03-01,source confirmed,5,2026-03-01
+MtotNom,downloaded,1 series; overlap ends 2024-12-01,202,0,0.017,0.329,2024-06-01,source confirmed,5,2026-03-01
+Ywss,downloaded,1 series; overlap ends 2024-12-01,202,0.001,0.005,0.084,2022-09-01,source confirmed,5,2026-03-01
+Yhdi,downloaded,1 series; overlap ends 2024-12-01,202,0.001,1384.562,279680,1975-06-01,source confirmed,5,2026-03-01
+Lwge,downloaded,1 series; overlap ends 2024-12-01,188,0.039,0.04,0.122,2022-09-01,source confirmed,5,2026-03-01
+Pulc,downloaded,1 series; overlap ends 2024-12-01,158,0,0.006,0.165,2005-06-01,source confirmed,5,2026-03-01
+Tprl,downloaded,1 series; overlap ends 2024-12-01,202,0,0.018,0.738,2024-06-01,source confirmed,5,2026-03-01
+Tgst,downloaded,1 series; overlap ends 2024-12-01,98,0.02,0.088,2.191,2024-12-01,source confirmed,5,2026-03-01
+Ttot,downloaded,1 series; overlap ends 2024-12-01,202,0.005,0.093,2.422,2023-09-01,source confirmed,5,2026-03-01
+Imin,downloaded,1 series; overlap ends 2024-12-01,94,0,0.016,0.346,2024-06-01,source confirmed,5,2026-03-01
+IminNom,downloaded,1 series; overlap ends 2024-12-01,98,0,0.014,0.347,2024-06-01,source confirmed,5,2026-03-01
+Inonmin,downloaded,1 series; overlap ends 2024-12-01,94,0.002,0.011,0.205,2024-03-01,source confirmed,5,2026-03-01
+InonminNom,downloaded,1 series; overlap ends 2024-12-01,98,0.003,0.011,0.206,2024-03-01,source confirmed,5,2026-03-01
+Xmet,downloaded,1 series; overlap ends 2024-12-01,202,0,0.016,0.625,2024-06-01,source confirmed,5,2026-03-01
+Xccb,downloaded,1 series; overlap ends 2024-12-01,202,0,0.018,0.667,2024-12-01,source confirmed,5,2026-03-01
+Xomf,downloaded,1 series; overlap ends 2024-12-01,202,0,0.009,0.26,2024-06-01,source confirmed,5,2026-03-01
+Xagr,downloaded,1 series; overlap ends 2024-12-01,202,0,0.017,0.579,2024-06-01,source confirmed,5,2026-03-01
+XagrNom,downloaded,1 series; overlap ends 2024-12-01,202,0,0.016,0.539,2023-06-01,source confirmed,5,2026-03-01
+Wfor,downloaded,1 series; overlap ends 2024-12-01,146,0.757,0.739,4.392,2024-09-01,revisions - review,5,2026-03-01
+KMin,downloaded,1 series; overlap ends 2024-06-01,50,0,0,0,2013-06-01,source confirmed,0,
+KBiz,downloaded,1 series; overlap ends 2024-06-01,50,0,0,0,1981-06-01,source confirmed,0,
+KDwell,downloaded,1 series; overlap ends 2024-06-01,50,0,0,0,1980-06-01,source confirmed,0,
+PcpiRent,downloaded,1 series; overlap ends 2024-12-01,202,0,0,0,1974-09-01,source confirmed,5,2026-03-01
+Xsvc,downloaded,1 series; overlap ends 2024-12-01,202,0.32,0.445,2.716,2020-09-01,source confirmed,5,2026-03-01
+Pxsvc,downloaded,1 series; overlap ends 2024-12-01,202,0,0.042,0.368,1981-03-01,source confirmed,5,2026-03-01
+Xmex,downloaded,1 series; overlap ends 2024-12-01,202,0,0.007,0.272,2024-06-01,source confirmed,5,2026-03-01
+Xmac,downloaded,1 series; overlap ends 2024-12-01,202,0,0.026,1.281,2024-12-01,source confirmed,5,2026-03-01
+Xtrn,downloaded,1 series; overlap ends 2024-12-01,202,0,0.009,0.303,2024-12-01,source confirmed,5,2026-03-01
+Xotm,downloaded,1 series; overlap ends 2024-12-01,202,0,0.012,0.493,2024-03-01,source confirmed,5,2026-03-01
+Xonr,downloaded,1 series; overlap ends 2024-12-01,202,0,0.012,0.494,2024-03-01,source confirmed,5,2026-03-01
+Xgpr,downloaded,1 series; overlap ends 2024-12-01,158,0,0,0,1985-09-01,source confirmed,5,2026-03-01
+R10y,downloaded,1 series; overlap ends 2024-12-01,47,0,0.254,6.321,2013-06-01,source confirmed,7,2026-09-01
+R90d,downloaded,1 series; overlap ends 2024-12-01,202,0,0.007,0.251,2021-09-01,source confirmed,7,2026-09-01
+Rusd,downloaded,1 series; overlap ends 2024-12-01,60,0,0,0,2024-12-01,source confirmed,7,2026-09-01
+RtwiNom,downloaded,1 series; overlap ends 2024-12-01,60,0,0,0,2020-06-01,source confirmed,7,2026-09-01
+R10yReal,downloaded,1 series; overlap ends 2024-12-01,41,0,0,0,2023-03-01,source confirmed,7,2026-09-01
+Rmort,downloaded,1 series; overlap ends 2024-12-01,202,0,0,0.001,2020-03-01,source confirmed,7,2026-09-01
+Whh,downloaded,rescaled x1000 to workbook units; 1 series; overlap ends 2024-12-01,146,0,0,0.025,2024-03-01,source confirmed,4,2025-12-01
+IdwellNom,downloaded,1 series; overlap ends 2024-12-01,202,0,0.004,0.178,2024-06-01,source confirmed,5,2026-03-01
+IotcNom,downloaded,1 series; overlap ends 2024-12-01,202,0,0.012,0.504,2024-06-01,source confirmed,5,2026-03-01
+Cgov,downloaded,1 series; overlap ends 2024-12-01,202,0,0.007,0.071,2024-06-01,source confirmed,5,2026-03-01
+CgovNom,downloaded,1 series; overlap ends 2024-12-01,202,0,0.006,0.071,2024-03-01,source confirmed,5,2026-03-01
+Ygoa,downloaded,1 series; overlap ends 2024-12-01,202,0,0.008,0.163,2024-06-01,source confirmed,5,2026-03-01
+Lsup,downloaded,1 series; overlap ends 2024-12-01,187,0,0.001,0.012,2022-06-01,source confirmed,6,2026-06-01
+Lpop,downloaded,1 series; overlap ends 2024-12-01,175,0,0,0.001,2024-12-01,source confirmed,3,2025-09-01
+IvtNonfarm,downloaded,1 series; overlap ends 2024-12-01,159,0.004,0.018,0.426,2024-06-01,source confirmed,5,2026-03-01
+Tcit,downloaded,2 series; overlap ends 2024-12-01,202,0,0.47,11.43,2023-09-01,source confirmed,5,2026-03-01
+Ytsf,downloaded,1 series; overlap ends 2024-12-01,202,0,0,0,1974-09-01,source confirmed,5,2026-03-01
+Ygdw,downloaded,1 series; overlap ends 2024-12-01,202,0,0,0.015,2024-03-01,source confirmed,5,2026-03-01
+LempPub,downloaded,1 series; overlap ends 2024-12-01,161,0,0,0,1984-12-01,source confirmed,4,2025-12-01
+LempEdu,downloaded,1 series; overlap ends 2024-12-01,161,0,0,0,1984-12-01,source confirmed,4,2025-12-01
+LempHlt,downloaded,1 series; overlap ends 2024-12-01,161,0,0,0,1984-12-01,source confirmed,4,2025-12-01
+BizLns,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+BizBnd,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+Ygmi,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+YprpR,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+YprpP,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+Lemp,downloaded,1 series; overlap ends 2024-12-01,187,0,0.001,0.009,2022-06-01,source confirmed,6,2026-06-01
+LhrsAll,downloaded,1 series; overlap ends 2024-12-01,122,0,0,0,1994-12-01,source confirmed,4,2025-12-01
+LhrsPub,downloaded,1 series; overlap ends 2024-12-01,122,3.996,4.034,6.771,1996-09-01,MISMATCH - check source,4,2025-12-01
+LhrsEdu,downloaded,1 series; overlap ends 2024-12-01,122,0,0,0,2000-03-01,source confirmed,4,2025-12-01
+LhrsHlt,downloaded,1 series; overlap ends 2024-12-01,122,0,0,0,1995-09-01,source confirmed,4,2025-12-01
+Igov,downloaded,1 series; overlap ends 2024-12-01,202,0,0.01,0.317,2024-06-01,source confirmed,5,2026-03-01
+Ipubent,downloaded,1 series; overlap ends 2024-12-01,202,0,0.013,0.456,2024-06-01,source confirmed,5,2026-03-01
+Pgne,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+Phouse,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+IvtFar,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+Fpcpi,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+Fpoil,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+Fpcom,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+Fpagr,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+Fr10yUs,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+Fr10yJp,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+Fr10yDe,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+Fr10yUk,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+FcGdp,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+FcPpp,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+KTotal,downloaded,1 series; overlap ends 2024-06-01,50,0,0,0,2023-06-01,source confirmed,0,
+PeRatio,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+EqEarn,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+Lnom,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+XmetNom,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+XccbNom,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+XomfNom,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+XmexNom,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+XmacNom,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+XtrnNom,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+XotmNom,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+XonrNom,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+XgprNom,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+CconsRentNom,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+CconsRent,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+GovDef,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+GovDebt,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+Rbiz,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+BizEq,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+TcorpRate,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+KdepRate,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+DumTsfTot,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+Peq,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+LavhMkt,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+Ustar,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+Tpit,downloaded,2 series; overlap ends 2024-12-01,202,0,0.016,0.693,2024-09-01,source confirmed,5,2026-03-01
+IntStu,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+PcpiExGst,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+ShockGst,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,
+KNbiz,skipped,exogenous scenario series (maintained via exogenous_forecast.csv),NA,NA,NA,NA,,n/a,NA,
+KOther,skipped,no directly downloadable series ID (internal or derived source),NA,NA,NA,NA,,n/a,NA,

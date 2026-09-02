@@ -12,3 +12,4 @@ renv/cellar/
 # Scenario runtime
 scenario-runs/
 *.log
+data-raw/downloads/

@@ -223,3 +223,79 @@ compare_coefficients <- function(coefficients,
   readr::write_csv(comparison, path, na = "")
   invisible(comparison)
 }
+
+# Variable usage audit (outputs/variable_audit.csv): where every prepared-data
+# column is used - estimation, forecast equations, identities, the exogenous
+# contract, data preparation, or nowhere.
+audit_variable_usage <- function(data,
+                                  path = "outputs/variable_audit.csv") {
+  read_source <- function(file) {
+    paste(readLines(file, warn = FALSE), collapse = " ")
+  }
+  equations_text <- paste(mdl_equations(), collapse = " ")
+  identities_text <- paste(mdl_identities(), collapse = " ")
+  exogenous <- mdl_exogenous_contract()$model_variable
+  prep_text <- read_source("R/calculate_estimation_data.R")
+  estimation_text <- read_source("R/estimation.R")
+  variables <- setdiff(names(data), "date")
+  mentions <- function(text, v) grepl(paste0("\\b", v, "\\b"), text)
+  audit <- tibble::tibble(
+    variable = variables,
+    in_estimation = vapply(variables, function(v)
+      mentions(estimation_text, v), logical(1)),
+    in_forecast_equations = vapply(variables, function(v)
+      mentions(equations_text, v), logical(1)),
+    in_identities = vapply(variables, function(v)
+      mentions(identities_text, v), logical(1)),
+    exogenous_contract = variables %in% exogenous,
+    in_data_preparation = vapply(variables, function(v)
+      mentions(prep_text, v), logical(1))
+  )
+  audit$usage <- dplyr::case_when(
+    audit$exogenous_contract ~ "exogenous scenario input",
+    audit$in_forecast_equations ~ "behavioural equation variable",
+    audit$in_identities ~ "identity-defined",
+    audit$in_estimation ~ "estimation-only input",
+    audit$in_data_preparation ~ "data-preparation input",
+    TRUE ~ "unused by the model"
+  )
+  readr::write_csv(audit, path, na = "")
+  invisible(audit)
+}
+
+# Exogenous assumptions audit (outputs/exogenous_assumptions.csv): the
+# effective endpoint of each scenario column, its source metadata from
+# data-raw/exogenous_sources.csv, and the official-versus-extension status.
+write_exogenous_assumptions <- function(exo, origin,
+                                        path = "outputs/exogenous_assumptions.csv") {
+  contract <- mdl_exogenous_contract()
+  sources <- if (file.exists("data-raw/exogenous_sources.csv")) {
+    readr::read_csv("data-raw/exogenous_sources.csv", show_col_types = FALSE)
+  } else {
+    NULL
+  }
+  rows <- lapply(seq_len(nrow(contract)), function(i) {
+    column <- contract$forecast_column[i]
+    values <- exo[exo$date >= origin, column]
+    tibble::tibble(
+      forecast_column = column,
+      model_variable = contract$model_variable[i],
+      units = contract$units[i],
+      forecast_start = format(min(exo$date)),
+      forecast_end = format(max(exo$date)),
+      endpoint_value = dplyr::last(values[!is.na(values)])
+    )
+  })
+  out <- dplyr::bind_rows(rows)
+  if (!is.null(sources)) {
+    out <- dplyr::left_join(
+      out,
+      sources %>% dplyr::select(dplyr::any_of(c(
+        "forecast_column", "source", "release", "published_horizon",
+        "terminal_rule", "url"))),
+      by = "forecast_column"
+    )
+  }
+  readr::write_csv(out, path, na = "")
+  invisible(out)
+}

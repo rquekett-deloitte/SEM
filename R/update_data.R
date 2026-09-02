@@ -1,0 +1,501 @@
+# Data update pipeline: download, transform, validate, extend.
+#
+# Downloads the latest data for every workbook variable with a directly
+# downloadable source:
+#   - ABS: the series IDs in the Variables sheet resolve, via the ABS Time
+#     Series Directory (TSSearchServlet), to the current release's time
+#     series table downloads.
+#   - RBA: the statistical-table CSVs (f1.1, f2.1, f5, f11 monthly).
+# The transformation noted in the workbook's Variables sheet is applied
+# (quarterly as published; monthly series take a three-month average, with
+# the noted divide-by-100; multiple-series sources are summed). The result is
+# validated against the existing Data.xlsx history - the source-correctness
+# check - and a candidate updated workbook is written with the new quarters
+# appended. Existing history is never rewritten by this script: revisions are
+# quantified in the validation report for a separate decision.
+#
+# Run from the project root:  Rscript R/update_data.R
+# Outputs: data-raw/Data_updated.xlsx (candidate, review then promote),
+#          outputs/data_download_validation.csv,
+#          data-raw/downloads/ (table cache, git-ignored).
+
+required_packages <- c("openxlsx", "readr", "tidyverse")
+missing_packages <- required_packages[
+  !vapply(required_packages, requireNamespace, logical(1), quietly = TRUE)
+]
+if (length(missing_packages) > 0) {
+  stop("Install the required packages first: ",
+       paste(missing_packages, collapse = ", "))
+}
+
+suppressPackageStartupMessages({
+  library(openxlsx)
+  library(tidyverse)
+})
+
+options(timeout = 300)
+download_dir <- file.path("data-raw", "downloads")
+dir.create(download_dir, showWarnings = FALSE, recursive = TRUE)
+WORKBOOK <- "data-raw/Data.xlsx"
+CANDIDATE <- "data-raw/Data_updated.xlsx"
+UA <- "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+
+variables_sheet <- read.xlsx(WORKBOOK, sheet = "Variables")
+data_sheet <- read.xlsx(WORKBOOK, sheet = "Data", detectDates = TRUE)
+data_sheet$date <- as.Date(data_sheet$date)
+existing_end <- max(data_sheet$date)
+data_columns <- setdiff(names(data_sheet), "date")
+
+# ---- source routing --------------------------------------------------------------
+
+ABS_ID <- "A[0-9]{7,8}[A-Z]"
+RBA_TABLES <- c(
+  FIRMMBAB90 = "f1.1", FCMYGBAG10 = "f2.1", FCMYGBAGI = "f2.1",
+  FXRUSD = "f11", FXRTWI = "f11", FILRHLBVS = "f5"
+)
+
+abs_series_ids <- function(source) {
+  unique(unlist(regmatches(source, gregexpr(ABS_ID, source))))
+}
+rba_series_ids <- function(source) {
+  names(RBA_TABLES)[vapply(names(RBA_TABLES), function(id)
+    grepl(id, source, fixed = TRUE), logical(1))]
+}
+
+route <- variables_sheet %>%
+  transmute(
+    variable = Name,
+    source = Source,
+    transformation = Transformation,
+    abs_ids = map(source, abs_series_ids),
+    rba_ids = map(source, rba_series_ids)
+  ) %>%
+  filter(variable %in% data_columns) %>%
+  mutate(
+    skip_reason = case_when(
+      map_int(abs_ids, length) + map_int(rba_ids, length) == 0 &
+        !is.na(source) & nzchar(source) & !grepl("Exogenous", source) ~
+        "no directly downloadable series ID (internal or derived source)",
+      map_int(abs_ids, length) + map_int(rba_ids, length) == 0 ~
+        "exogenous scenario series (maintained via exogenous_forecast.csv)",
+      is.na(source) | !nzchar(source) ~ "no documented source",
+      variable == "Rbiz" ~
+        "RBA D8/F7 splice definition needs a confirmed series code",
+      TRUE ~ ""
+    )
+  )
+
+# ---- ABS: resolve series IDs to table downloads -----------------------------------
+
+tss_block <- function(series_id) {
+  path <- file.path(download_dir, paste0("tss_", series_id, ".xml"))
+  if (!file.exists(path)) {
+    url <- paste0("https://www.abs.gov.au/servlet/TSSearchServlet?sid=",
+                  series_id)
+    ok <- tryCatch({
+      download.file(url, path, quiet = TRUE, mode = "wb")
+      TRUE
+    }, error = function(e) FALSE)
+    if (!ok) return(NULL)
+  }
+  xml <- paste(readLines(path, warn = FALSE), collapse = "\n")
+  blocks <- regmatches(xml, gregexpr("<Series>.*?</Series>", xml))[[1]]
+  if (!length(blocks)) return(NULL)
+  first <- blocks[[1]]
+  pick <- function(tag) {
+    pattern <- paste0("<", tag, ">(.*?)</", tag, ">")
+    m <- regexec(pattern, first)
+    if (m[[1]][1] == -1) {
+      # tags may be spread across lines; try the whitespace-tolerant join
+      m <- regexec(pattern, gsub("\\s+", " ", first))
+    }
+    if (m[[1]][1] == -1) return(NA_character_)
+    got <- regmatches(first, m)[[1]]
+    trimws(got[2])
+  }
+  list(
+    table_url = pick("TableURL"),
+    frequency = pick("Frequency"),
+    series_end = pick("SeriesEnd"),
+    product = pick("ProductNumber"),
+    description = pick("Description")
+  )
+}
+
+tss_table_cache <- new.env(parent = emptyenv())
+
+download_tss_table <- function(url) {
+  if (!grepl("^https?://", url)) return(NULL)
+  path <- file.path(download_dir, basename(url))
+  if (!file.exists(path)) {
+    ok <- tryCatch({
+      download.file(url, path, quiet = TRUE, mode = "wb")
+      TRUE
+    }, error = function(e) FALSE)
+    if (!ok) return(NULL)
+  }
+  path
+}
+
+read_tss_table <- function(table_path) {
+  sheets <- getSheetNames(table_path)
+  data_sheet_name <- grep("^Data", sheets, value = TRUE)[1]
+  if (is.na(data_sheet_name)) stop("No Data sheet in ", table_path)
+  n <- nrow(read.xlsx(table_path, sheet = data_sheet_name,
+                      colNames = FALSE, cols = 1))
+  head <- read.xlsx(table_path, sheet = data_sheet_name, colNames = FALSE,
+                    rows = seq_len(min(12, n)))
+  id_row <- which(apply(head, 1, function(r)
+    any(grepl("Series ID", r, fixed = TRUE))))[1]
+  if (is.na(id_row)) stop("No Series ID row in ", table_path)
+  ids <- as.character(unlist(head[id_row, ]))
+  body <- read.xlsx(table_path, sheet = data_sheet_name, colNames = FALSE,
+                   rows = (id_row + 1):n, detectDates = FALSE)
+  dates_raw <- body[[1]]
+  dates <- if (inherits(dates_raw, c("Date", "POSIXct"))) {
+    as.Date(dates_raw)
+  } else {
+    as.Date(as.numeric(dates_raw), origin = "1899-12-30")
+  }
+  out <- list(date = dates)
+  for (j in seq_along(ids)[-1]) {
+    if (j > ncol(body)) break
+    if (!is.na(ids[j]) && nzchar(ids[j])) out[[ids[j]]] <- as.numeric(body[[j]])
+  }
+  as_tibble(out)
+}
+
+tss_tables <- new.env(parent = emptyenv())
+tss_meta <- new.env(parent = emptyenv())
+
+abs_series <- function(series_id) {
+  if (!is.null(tss_meta[[series_id]])) return(tss_meta[[series_id]])
+  meta <- tss_block(series_id)
+  if (is.null(meta) || is.na(meta$table_url)) {
+    message("TSS: could not resolve ", series_id)
+    tss_meta[[series_id]] <- NULL
+    return(NULL)
+  }
+  table_path <- download_tss_table(meta$table_url)
+  if (is.null(table_path)) {
+    message("TSS: could not download ", meta$table_url)
+    tss_meta[[series_id]] <- NULL
+    return(NULL)
+  }
+  key <- basename(meta$table_url)
+  if (is.null(tss_tables[[key]])) {
+    tss_tables[[key]] <- tryCatch(
+      read_tss_table(table_path),
+      error = function(e) {
+        message("TSS: could not read ", basename(table_path), ": ",
+                conditionMessage(e))
+        NULL
+      }
+    )
+  }
+  if (is.null(tss_tables[[key]])) {
+    tss_meta[[series_id]] <- NULL
+    return(NULL)
+  }
+  result <- list(meta = meta, table = tss_tables[[key]])
+  tss_meta[[series_id]] <- result
+  result
+}
+
+# ---- RBA ---------------------------------------------------------------------------
+
+RBA_MONTHS <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
+                "Oct", "Nov", "Dec")
+
+parse_rba_date <- function(x) {
+  # RBA tables use both "30-Jun-1969" and "30/06/1969".
+  x <- trimws(x)
+  out <- as.Date(rep(NA_character_, length(x)))
+  alpha <- grepl("^[0-9]{2}-[A-Za-z]{3}-[0-9]{4}$", x)
+  if (any(alpha)) {
+    p <- do.call(rbind, strsplit(x[alpha], "-"))
+    out[alpha] <- as.Date(sprintf("%s-%02d-%s", p[, 3],
+                                  match(p[, 2], RBA_MONTHS), p[, 1]))
+  }
+  slash <- grepl("^[0-9]{2}/[0-9]{2}/[0-9]{4}$", x)
+  if (any(slash)) {
+    p <- do.call(rbind, strsplit(x[slash], "/"))
+    out[slash] <- as.Date(sprintf("%s-%s-%s", p[, 3], p[, 2], p[, 1]))
+  }
+  out
+}
+
+rba_tables <- new.env(parent = emptyenv())
+
+read_rba_table <- function(table_code) {
+  if (!is.null(rba_tables[[table_code]])) return(rba_tables[[table_code]])
+  path <- file.path(download_dir, paste0(table_code, "-data.csv"))
+  if (!file.exists(path)) {
+    url <- paste0("https://www.rba.gov.au/statistics/tables/csv/",
+                  table_code, "-data.csv")
+    ok <- tryCatch({
+      download.file(url, path, quiet = TRUE, mode = "wb")
+      TRUE
+    }, error = function(e) FALSE)
+    if (!ok) return(NULL)
+  }
+  raw <- readLines(path, warn = FALSE)
+  raw <- raw[nzchar(trimws(raw))]
+  id_line <- grep("^Series ID,", raw)
+  if (!length(id_line)) return(NULL)
+  ids_row <- raw[id_line[1]]
+  ids_df <- utils::read.csv(text = ids_row, header = FALSE,
+                           check.names = FALSE, na.strings = "")
+  ids <- as.character(ids_df[1, ])
+  body <- utils::read.csv(path, skip = id_line[1], header = FALSE,
+                          check.names = FALSE, na.strings = c("", "NA"),
+                          colClasses = "character")
+  parsed <- parse_rba_date(as.character(body[[1]]))
+  keep <- is.finite(parsed)
+  body <- body[keep, , drop = FALSE]
+  out <- list(date = parsed[keep])
+  for (j in seq_along(ids)[-1]) {
+    if (j > ncol(body)) break
+    code <- ids[j]
+    if (!is.na(code) && nzchar(code)) {
+      out[[code]] <- suppressWarnings(as.numeric(trimws(body[[j]])))
+    }
+  }
+  result <- as_tibble(out)
+  rba_tables[[table_code]] <- result
+  result
+}
+
+# ---- transformations ----------------------------------------------------------------
+
+# The workbook dates quarters by their end month (Q1 = March, ..., Q4 =
+# December); ABS time series tables date an observation at the first month
+# of its quarter and monthly series need a three-month average. Both are
+# handled by mapping every month to the end month of its quarter.
+repo_quarter <- function(d) {
+  as.Date(sprintf("%d-%02d-01", as.integer(format(d, "%Y")),
+                  3 * ((as.integer(format(d, "%m")) + 2) %/% 3)))
+}
+
+apply_transform <- function(series, frequency, transformation) {
+  if (is.null(series)) return(NULL)
+  if (grepl("Month", frequency, fixed = TRUE)) {
+    series <- series %>%
+      mutate(quarter = repo_quarter(date)) %>%
+      group_by(quarter) %>%
+      summarise(value = mean(value[is.finite(value)]), .groups = "drop") %>%
+      transmute(date = quarter, value)
+  } else {
+    # Quarterly and annual series: snap the observation date onto the
+    # workbook's quarter-end-month convention (annual end-June benchmarks
+    # land on the June quarter).
+    series <- series %>%
+      transmute(date = repo_quarter(date), value)
+  }
+  if (grepl("divided by 100", transformation, fixed = TRUE)) {
+    series <- series %>% mutate(value = value / 100)
+  }
+  series
+}
+
+fetch_abs_variable <- function(ids, transformation) {
+  parts <- lapply(ids, function(id) {
+    res <- abs_series(id)
+    if (is.null(res)) return(NULL)
+    tibble(date = res$table$date,
+           value = as.numeric(res$table[[id]]),
+           frequency = res$meta$frequency)
+  })
+  parts <- parts[!vapply(parts, is.null, logical(1))]
+  if (!length(parts)) return(NULL)
+  frequency <- parts[[1]]$frequency[1]
+  transformed <- lapply(parts, function(p)
+    apply_transform(p[, c("date", "value")], frequency, transformation))
+  if (length(transformed) == 1) return(transformed[[1]])
+  # multi-part sources (e.g. two tax components): sum on the common dates
+  out <- transformed[[1]]
+  for (k in 2:length(transformed)) {
+    out <- out %>%
+      full_join(transformed[[k]], by = "date", suffix = c("", "_k")) %>%
+      mutate(value = coalesce(value, 0) + coalesce(value_k, 0)) %>%
+      select(date, value)
+  }
+  out
+}
+
+fetch_rba_variable <- function(ids, transformation) {
+  parts <- lapply(ids, function(id) {
+    tbl <- read_rba_table(RBA_TABLES[[id]])
+    if (is.null(tbl) || !(id %in% names(tbl))) return(NULL)
+    tibble(date = tbl$date, value = tbl[[id]])
+  })
+  parts <- parts[!vapply(parts, is.null, logical(1))]
+  if (!length(parts)) return(NULL)
+  transformed <- lapply(parts, function(p)
+    apply_transform(p, "Month", transformation))
+  if (length(transformed) == 1) return(transformed[[1]])
+  out <- transformed[[1]]
+  for (k in 2:length(transformed)) {
+    out <- out %>%
+      full_join(transformed[[k]], by = "date", suffix = c("", "_k")) %>%
+      mutate(value = value + coalesce(value_k, 0)) %>%
+      select(date, value)
+  }
+  out
+}
+
+# ---- run the pipeline -----------------------------------------------------------------
+
+cat("Existing history:", length(unique(data_sheet$date)), "quarters, ending",
+    format(existing_end), "\n")
+cat("Downloading ABS and RBA series for variables with a clear source...\n\n")
+
+series_cache <- new.env(parent = emptyenv())
+
+process_variable <- function(variable, source, transformation,
+                              abs_ids, rba_ids, skip_reason) {
+  # Route list-columns arrive as lists; normalise to plain (possibly empty)
+  # character vectors.
+  abs_ids <- unlist(abs_ids)
+  rba_ids <- unlist(rba_ids)
+  empty <- tibble(variable = variable, status = "x", note = "",
+                  n_overlap = NA_integer_, median_abs_pct_diff = NA_real_,
+                  mean_abs_pct_diff = NA_real_, max_abs_pct_diff = NA_real_,
+                  worst_quarter = "", verdict = "n/a",
+                  n_new = NA_integer_, new_end = "")
+  if (nzchar(skip_reason)) {
+    return(empty %>% mutate(status = "skipped", note = skip_reason))
+  }
+  series <- NULL
+  if (length(abs_ids)) series <- fetch_abs_variable(abs_ids, transformation)
+  if (is.null(series) && length(rba_ids)) {
+    series <- fetch_rba_variable(rba_ids, transformation)
+  }
+  if (is.null(series)) {
+    return(empty %>% mutate(status = "failed",
+                            note = "download or transform failed"))
+  }
+  existing <- data_sheet[, c("date", variable)]
+  overlap <- inner_join(existing, series, by = "date") %>%
+    filter(is.finite(.data[[variable]]), is.finite(value))
+  # Unit check: the workbook is the unit reference. If the downloaded series
+  # differs by a power of ten (the current ABS release may publish in a
+  # different unit than the vintage the workbook was built from), rescale
+  # it and record that in the report.
+  scale_note <- ""
+  if (nrow(overlap)) {
+    ratio <- stats::median(overlap$value / overlap[[variable]], na.rm = TRUE)
+    if (is.finite(ratio) && ratio > 0 &&
+        abs(log10(ratio) - round(log10(ratio))) < 0.02 &&
+        round(log10(ratio)) != 0) {
+      factor <- 10^(-round(log10(ratio)))
+      series <- series %>% mutate(value = value * factor)
+      overlap <- overlap %>% mutate(value = value * factor)
+      scale_note <- paste0("rescaled x", format(factor),
+                           " to workbook units; ")
+    }
+  }
+  scale <- function(a, b) ifelse(abs(b) > 1e-9, 100 * abs(a - b) / abs(b), NA)
+  pct <- scale(overlap$value, overlap[[variable]])
+  median_diff <- stats::median(abs(pct), na.rm = TRUE)
+  mean_diff <- suppressWarnings(mean(abs(pct), na.rm = TRUE))
+  max_diff <- suppressWarnings(max(abs(pct), na.rm = TRUE))
+  worst <- if (nrow(overlap) && any(is.finite(pct))) {
+    format(overlap$date[which.max(abs(pct))])
+  } else ""
+  new_data <- filter(series, date > existing_end, is.finite(value))
+  verdict <- case_when(
+    !is.finite(median_diff) ~ "no comparable overlap",
+    median_diff < 0.5 ~ "source confirmed",
+    median_diff < 2 ~ "revisions - review",
+    TRUE ~ "MISMATCH - check source"
+  )
+  # Cache the fully transformed series for the extension step.
+  series_cache[[variable]] <- series
+  tibble(
+    variable = variable,
+    status = "downloaded",
+    note = paste0(scale_note, length(c(abs_ids, rba_ids)),
+                  " series; overlap ends ",
+                  if (nrow(overlap)) format(max(overlap$date)) else "none"),
+    n_overlap = nrow(overlap),
+    median_abs_pct_diff = round(median_diff, 3),
+    mean_abs_pct_diff = round(mean_diff, 3),
+    max_abs_pct_diff = round(max_diff, 3),
+    worst_quarter = worst,
+    verdict = verdict,
+    n_new = nrow(new_data),
+    new_end = if (nrow(new_data)) format(max(new_data$date)) else ""
+  )
+}
+
+fail_row <- function(variable, message) {
+  tibble(variable = variable, status = "failed",
+         note = paste0("error: ", substr(message, 1, 160)),
+         n_overlap = NA_integer_, median_abs_pct_diff = NA_real_,
+         mean_abs_pct_diff = NA_real_, max_abs_pct_diff = NA_real_,
+         worst_quarter = "", verdict = "n/a",
+         n_new = NA_integer_, new_end = "")
+}
+
+results <- lapply(seq_len(nrow(route)), function(i) {
+  args <- as.list(route[i, ])
+  tryCatch(do.call(process_variable, args),
+           error = function(e) {
+             cat("ERROR on", route$variable[i], ":", conditionMessage(e), "\n")
+             fail_row(route$variable[i], conditionMessage(e))
+           })
+})
+results <- bind_rows(results)
+
+# ---- extend the workbook ----------------------------------------------------------------
+
+new_quarters <- sort(unique(unlist(results$new_end[
+  results$status == "downloaded" & results$n_new > 0 &
+    nzchar(results$new_end)])))
+if (length(new_quarters)) {
+  quarter_ends <- as.Date(new_quarters)
+  extended_dates <- seq(from = seq(existing_end, by = "quarter",
+                                  length.out = 2)[2],
+                        to = max(quarter_ends), by = "quarter")
+} else {
+  extended_dates <- NULL
+}
+
+if (length(extended_dates)) {
+  updated <- data_sheet
+  for (d in extended_dates) updated[nrow(updated) + 1, "date"] <- d
+  for (i in seq_len(nrow(results))) {
+    r <- results[i, ]
+    if (r$status != "downloaded" || r$n_new == 0 || !nzchar(r$new_end)) next
+    variable <- r$variable
+    series <- series_cache[[variable]]
+    new_data <- filter(series, date > existing_end, is.finite(value))
+    for (k in seq_len(nrow(new_data))) {
+      updated[updated$date == new_data$date[k], variable] <- new_data$value[k]
+    }
+  }
+  wb <- loadWorkbook(WORKBOOK)
+  removeWorksheet(wb, "Data")
+  addWorksheet(wb, "Data")
+  writeData(wb, "Data", updated, startRow = 1)
+  # keep the Data sheet first
+  order <- wb$sheet_names
+  worksheetOrder(wb) <- match(c("Data",
+                                setdiff(order, "Data")), order)
+  saveWorkbook(wb, CANDIDATE, overwrite = TRUE)
+  cat("\nCandidate workbook written to", CANDIDATE, "- extended to",
+      format(max(extended_dates)), "\n")
+} else {
+  cat("\nNo new quarters found; no candidate workbook written.\n")
+}
+
+dir.create("outputs", showWarnings = FALSE)
+write_csv(results, "outputs/data_download_validation.csv")
+
+cat("\n=== Validation summary ===\n")
+print(count(results, verdict), n = Inf)
+cat("\n=== Skipped variables ===\n")
+skipped <- results[results$status != "downloaded", c("variable", "note")]
+print(as.data.frame(skipped), row.names = FALSE)
+cat("\nFull report: outputs/data_download_validation.csv\n")

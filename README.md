@@ -129,6 +129,9 @@ executes data preparation, estimation and forecasting. It writes:
   standalone `R/calculate_residuals.R` step and read by the simulation)
 - `outputs/coefficient_comparison.csv` (sense-check of the current estimates
   against `original_estimated_coefficients.csv`)
+- `outputs/variable_audit.csv` (where every prepared-data column is used)
+- `outputs/exogenous_assumptions.csv` (effective endpoints and sources of the
+  scenario columns, joined with `data-raw/exogenous_sources.csv`)
 - `outputs/model_results.xlsx` (dashboard, actual/forecast comparison, full
   forecast and coefficients)
 - `outputs/model_results_flat.xlsx` (one flat sheet: every model variable,
@@ -152,6 +155,24 @@ executes data preparation, estimation and forecasting. It writes:
   the current full-sample estimates.
 - `Rscript R/coredata_export.R` rebuilds the Coredata workbook from the
   current flat output without re-running the model.
+- `Rscript R/update_data.R` downloads the latest observations for every
+  workbook variable with a directly downloadable source - ABS series IDs
+  resolve through the ABS Time Series Directory to the current release's
+  time series tables, and RBA series come from the statistical-table CSVs -
+  applies the transformation noted in the workbook's `Variables` sheet
+  (quarterly as published; monthly series take a three-month average, with
+  the noted divide-by-100) and writes `outputs/data_download_validation.csv`
+  (the source-correctness check: every downloaded series compared with the
+  existing history and graded, with the new quarters counted) plus
+  `data-raw/Data_updated.xlsx`, a candidate workbook with the new quarters
+  appended. Existing history is never rewritten by the script; revisions
+  are quantified in the validation report for a separate decision. Review
+  the candidate, then promote it by replacing `data-raw/Data.xlsx` and
+  re-running the model. Downloaded tables are cached under
+  `data-raw/downloads/` (git-ignored). Variables without a directly
+  downloadable series ID (the Masterdata-sourced series, internal
+  calibrations and the annual interpolations) are listed in the report with
+  the reason.
 
 ## Residual carry-forward
 

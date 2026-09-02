@@ -223,3 +223,30 @@ input.
   ratios are decimal fractions in both conventions. A variable registry
   extracted from the reference workbook is in
   `outputs/coredata_variable_registry.csv`.
+
+## Data download pipeline and restored audits (2026-09-02, later)
+
+- `R/update_data.R` downloads the latest observations for every workbook
+  variable with a directly downloadable source: ABS series IDs resolve
+  through the ABS Time Series Directory to the current release's time
+  series tables, RBA series come from the statistical-table CSVs. The
+  transformation noted in the Variables sheet is applied (quarterly as
+  published; monthly series take a three-month average with the noted
+  divide-by-100; ABS quarterly observations are dated at the first month
+  of their quarter and are mapped onto the workbook's end-month quarter
+  convention). Every series is validated against the existing history
+  (outputs/data_download_validation.csv; median percentage difference,
+  power-of-ten unit rescaling with a note, worst quarter) and
+  data-raw/Data_updated.xlsx is written with new quarters appended -
+  existing history is never rewritten. Findings from the first run:
+  the workbook's Yhdi 1975Q2 cell holds 5 against a downloaded 13,989
+  (data-entry error; untouched pending review); LhrsPub has been
+  rebenchmarked by the ABS (4% median difference, worst 1996Q3); Wfor
+  carries recent revisions; household net worth now publishes in $bn and
+  is rescaled x1000 to the workbook's $m.
+- `data-raw/exogenous_sources.csv` restored (the source-to-variable map for
+  the 18 scenario columns, from the official-release snapshots under
+  data-raw/sources/). `outputs/variable_audit.csv` (where every
+  prepared-data column is used) and `outputs/exogenous_assumptions.csv`
+  (effective endpoints joined to the sources map) are written by
+  run_model.R again, closing the gap between VARIABLES.md and the repo.
