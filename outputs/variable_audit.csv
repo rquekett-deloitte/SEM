@@ -1,0 +1,203 @@
+variable,in_estimation,in_forecast_equations,in_identities,exogenous_contract,in_data_preparation,usage
+Lune,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Lhh,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Lpar,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Pcpi,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Ygdp,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+YgdpNom,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+SavHh,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+Cpr,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Idwell,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Iotc,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+Ygne,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+Xtot,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+Mtot,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+CprNom,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+XtotNom,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+MtotNom,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+Ywss,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+Yhdi,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+Lwge,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+Pulc,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+Tprl,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Tgst,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Ttot,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+Imin,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+IminNom,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+Inonmin,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+InonminNom,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+Xmet,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+Xccb,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+Xomf,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+Xagr,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+XagrNom,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+Wfor,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+KMin,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+KBiz,FALSE,FALSE,TRUE,FALSE,FALSE,identity-defined
+KDwell,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+PcpiRent,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+Xsvc,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+Pxsvc,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+Xmex,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+Xmac,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+Xtrn,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+Xotm,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+Xonr,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+Xgpr,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+R10y,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+R90d,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Rusd,TRUE,TRUE,FALSE,FALSE,FALSE,behavioural equation variable
+RtwiNom,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+R10yReal,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+Rmort,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Whh,TRUE,TRUE,FALSE,FALSE,FALSE,behavioural equation variable
+IdwellNom,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+IotcNom,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+Cgov,FALSE,FALSE,TRUE,TRUE,TRUE,exogenous scenario input
+CgovNom,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+Ygoa,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+Lsup,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+Lpop,FALSE,FALSE,TRUE,TRUE,FALSE,exogenous scenario input
+IvtNonfarm,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Tcit,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Ytsf,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+Ygdw,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+LempPub,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+LempEdu,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+LempHlt,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+BizLns,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+BizBnd,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+Ygmi,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+YprpR,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+YprpP,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+Lemp,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+LhrsAll,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+LhrsPub,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+LhrsEdu,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+LhrsHlt,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+Igov,FALSE,FALSE,TRUE,TRUE,TRUE,exogenous scenario input
+Ipubent,FALSE,FALSE,TRUE,TRUE,TRUE,exogenous scenario input
+Pgne,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+Phouse,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+IvtFar,FALSE,FALSE,TRUE,TRUE,TRUE,exogenous scenario input
+Fpcpi,TRUE,TRUE,TRUE,TRUE,TRUE,exogenous scenario input
+Fpoil,TRUE,TRUE,FALSE,TRUE,FALSE,exogenous scenario input
+Fpcom,TRUE,TRUE,FALSE,TRUE,FALSE,exogenous scenario input
+Fpagr,TRUE,TRUE,FALSE,TRUE,FALSE,exogenous scenario input
+Fr10yUs,FALSE,FALSE,TRUE,TRUE,TRUE,exogenous scenario input
+Fr10yJp,FALSE,FALSE,TRUE,TRUE,TRUE,exogenous scenario input
+Fr10yDe,FALSE,FALSE,TRUE,TRUE,TRUE,exogenous scenario input
+Fr10yUk,FALSE,FALSE,TRUE,TRUE,TRUE,exogenous scenario input
+FcGdp,TRUE,TRUE,FALSE,TRUE,FALSE,exogenous scenario input
+FcPpp,TRUE,TRUE,FALSE,TRUE,FALSE,exogenous scenario input
+KTotal,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+PeRatio,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+EqEarn,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+Lnom,TRUE,TRUE,FALSE,TRUE,FALSE,exogenous scenario input
+XmetNom,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+XccbNom,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+XomfNom,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+XmexNom,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+XmacNom,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+XtrnNom,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+XotmNom,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+XonrNom,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+XgprNom,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+CconsRentNom,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+CconsRent,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+GovDef,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+GovDebt,TRUE,TRUE,FALSE,FALSE,TRUE,behavioural equation variable
+Rbiz,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+BizEq,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+TcorpRate,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+KdepRate,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+DumTsfTot,TRUE,TRUE,FALSE,FALSE,FALSE,behavioural equation variable
+Peq,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+LavhMkt,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+Ustar,FALSE,FALSE,FALSE,FALSE,FALSE,unused by the model
+Tpit,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+IntStu,TRUE,TRUE,FALSE,TRUE,TRUE,exogenous scenario input
+PcpiExGst,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+ShockGst,TRUE,TRUE,FALSE,FALSE,TRUE,behavioural equation variable
+KNbiz,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+KOther,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+KMinDepRate,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+KNbizDepRate,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+KDwellDepRate,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+Ivt,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+Xmin,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+XminNom,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+Xoth,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+XothNom,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+Toth,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Pxoth,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Ppcd,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Pgdp,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Pmgs,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Pidwell,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Piret,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Pxtot,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+Pxagr,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Pxmin,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Pgov,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Pimin,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Pinonmin,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+PconsRent,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+PconsExrent,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Lur,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+LempNonmkt,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+LempMkt,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+LhrsNonmkt,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+LhrsAllSa,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+Lhrs,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+EqYield,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+BizGear,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+RbizReal,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+KdepAllow,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+CostCap,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Ynli,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+GovDem,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+PhouseSa,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+PhouseReal,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Rtwi,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+R90dReal,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Fr10y,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+Fr10yReal,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+Rdif10y,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+RmortReal,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
+RmortRealExgst,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+InflExp,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+CprHpf,TRUE,TRUE,FALSE,FALSE,TRUE,behavioural equation variable
+PhouseHpf,TRUE,TRUE,FALSE,FALSE,TRUE,behavioural equation variable
+LurHpf,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+YgdpHpf,TRUE,TRUE,FALSE,FALSE,TRUE,behavioural equation variable
+RmortRealHpf,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+Ptot,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+trend,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+trend_piret,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+trend_98,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+trend_01,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+trend_08,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+d93,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+q3,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+dum_1975q3,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+dum_1976q4,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+dum_2009q1,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+dum_2020q1,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+dum_2020q2,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+dum_2020q3,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+dum_2020q4,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+dum_2021q1,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+dum_2000q3,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+dum_2000q4,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+dum_2012q4,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+dum_2022q1,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
+dum_2022,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+dum_2023,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+sb_2001,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+dum_covid_cpr,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+dum_covid_avh,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
+LparHpf,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+PpcdHpf,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+UlcDom,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+UlcExp,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
