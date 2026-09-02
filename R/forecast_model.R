@@ -400,12 +400,21 @@ aux_regressors <- function(model, data) {
 # ---- forecast contracts ---------------------------------------------------------
 
 forecast_origin <- function(data) {
-  origin <- as.Date("2025-03-01")
-  required_conditioning_date <- as.Date("2024-12-01")
-  if (!required_conditioning_date %in% as.Date(data$date)) {
-    stop("Forecast requires the 2024Q4 conditioning quarter")
+  # The forecast starts one quarter after the final observed historical
+  # quarter, so an updated Data.xlsx moves the origin with the data.
+  dates <- as.Date(data$date)
+  if (anyNA(dates) || anyDuplicated(dates) > 0L) {
+    stop("Model data dates must be complete and unique")
   }
-  origin
+  if (!all(lubridate::month(dates) %in% c(3, 6, 9, 12)) ||
+      any(lubridate::mday(dates) != 1L)) {
+    stop("Model data dates must be quarter-aligned")
+  }
+  quarters <- lubridate::year(dates) * 4L + lubridate::quarter(dates)
+  if (!all(diff(quarters) == 1L)) {
+    stop("Model data dates must be consecutive quarters")
+  }
+  seq(max(dates), by = "quarter", length.out = 2L)[2L]
 }
 
 mdl_exogenous_contract <- function() {
@@ -444,7 +453,9 @@ mdl_realtime_hpf_contract <- function() {
 # ---- database -------------------------------------------------------------------
 
 build_ts_database <- function(data, exo, model, shocks, origin = forecast_origin(data),
-                              horizon = as.Date("2036-12-01")) {
+                              horizon = as.Date("2036-12-01"),
+                              residuals_path = "outputs/residuals.csv",
+                              carry_forward = TRUE) {
   # The full data set is used for estimation, but forecast conditioning must
   # stop at 2024Q4. Later actual outcomes are retained only for comparison and
   # must not enter lags, residual calibrations, trends, or solver seeds.
@@ -604,50 +615,34 @@ build_ts_database <- function(data, exo, model, shocks, origin = forecast_origin
   db$RcashA <- ts(ra, start = start, frequency = 4)
   db$BsC2 <- ts(rep(model$bs_c2, n), start = start, frequency = 4)
 
-  # Recent outcomes extend beyond several coefficient-estimation windows.
-  # Carry each final observed equation residual into the forecast and fade it.
-  params <- mdl_parameters(model)
-  i <- nh
-  pcpi_fitted <- params$Pcpi_c1 +
-    params$Pcpi_c2 * (log(data$Pcpi[i - 1] / 100) - log(data$Ppcd[i - 1]) -
-                        params$Pcpi_c3 * data$trend[i - 1]) +
-    params$Pcpi_c4 * (log(data$Ppcd[i]) - log(data$Ppcd[i - 1]))
-  pcpi_residual <- log(data$Pcpi[i] / data$Pcpi[i - 1]) - pcpi_fitted
-  rent_fitted <- params$PcpiRent_c1 +
-    params$PcpiRent_c2 * (log(data$PcpiRent[i - 1]) -
-      log(data$PhouseHpf[i - 1]) - params$PcpiRent_c4 * data$RmortRealHpf[i - 1]) +
-    params$PcpiRent_c5 * data$Lnom[i] / 1000 +
-    params$PcpiRent_c6 * (log(data$Lwge[i]) - log(data$Lwge[i - 1])) +
-    params$PcpiRent_c7 * (log(data$Lwge[i - 1]) - log(data$Lwge[i - 2])) +
-    params$PcpiRent_c8 * (log(data$PcpiRent[i - 1]) - log(data$PcpiRent[i - 2]))
-  rent_residual <- log(data$PcpiRent[i] / data$PcpiRent[i - 1]) - rent_fitted
-  inflation <- data$Pcpi[i] / data$Pcpi[i - 4] - 1
-  rcash_fitted <- RCASH_IMPOSED[["c1"]] *
-    (aux$RcashA[i] + inflation + RCASH_IMPOSED[["c2"]] *
-       (data$Lur[i] - data$LurHpf[i]) + RCASH_IMPOSED[["c3"]] * data$d93[i] *
-       (inflation - 0.025) - data$R90d[i - 1]) +
-    RCASH_IMPOSED[["c4"]] * (data$Lur[i] - data$Lur[i - 1])
-  rcash_residual <- data$R90d[i] - data$R90d[i - 1] - rcash_fitted
-  z_lhrs <- log(data$Lhrs) - log(dplyr::lag(data$KTotal))
-  lhrs_observed <- z_lhrs - dplyr::lag(z_lhrs)
-  lhrs_fitted <- params$Lhrs_c1 *
-    (params$Lhrs_c2 + log(data$Ygdp) - log(dplyr::lag(data$KTotal)) +
-       params$Lhrs_c4 * data$trend +
-       params$Lhrs_c5 * (data$Ygdp - data$YgdpHpf) / data$YgdpHpf +
-       params$Lhrs_c6 * (log(data$Lwge) - log(data$Pgdp)) +
-       params$Lhrs_c7 * (log(dplyr::lag(data$Lwge)) -
-                           log(dplyr::lag(data$Pgdp))) -
-       (log(dplyr::lag(data$Lhrs)) - log(dplyr::lag(data$KTotal, 2)))) +
-    params$Lhrs_c8 * data$dum_2020q2 + params$Lhrs_c9 * data$dum_2020q3
-  lhrs_residual <- lhrs_observed[i] - lhrs_fitted[i]
-  boundary_path <- function(residual, persistence = 0.9) {
+  # Equation residuals are calculated by the standalone R/calculate_residuals.R
+  # script and read from its exported CSV. With carry_forward = TRUE each final
+  # observed residual enters the first forecast quarter and fades geometrically
+  # at its recorded persistence; with carry_forward = FALSE the residuals are
+  # set to zero and every boundary path is identically zero.
+  residual_frames <- read_residuals_csv(residuals_path)
+  conditioning_date <- dates[nh]
+  if (carry_forward &&
+      any(residual_frames$conditioning_date != conditioning_date)) {
+    stale <- unique(format(residual_frames$conditioning_date[
+      residual_frames$conditioning_date != conditioning_date
+    ]))
+    stop(
+      "Exported residuals were conditioned on ", paste(stale, collapse = ", "),
+      " but the simulation conditions on ", format(conditioning_date),
+      ". Re-run Rscript R/calculate_residuals.R or run_model.R."
+    )
+  }
+  boundary_path <- function(residual, persistence) {
+    if (!carry_forward) residual <- 0
     ts(c(rep(0, nh), residual * persistence^seq.int(0, n - nh - 1L)),
        start = start, frequency = 4)
   }
-  db$PcpiBoundary <- boundary_path(pcpi_residual)
-  db$PcpiRentBoundary <- boundary_path(rent_residual)
-  db$RcashBoundary <- boundary_path(rcash_residual)
-  db$LhrsBoundary <- boundary_path(lhrs_residual)
+  for (k in seq_len(nrow(residual_frames))) {
+    db[[residual_frames$boundary_variable[[k]]]] <- boundary_path(
+      residual_frames$residual[[k]], residual_frames$persistence[[k]]
+    )
+  }
 
   # carried residuals / factors / held parameters (constant series).
   # Each is computed at the last row where ALL its inputs are observed, so
@@ -829,6 +824,8 @@ parse_shocks_csv <- function(path = "data-raw/shocks.csv",
 
 run_bimets_forecast <- function(data, model, exo, shocks, origin = forecast_origin(data),
                                 horizon = as.Date("2036-12-01"),
+                                residuals_path = "outputs/residuals.csv",
+                                carry_forward = TRUE,
                                 convergence = 1e-6, iterlimit = 1000,
                                 hpf_convergence = 1e-5, hpf_iterlimit = 12,
                                 show_progress = TRUE) {
@@ -836,7 +833,8 @@ run_bimets_forecast <- function(data, model, exo, shocks, origin = forecast_orig
   if (show_progress) message("BIMETS: loading model")
   mdl <- LOAD_MODEL(modelText = mdl_text(model), quietly = TRUE)
   if (show_progress) message("BIMETS: building simulation database")
-  db <- build_ts_database(data, exo, model, shocks, origin, horizon)
+  db <- build_ts_database(data, exo, model, shocks, origin, horizon,
+                          residuals_path, carry_forward)
   forecast_dates <- seq(as.Date(origin), as.Date(horizon), by = "quarter")
   all_dates <- seq(min(as.Date(data$date)), as.Date(horizon), by = "quarter")
   contract <- mdl_realtime_hpf_contract()

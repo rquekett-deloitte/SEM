@@ -65,9 +65,10 @@ The model has two production inputs:
 `run_model.R` estimates each equation once, reads the exogenous forecast, runs
 the simulation and writes the model outputs.
 
-The forecast implementation is in `R/forecast_model.R`. It starts on
-2025-03-01 (2025Q1), after the 2024Q4 conditioning observation, uses the
-explicit scenario contract in
+The forecast implementation is in `R/forecast_model.R`. The forecast origin is
+derived from the data: it starts one quarter after the final observed quarter
+in `Data.xlsx`, currently 2025-03-01 (2025Q1), after the 2024Q4 conditioning
+observation. It uses the explicit scenario contract in
 `data-raw/exogenous_forecast.csv`, and runs a simultaneous dynamic forecast
 through 2036Q4. The scenario CSV is an immutable model input and is not
 generated or modified by production code. Supporting source metadata remains
@@ -77,8 +78,12 @@ feedback block uses a 10 per cent damped Gauss-Seidel update, which changes the
 iteration path but not the fixed-point equations. Forecast closures, units and
 scenario-provenance handling are documented in `VARIABLES.md`.
 
-`Data.xlsx` ends in 2024Q4, so the forecast begins in 2025Q1. No later observed
-data enter estimation, conditioning, filtering or simulation.
+`Data.xlsx` currently ends in 2024Q4, so the forecast begins in 2025Q1.
+Estimation windows, the forecast origin and the residual conditioning quarter
+all follow the data end, so extending `Data.xlsx` re-estimates the equations to
+the new quarter and re-forecasts from the following quarter without code
+changes. No observed data beyond the final `Data.xlsx` quarter enter
+estimation, conditioning, filtering or simulation.
 
 ## Run directly
 
@@ -102,9 +107,12 @@ model_settings <- list(
   refresh_model_data = TRUE,
   run_estimation = TRUE,
   show_bimets_progress = TRUE,
+  carry_forward_residuals = TRUE,
   model_data_path = "data/model_data.rds",
   coefficients_path = "outputs/coefficients.csv",
-  shocks_path = "data-raw/shocks.csv"
+  residuals_path = "outputs/residuals.csv",
+  shocks_path = "data-raw/shocks.csv",
+  flat_output_path = "outputs/model_results_flat.xlsx"
 )
 ```
 
@@ -118,6 +126,9 @@ model_settings <- list(
   one row per forecast quarter and columns for all behavioural equations and
   exogenous model variables. The checked-in file is an all-zero baseline.
   Enter values only in the variables and quarters to be shocked.
+- Set `carry_forward_residuals = FALSE` to run the forecast with the exported
+  residuals set to zero instead of carried into the first forecast quarter and
+  faded geometrically.
 - A normal run with both settings `TRUE` refreshes both saved files for later
   fast runs.
 
@@ -138,8 +149,26 @@ executes data preparation, estimation and forecasting. It writes:
 
 - `outputs/coefficients.csv`
 - `outputs/forecast.csv`
+- `outputs/residuals.csv` (final-quarter equation residuals, calculated by the
+  standalone `R/calculate_residuals.R` step and read by the simulation)
+- `outputs/coefficient_comparison.csv` (sense-check of the current estimates
+  against `original_estimated_coefficients.csv`)
 - `outputs/model_results.xlsx` (dashboard, actual/forecast comparison, full
   forecast and coefficients)
+- `outputs/model_results_flat.xlsx` (one flat sheet: every model variable,
+  historical and forecast, one row per quarter)
+
+## Residual carry-forward
+
+The final-quarter equation residuals carried into each forecast are
+calculated and exported independently of the simulation: `run_model.R` runs
+the standalone step each time, and `Rscript R/calculate_residuals.R` re-exports
+`outputs/residuals.csv` from the saved model data and coefficients without
+re-running estimation. The simulation reads that file; with
+`carry_forward_residuals = TRUE` each residual enters the first forecast
+quarter and fades geometrically (persistence 0.9), and with `FALSE` the
+residuals are set to zero. `Rscript R/run_residual_demo.R` runs both cases and
+writes the comparison to `outputs/residual_demo/`.
 
 The workbook is populated from `templates/model_results_template.xlsx`. Edit
 that template to change workbook formatting, formulas, layout or native Excel

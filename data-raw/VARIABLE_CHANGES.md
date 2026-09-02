@@ -158,3 +158,41 @@ input.
   conversions and terminal model rules are in
   `data-raw/exogenous_sources.csv`. The output audit preserves that distinction
   rather than labelling a post-horizon assumption as published data.
+
+## Estimation and residual process changes (2026-09-02)
+
+- Estimation windows now follow the data end by default (`estimation_end`
+  argument of `estimate_model()`); pass a date to pin a vintage. Fourteen
+  equations previously stopped before the 2024Q4 data end — Rtwi at 2019Q4,
+  Xmin at 2024Q2, Pidwell at 2023Q2, Lavh/Lwge/Piret/Pxagr/Pmgs/R10y/Ppcd/
+  PconsExrent at 2023Q3, LempNonmkt/Rmort/Whh at 2023Q4 and Inonmin at 2024Q3 —
+  and now estimate to the final observed quarter. Review point for the model
+  owner: the Rtwi window now includes COVID and post-COVID quarters and its
+  c5 coefficient flips sign (+0.056 to -0.073); re-pin that window if the
+  2019Q4 endpoint was a deliberate structural choice.
+- The coefficient regression gate is superseded by a written sense-check:
+  `outputs/coefficient_comparison.csv` compares each run against
+  `original_estimated_coefficients.csv` (old equation names mapped:
+  Idw→Idwell, IvtNF→IvtNonfarm, Ttsf→Ytsf, LempNM→LempNonmkt, Peqi→Peq,
+  Pgc→Pgov, Pidw→Pidwell, Wgov→GovDebt, Prent→PcpiRent, EqiEarn→EqEarn,
+  Pcnh→PconsExrent), and the pre-change snapshot is compared separately in
+  `outputs/coefficient_comparison_window_extension.csv` to isolate the effect
+  of extending the windows. Largest movers: Lavh c2 (-19.5 to -17.8),
+  Lhrs c2 (9.32 to 9.90), the Rtwi block.
+- The forecast origin and the residual conditioning quarter now derive from
+  the final `Data.xlsx` quarter instead of hardcoded dates (currently 2024Q4
+  → origin 2025Q1), so an extended workbook re-estimates and re-forecasts from
+  the new quarter in one run.
+- Final-quarter equation residuals moved out of the simulation:
+  `R/calculate_residuals.R` calculates the Pcpi/PcpiRent/Rcash/Lhrs residuals
+  at the conditioning quarter and exports `outputs/residuals.csv`, which the
+  simulation reads (stale-conditioning guard included).
+  `carry_forward_residuals` in `run_model.R` switches the carry-forward on
+  (each residual enters 2025Q1 and fades at persistence 0.9) or off
+  (residuals set to zero). A regression run with the pre-change coefficients
+  reproduced the previous forecast exactly (max difference 1e-7).
+- New outputs: `outputs/residuals.csv`,
+  `outputs/model_results_flat.xlsx` (one flat sheet, every model variable,
+  1974Q3 to 2036Q4, period-marked Actual/Forecast) and the coefficient
+  comparisons above. `Rscript R/run_residual_demo.R` writes the carry-forward
+  on/off comparison to `outputs/residual_demo/`.

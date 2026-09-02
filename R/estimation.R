@@ -22,7 +22,12 @@ build_lhrs_frame <- function(data, end_date) {
 #   data   - the estimation data augmented with Rstar (RTS-smoothed neutral
 #            rate from the Rcash state-space model)
 #   bs_c2  - Balassa-Samuelson weight estimated during data preparation
-estimate_model <- function(data) {
+estimate_model <- function(data, estimation_end = NULL) {
+
+  # Estimate every equation to the most recent historical period by default:
+  # every window below follows the data end, so an updated Data.xlsx
+  # re-estimates automatically. Pass estimation_end to pin a vintage.
+  end <- if (is.null(estimation_end)) max(as.Date(data$date)) else as.Date(estimation_end)
 
 dlog <- function(x) log(x) - log(lag(x))
 
@@ -43,7 +48,7 @@ cpr <- data %>%
     d_y2 = lag(dlog(Yhdi), 2),
     d_u  = 4 * (Lur - lag(Lur))
   ) %>%
-  filter(date >= "1988-12-01", date <= "2024-12-01")
+  filter(date >= "1988-12-01", date <= end)
 cpr_base <- nls(
   y ~ c1 + c2 * (l_c - c3 * l_yr - (1 - c3) * l_wr + 0.5 * l_r) +
     c6 * d_w + c8 * d_y + c9 * d_y1 + c10 * d_y2 + c11 * d_u,
@@ -74,7 +79,7 @@ idwell <- data %>%
     d_h3 = lag(dlog(PhouseReal), 3),
     d_h4 = lag(dlog(PhouseReal), 4)
   ) %>%
-  filter(date >= "2005-03-01", date <= "2024-12-01")
+  filter(date >= "2005-03-01", date <= end)
 fits$Idwell <- nls(
   y ~ c1 + c2 * (l_i - l_c - c4 * l_p - c5 * l_r) +
     c7 * d_h1 + c8 * d_h2 + c9 * d_h3 + c10 * d_h4 +
@@ -97,7 +102,7 @@ imin <- data %>%
     d_p2 = lag(dlog(Pxmin), 2),
     d2_i = lag(log(Imin) - 2 * lag(log(Imin)) + lag(log(Imin), 2))
   ) %>%
-  filter(date >= "2002-06-01", date <= "2024-12-01")
+  filter(date >= "2002-06-01", date <= end)
 fits$Imin <- nls(
   y ~ c1 + c2 * (l_i - l_g - c3 * l_p) + c4 * d_p0 + c5 * d_p1 + c6 * d_p2 + c7 * d2_i,
   data = imin,
@@ -115,7 +120,7 @@ ivtnf <- data %>%
     d_v2 = lag(dlog(IvtNonfarm), 2),
     d_g1 = lag(dlog(Ygdp))
   ) %>%
-  filter(date >= "1986-03-01", date <= "2024-12-01")
+  filter(date >= "1986-03-01", date <= end)
 fits$IvtNonfarm <- nls(
   y ~ c1 + c2 * (l_v - l_g + c3 * trend + c4 * trend^2 + c5 * trend^3) +
     c6 * d_v1 + c7 * d_v2 + c8 * d_g1,
@@ -134,7 +139,7 @@ tcit <- data %>%
     d_g = dlog(Ygoa),
     d_p = dlog(Fpcom / Pgdp)
   ) %>%
-  filter(date >= "1974-12-01", date <= "2024-12-01")
+  filter(date >= "1974-12-01", date <= end)
 fits$Tcit <- nls(
   y ~ c1 + c2 * (l_t - l_g - c5 * l_p) + c6 * d_g + c7 * d_p,
   data = tcit,
@@ -151,7 +156,7 @@ tprl <- data %>%
     c5 = log(lag(Lemp)) - 4 * log(lag(Lemp, 2)) + 6 * log(lag(Lemp, 3)) -
       4 * log(lag(Lemp, 4)) + log(lag(Lemp, 5))
   ) %>%
-  filter(date >= "1975-12-01", date <= "2024-12-01")
+  filter(date >= "1975-12-01", date <= end)
 fits$Tprl <- lm(y ~ c2 + c4 + c5, data = tprl)
 frames$Tprl <- tprl
 
@@ -164,7 +169,7 @@ toth <- data %>%
     dgst = lag(ShockGst),
     d_g  = dlog(YgdpNom)
   ) %>%
-  filter(date >= "1974-12-01", date <= "2024-12-01")
+  filter(date >= "1974-12-01", date <= end)
 fits$Toth <- nls(
   y ~ c1 + c2 * (l_t - l_g - c3 * dgst) + c4 * d_g,
   data = toth, na.action = na.exclude,
@@ -183,7 +188,7 @@ ytsf <- data %>%
     gap = lag(Lur) - lag(LurHpf),
     dum = DumTsfTot
   ) %>%
-  filter(date >= "1976-06-01", date <= "2024-12-01")
+  filter(date >= "1976-06-01", date <= end)
 fits$Ytsf <- nls(
   y ~ c1 + c2 * (l_t - c3 * l_g - (1 - c3) * l_u) + c4 * d_e + c5 * gap + c6 * q3 + c7 * dum,
   data = ytsf, na.action = na.exclude,
@@ -207,14 +212,14 @@ xmin <- data %>%
     c11 = lag(dlog(Fpcom), 2),
     c12 = lag(dlog(Fpcom), 3)
   ) %>%
-  filter(date >= "1983-03-01", date <= "2024-06-01")
+  filter(date >= "1983-03-01", date <= end)
 fits$Xmin <- lm(y ~ c2 + c3 + c4 + c5 + c6 + c7 + c8 + c9 + c10 + c11 + c12, data = xmin)
 frames$Xmin <- xmin
 
 # ---- Average hours worked (market sector) ---------------------------------------------
 lavh <- data %>%
   mutate(gap = (Lur - LurHpf) / Lur, Lavh_q = LavhMkt) %>%
-  filter(date >= "1984-12-01", date <= "2023-09-01") %>%
+  filter(date >= "1984-12-01", date <= end) %>%
   mutate(l_avh = lag(Lavh_q), l_gap = lag(gap), l_t98 = lag(trend_98))
 lavh_base <- nls(
   Lavh_q ~ rho * l_avh + (1 - rho) * c1 + c2 * (gap - rho * l_gap) +
@@ -247,7 +252,7 @@ lempnm <- data %>%
     c3 = trend_01,
     c4 = log(GovDem)
   ) %>%
-  filter(date >= "1984-12-01", date <= "2023-12-01")
+  filter(date >= "1984-12-01", date <= end)
 fits$LempNonmkt <- lm(y ~ c2 + c3 + c4, data = lempnm)
 frames$LempNonmkt <- lempnm
 
@@ -264,7 +269,7 @@ lpar <- data %>%
     c8 = dum_2020q3,
     c9 = dum_2020q4
   ) %>%
-  filter(date >= "1975-12-01", date <= "2024-12-01")
+  filter(date >= "1975-12-01", date <= end)
 fits$Lpar <- lm(y ~ c2 + c3 + c4 + c5 + c6 + c7 + c8 + c9, data = lpar)
 frames$Lpar <- lpar
 
@@ -278,7 +283,7 @@ lwge <- data %>%
     c4 = Lur - lag(Lur),
     c5 = lag(Lur) - lag(Lur, 2)
   ) %>%
-  filter(date >= "1975-09-01", date <= "2023-09-01")
+  filter(date >= "1975-09-01", date <= end)
 fits$Lwge <- lm(y ~ c2 + c3 + c4 + c5, data = lwge)
 frames$Lwge <- lwge
 
@@ -291,7 +296,7 @@ pcpi <- data %>%
     l_tr = lag(trend),
     d_p  = dlog(Ppcd)
   ) %>%
-  filter(date >= "1974-12-01", date <= "2024-12-01")
+  filter(date >= "1974-12-01", date <= end)
 fits$Pcpi <- nls(
   y ~ c1 + c2 * (l_c - l_p - c3 * l_tr) + c4 * d_p +
       c6 * dum_1975q3 + c7 * dum_1976q4 + c8 * dum_2020q2,
@@ -306,7 +311,7 @@ piret <- data %>%
     y  = log(Piret) - log(Pgdp),
     c3 = trend_piret
   ) %>%
-  filter(date >= "1985-09-01", date <= "2023-09-01")
+  filter(date >= "1985-09-01", date <= end)
 fits$Piret <- lm(y ~ c3, data = piret)
 frames$Piret <- piret
 
@@ -320,7 +325,7 @@ pxagr <- data %>%
     c5 = dum_2009q1,
     c6 = dum_2023
   ) %>%
-  filter(date >= "1975-03-01", date <= "2023-09-01")
+  filter(date >= "1975-03-01", date <= end)
 fits$Pxagr <- lm(y ~ c2 + c3 + c4 + c5 + c6, data = pxagr)
 frames$Pxagr <- pxagr
 
@@ -334,7 +339,7 @@ pmgs <- data %>%
     d_w = dlog(Fpcpi / RtwiNom),
     d_o = dlog(Fpoil / Rusd)
   ) %>%
-  filter(date >= "1987-12-01", date <= "2023-09-01")
+  filter(date >= "1987-12-01", date <= end)
 fits$Pmgs <- nls(
   y ~ c1 + c2 * (l_m - c3 * l_w - (1 - c3) * l_o - c4 * trend) + c5 * d_w + c6 * d_o,
   data = pmgs,
@@ -351,7 +356,7 @@ rmort <- data %>%
     d_r  = R90d - lag(R90d),
     d_r1 = lag(R90d) - lag(R90d, 2)
   ) %>%
-  filter(date >= "1994-03-01", date <= "2023-12-01")
+  filter(date >= "1994-03-01", date <= end)
 fits$Rmort <- nls(
   y ~ c1 * (l_s - c2 - c3 * l_tr) + c4 * d_r + c5 * d_r1,
   data = rmort,
@@ -369,7 +374,7 @@ peqi <- data %>%
     c5 = dlog(Fpcom),
     c6 = lag(dlog(Fpcom))
   ) %>%
-  filter(date >= "2004-12-01", date <= "2024-12-01")
+  filter(date >= "2004-12-01", date <= end)
 fits$Peq <- lm(y ~ c2 + c3 + c4 + c5 + c6, data = peqi)
 frames$Peq <- peqi
 
@@ -386,7 +391,7 @@ rtwi <- data %>%
     d_p  = dlog(Ptot),
     d_d  = rdif - lag(rdif)
   ) %>%
-  filter(date >= "1981-12-01", date <= "2019-12-01")
+  filter(date >= "1981-12-01", date <= end)
 fits$Rtwi <- nls(
   y ~ c1 + c2 * (l_r + c3 * l_p + c4 * l_d + c5 * l_i) + c6 * d_p + c7 * d_d,
   data = rtwi,
@@ -401,7 +406,7 @@ rusd <- data %>%
     c2 = dlog(Rtwi),
     c3 = dlog(Fpcpi / Pgdp)
   ) %>%
-  filter(date >= "1977-09-01", date <= "2024-12-01")
+  filter(date >= "1977-09-01", date <= end)
 fits$Rusd <- lm(y ~ c2 + c3, data = rusd)
 frames$Rusd <- rusd
 
@@ -416,7 +421,7 @@ whh <- data %>%
     c3 = lag(Whh) * dlog(Peq),
     c4 = lag(Whh) * dlog(Rmort)
   ) %>%
-  filter(date >= "2004-12-01", date <= "2023-12-01")
+  filter(date >= "2004-12-01", date <= end)
 fits$Whh <- lm(y ~ 0 + c1 + c2 + c3 + c4, data = whh)
 frames$Whh <- whh
 
@@ -428,7 +433,7 @@ ygdw <- data %>%
     l_c = lag(log(CprHpf * Ppcd)),
     d_c = dlog(CprHpf * Ppcd)
   ) %>%
-  filter(date >= "1974-12-01", date <= "2024-12-01")
+  filter(date >= "1974-12-01", date <= end)
 fits$Ygdw <- nls(
   y ~ c1 + c2 * (l_g - l_c - c3 * trend) + c4 * d_c,
   data = ygdw,
@@ -447,7 +452,7 @@ lhrs <- data %>%
     rw1 = log(lag(Lwge)) - log(lag(Pgdp)),
     ec = log(lag(Lhrs)) - log(lag(KTotal, 2))
   ) %>%
-  filter(date >= "1985-06-01", date <= "2024-12-01") # date >= "1985-06-01", date <= "2023-09-01"
+  filter(date >= "1985-06-01", date <= end)
 fits$Lhrs <- nls(
   y ~ c1 * (c2 + lr_g + c4 * trend + c5 * gap + c6 * rw + c7 * rw1 - ec) +
     c8 * dum_2020q2 + c9 * dum_2020q3,
@@ -468,7 +473,7 @@ phouse <- data %>%
     d_hp1 = lag(dlog(PhouseSa)),
     d_hp2 = lag(dlog(PhouseSa), 2)
   ) %>%
-  filter(date >= "2005-09-01", date <= "2025-09-01")
+  filter(date >= "2005-09-01", date <= end)
 fits$Phouse <- nls(
   y ~ c1 + c2 * (ec - c3 * trend - c4 * hhkd) +
     c5 * d_p + c6 * d_rm1 + c7 * d_hp1 + c8 * d_hp2,
@@ -487,7 +492,7 @@ pimin <- data %>%
     d_pm = dlog(Pmgs), d_pm2 = lag(dlog(Pmgs), 2),
     d_u = UlcDom - lag(UlcDom), d_u2 = lag(UlcDom, 2) - lag(UlcDom, 3),
     d_u3 = lag(UlcDom, 3) - lag(UlcDom, 4)
-  ) %>% filter(date >= "1995-09-01", date <= "2024-12-01")
+  ) %>% filter(date >= "1995-09-01", date <= end)
 fits$Pimin <- nls(
   y ~ c1 + c2 * (lp - c3 * ulc1 - (1 - c3) * pm1) + c4 * d_pm + c6 * d_pm2 +
     c7 * d_u + c9 * d_u2 + c10 * d_u3 + c11 * dum_2022 + c12 * dum_2023,
@@ -502,7 +507,7 @@ pinonmin <- data %>%
     y = dlog(Pinonmin), lp = lag(log(Pinonmin)), ulc1 = lag(UlcDom), pm1 = lag(log(Pmgs)),
     d_pm = dlog(Pmgs), d_pm1 = lag(dlog(Pmgs)), d_pm2 = lag(dlog(Pmgs), 2),
     d_u1 = lag(UlcDom) - lag(UlcDom, 2)
-  ) %>% filter(date >= "1995-09-01", date <= "2024-12-01")
+  ) %>% filter(date >= "1995-09-01", date <= end)
 fits$Pinonmin <- nls(
   y ~ c1 + c2 * (lp - c3 * ulc1 - (1 - c3) * pm1) + c6 * d_pm + c7 * d_u1 +
     c8 * d_pm1 + c9 * d_pm2 + c10 * dum_2022 + c11 * dum_2023,
@@ -516,7 +521,7 @@ pgov <- data %>%
   mutate(
     y = dlog(Pgov), lp = lag(log(Pgov)), ulc1 = lag(UlcDom), pm1 = lag(log(Pmgs)),
     d_u = UlcDom - lag(UlcDom), d_p1 = lag(dlog(Pgov))
-  ) %>% filter(date >= "1985-09-01", date <= "2024-12-01")
+  ) %>% filter(date >= "1985-09-01", date <= end)
 fits$Pgov <- nls(
   y ~ c1 + c2 * (lp - c3 * ulc1 - (1 - c3) * pm1) + c4 * d_u + c5 * d_p1,
   data = pgov,
@@ -529,7 +534,7 @@ pidwell <- data %>%
   mutate(
     y = dlog(Pidwell), lp = lag(log(Pidwell)), ulc1 = lag(UlcDom), pm1 = lag(log(Pmgs)),
     tr = trend, d_p1 = lag(dlog(Pidwell))
-  ) %>% filter(date >= "1995-09-01", date <= "2023-06-01")
+  ) %>% filter(date >= "1995-09-01", date <= end)
 fits$Pidwell <- nls(
   y ~ c1 + c2 * (lp - c3 * ulc1 - (1 - c3) * pm1 - c4 * tr) +
     c5 * dum_2000q3 + c6 * d_p1 + c7 * dum_2000q4,
@@ -543,7 +548,7 @@ pxsvc <- data %>%
   mutate(
     y = dlog(Pxsvc), lp = lag(log(Pxsvc)), ulcx1 = lag(UlcExp), tr = trend,
     d_u = UlcExp - lag(UlcExp), d_u1 = lag(UlcExp) - lag(UlcExp, 2)
-  ) %>% filter(date >= "1995-12-01", date <= "2024-12-01")
+  ) %>% filter(date >= "1995-12-01", date <= end)
 fits$Pxsvc <- nls(
   y ~ c1 + c2 * (lp - ulcx1 - c4 * tr) + c5 * d_u + c6 * d_u1,
   data = pxsvc,
@@ -559,7 +564,7 @@ tpit <- data %>%
     d_u = dlog(Lur),  d_u1 = lag(dlog(Lur)),
     d_w = lag(dlog(Lwge)),
     d_t = lag(dlog(Tpit))
-  ) %>% filter(date >= "1975-03-01", date <= "2024-12-01")
+  ) %>% filter(date >= "1975-03-01", date <= end)
 fits$Tpit <- nls(y ~ c1 + c2 * ec + c4 * d_u + c5 * d_u1 + c6 * d_w + c7 * d_t + c8 * dum_2000q3,
     data = tpit,
     start = list(c1 = -0.22, c2 = -0.12, c4 = -0.18, c5 = -0.19, c6 = 1.10, c7 = -0.24, c8 = -0.25))
@@ -569,7 +574,7 @@ frames$Tpit <- tpit
 govdebt <- data %>%
   mutate(y = GovDebt - lag(GovDebt) - GovDef,
          x = lag(R10y, 5) * lag(GovDebt)) %>%
-  filter(date >= "2004-09-01", date <= "2025-06-01")
+  filter(date >= "2004-09-01", date <= end)
 fits$GovDebt <- lm(y ~ 0 + x, data = govdebt)
 frames$GovDebt <- govdebt
 
@@ -582,7 +587,7 @@ prent <- data %>%
     nom  = Lnom / 1e3,
     d_w  = dlog(Lwge), d_w1 = lag(dlog(Lwge)),
     d_p1 = lag(dlog(PcpiRent))
-  ) %>% filter(date >= "2004-12-01", date <= "2024-12-01")
+  ) %>% filter(date >= "2004-12-01", date <= end)
 fits$PcpiRent <- nls(y ~ c1 + c2 * (ec_p - c4 * rm_h) + c5 * nom + c6 * d_w + c7 * d_w1 + c8 * d_p1,
     data = prent,
     start = list(c1 = -0.04, c2 = -0.04, c4 = 24, c5 = 0.03, c6 = -0.08, c7 = 0.10, c8 = 0.56))
@@ -602,10 +607,10 @@ inonmin <- data %>%
     c9  = lag(dlog(Inonmin)),
     c10 = dum_2012q4,
     c11 = dlog(Pinonmin)
-  # The binding coefficient vintage ends this equation in 2024Q3. The later
-  # 2024Q4 input is now populated, but adding it would change all nine rows of
-  # the user-supplied coefficient constraint.
-  ) %>% filter(date >= "2002-03-01", date <= "2024-09-01")
+  # This window previously ended at the 2024Q3 coefficient vintage; it now
+  # follows the data end, and the resulting coefficient changes are surfaced
+  # by the comparison written to outputs/coefficient_comparison.csv.
+  ) %>% filter(date >= "2002-03-01", date <= end)
 fits$Inonmin <- lm(y ~ c2 + c5 + c6 + c7 + c8 + c9 + c10 + c11, data = inonmin)
 frames$Inonmin <- inonmin
 
@@ -619,7 +624,7 @@ ynli <- data %>%
     pe1   = lag(EqYield),
     pe2   = lag(EqYield, 2),
     pe3   = lag(EqYield, 3)
-  ) %>% filter(date >= "1997-06-01", date <= "2024-12-01")
+  ) %>% filter(date >= "1997-06-01", date <= end)
 fits$Ynli <- lm(ratio ~ rm + pe + pe1 + pe2 + pe3 + l_r, data = ynli)
 frames$Ynli <- ynli
 
@@ -634,7 +639,7 @@ eqi <- data %>%
     d_ru1 = lag(Rusd) - lag(Rusd, 2),
     d_g   = dlog(Ygoa),  d_g1 = lag(dlog(Ygoa)),
     d_g2  = lag(dlog(Ygoa), 2), d_g3 = lag(dlog(Ygoa), 3), d_g4 = lag(dlog(Ygoa), 4)
-  ) %>% filter(date >= "2004-12-01", date <= "2024-12-01")
+  ) %>% filter(date >= "2004-12-01", date <= end)
 fits$EqEarn <- nls(y ~ c1 + c2 * (ec - c3 * rc1 - c4 * rus1 - c5 * trend) +
         c7 * d_rc + c8 * d_ru1 + c9 * d_g + c10 * d_g1 + c11 * d_g2 + c12 * d_g3 + c13 * d_g4,
       data = eqi,
@@ -649,7 +654,7 @@ tgst <- data %>%
     ec  = lag(log(Tgst)) - lag(log(CprNom)),
     d0  = dlog(CprNom),  d1 = lag(dlog(CprNom)),
     d2  = lag(dlog(CprNom), 2), d3 = lag(dlog(CprNom), 3), d4 = lag(dlog(CprNom), 4)
-  ) %>% filter(date >= "2001-03-01", date <= "2024-12-01")
+  ) %>% filter(date >= "2001-03-01", date <= end)
   fits$Tgst <- nls(y ~ c1 + c2 * (ec - c3 * ShockGst - c4 * trend) + c5 * d0 + c6 * d1 + c7 * d2 + c8 * d3 + c9 * d4,
     data = tgst,
     start = list(c1 = -0.18, c2 = -0.08, c3 = 0.05, c4 = -0.002, c5 = 0.73,
@@ -664,7 +669,7 @@ xoth <- data %>%
     rel = lag(Pxoth / Pgdp),
     d_r = (Pxoth / Pgdp) - lag(Pxoth / Pgdp),
     d_g = dlog(Ygdp)
-  ) %>% filter(date >= "1985-12-01", date <= "2025-09-01")
+  ) %>% filter(date >= "1985-12-01", date <= end)
 fits$Xoth <- nls(y ~ c1 + c2 * (ec - c3 * rel - c4 * sb_2001 - c5 * sb_2001 * trend) + c6 * d_r + c7 * d_g,
     data = xoth,
     start = list(c1 = -0.14, c2 = -0.05, c3 = -0.15, c4 = 0.7, c5 = 0, c6 = -0.15, c7 = 0.95))
@@ -677,7 +682,7 @@ pxmin <- data %>%
     ec  = lag(log(Pxmin)) - lag(log(Fpcom / Rusd)),
     d_f = dlog(Fpcom),
     d_u = dlog(Rusd)
-  ) %>% filter(date >= "1989-12-01", date <= "2024-12-01")
+  ) %>% filter(date >= "1989-12-01", date <= end)
 fits$Pxmin <- nls(y ~ c1 + c2 * ec + c3 * d_f + c4 * d_u,
     data = pxmin,
     start = list(c1 = -0.04, c2 = -0.12, c3 = 0.40, c4 = -1.27))
@@ -693,7 +698,7 @@ pxoth <- data %>%
     t     = lag(trend),
     d_ulcx = UlcExp - lag(UlcExp),
     d_pm = dlog(Pmgs)
-  ) %>% filter(date >= "1989-12-01", date <= "2024-12-01")
+  ) %>% filter(date >= "1989-12-01", date <= end)
 fits$Pxoth <- nls(y ~ c1 + c2 * (lp - c3 * ulcx1 - (1 - c3) * pm1 - c4 * t) + c5 * d_ulcx + c6 * d_pm,
     data = pxoth,
     start = list(c1 = -1.03, c2 = -0.31, c3 = 0.77, c4 = 0.68, c5 = -0.52, c6 = -0.11))
@@ -710,7 +715,7 @@ pcnh <- data %>%
     d_ulc = UlcDom - lag(UlcDom),
     d_pm  = dlog(Pmgs),
     d_lu  = dlog(Lur)
-  ) %>% filter(date >= "1995-09-01", date <= "2023-09-01")
+  ) %>% filter(date >= "1995-09-01", date <= end)
 fits$PconsExrent <- nls(y ~ c1 + c2 * (lp - c3 * ulc1 - (1 - c3) * pm1) + c4 * gap +
       c5 * d_ulc + c6 * d_pm + c9 * dum_2000q3 + c10 * d_lu,
     data = pcnh,
@@ -721,7 +726,7 @@ frames$PconsExrent <- pcnh
 # ---- Consumption deflator split (ex-rent weight) ------------------------------------------------------------------
 ppcd <- data %>%
   mutate(y = dlog(Ppcd), a = dlog(PconsExrent), b = dlog(PconsRent)) %>%
-  filter(date >= "1974-12-01", date <= "2023-09-01")
+  filter(date >= "1974-12-01", date <= end)
 fits$Ppcd <- nls(y ~ c1 * a + (1 - c1) * b, data = ppcd, start = list(c1 = 0.8))
 frames$Ppcd <- ppcd
 
@@ -736,7 +741,7 @@ xsvc <- data %>%
     d_r  = (Pxsvc / Pgdp) - lag(Pxsvc / Pgdp),
     d_g  = dlog(Ygdp),
     d_s  = dlog(IntStu)
-  ) %>% filter(date >= "2006-03-01", date <= "2025-12-01")
+  ) %>% filter(date >= "2006-03-01", date <= end)
 fits$Xsvc <- nls(
   y ~ c1 + c2 * (l_x - l_g - c3 * rel - c4 * l_s) + c5 * d_r + c6 * d_g + c7 * d_s +
       c8 * dum_2020q1 + c9 * dum_2020q2 + c10 * dum_2020q3,
@@ -753,7 +758,7 @@ md <- data %>%
          d_g = dlog(Ygne),
          d_g1 = lag(dlog(Ygne)),
          d_r = (Pmgs / Pgne) - lag(Pmgs / Pgne)) %>%
-  filter(date >= "1975-03-01", date <= "2026-03-01")
+  filter(date >= "1975-03-01", date <= end)
 # Specification as estimated: the long-run relative price carries a x100
 # level factor while the short-run change does not.
 fits$Mtot <- nls(
@@ -841,7 +846,7 @@ r10y <- data %>%
   mutate(y = R10y, l = lag(R10y), rat = Rstar + InflExp,
          dy = y - l, d_rat = rat - l, d_r90 = R90d - l) %>%
   filter(!is.na(y), !is.na(l), !is.na(rat), !is.na(R90d)) %>%
-  filter(date >= "1976-03-01", date <= "2023-09-01")
+  filter(date >= "1976-03-01", date <= end)
 fits$R10y <- lm(dy ~ d_rat + d_r90, data = r10y)
 frames$R10y <- r10y
 

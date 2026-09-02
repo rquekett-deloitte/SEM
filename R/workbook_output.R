@@ -76,3 +76,46 @@ build_results_workbook <- function(
   openxlsx::saveWorkbook(workbook, path, overwrite = TRUE)
   path
 }
+
+# One flat sheet: every model variable, historical and forecast, one row per
+# quarter. Deterministic estimation scaffolding (trends, dummies, indicators)
+# is excluded; every other variable in the estimation data and the forecast
+# is preserved. History is marked "Actual" up to the conditioning quarter
+# and "Forecast" from the origin.
+build_flat_output <- function(forecast, history, origin,
+                              path = "outputs/model_results_flat.xlsx") {
+  deterministic <- c(
+    "trend", "trend_piret", "trend_98", "trend_01", "trend_08",
+    "d93", "q3", "sb_2001",
+    "dum_1975q3", "dum_1976q4", "dum_2000q3", "dum_2000q4",
+    "dum_2009q1", "dum_2012q4", "dum_2020q1", "dum_2020q2",
+    "dum_2020q3", "dum_2020q4", "dum_2021q1", "dum_2022q1",
+    "dum_2022", "dum_2023", "dum_covid_cpr", "dum_covid_avh"
+  )
+  history_part <- history %>%
+    dplyr::select(-dplyr::any_of(deterministic)) %>%
+    dplyr::mutate(
+      period = "Actual",
+      GapAvh = (Lur - LurHpf) / Lur,
+      FiscalCovered = CgovNom + Pinonmin * (Igov + Ipubent) + Ytsf - Ttot,
+      XsvcNom = XtotNom - XminNom - XagrNom - XothNom,
+      YgovIvtNom = YgdpNom + MtotNom - CprNom - CgovNom - IdwellNom -
+        IotcNom - IminNom - InonminNom - XtotNom,
+      YgdpAnnualGrowth = 100 * (Ygdp / dplyr::lag(Ygdp, 4) - 1),
+      PcpiAnnualGrowth = 100 * (Pcpi / dplyr::lag(Pcpi, 4) - 1)
+    ) %>%
+    dplyr::filter(date < as.Date(origin))
+  forecast_part <- forecast %>%
+    dplyr::mutate(period = "Forecast")
+  flat <- dplyr::bind_rows(
+    dplyr::select(history_part, date, period, dplyr::everything()),
+    dplyr::select(forecast_part, date, period, dplyr::everything())
+  )
+
+  workbook <- openxlsx::createWorkbook()
+  openxlsx::addWorksheet(workbook, "Data")
+  openxlsx::writeData(workbook, "Data", flat)
+  openxlsx::freezePane(workbook, "Data", firstRow = TRUE, firstActiveCol = 3)
+  openxlsx::saveWorkbook(workbook, path, overwrite = TRUE)
+  path
+}

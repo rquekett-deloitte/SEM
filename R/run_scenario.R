@@ -19,8 +19,11 @@ if (length(missing_packages) > 0) {
 }
 
 suppressPackageStartupMessages(library(tidyverse))
+# Keeps the standalone block in R/calculate_residuals.R dormant.
+SEM_PIPELINE_SOURCING <- TRUE
 source(file.path(project_root, "R", "model_constants.R"))
 source(file.path(project_root, "R", "forecast_model.R"))
+source(file.path(project_root, "R", "calculate_residuals.R"))
 source(file.path(project_root, "R", "model_outputs.R"))
 
 model_data <- readRDS(file.path(project_root, "data", "model_data.rds"))

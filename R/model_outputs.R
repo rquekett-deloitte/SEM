@@ -162,3 +162,64 @@ validate_forecast <- function(forecast, history, tolerance = 1e-6) {
 
   invisible(forecast)
 }
+
+# Sense-check the current estimates against a saved coefficient vintage
+# (default: the baseline original_estimated_coefficients.csv). The baseline
+# predates an equation rename, so old names are mapped onto current ones
+# before joining; anything still unmatched (renamed away, added or removed
+# equations) is reported rather than silently dropped. Writes the full
+# comparison, sorted by the size of the absolute change.
+BASELINE_EQUATION_NAMES <- c(
+  Idw = "Idwell", IvtNF = "IvtNonfarm", Ttsf = "Ytsf",
+  LempNM = "LempNonmkt", Peqi = "Peq", Pgc = "Pgov",
+  Pidw = "Pidwell", Wgov = "GovDebt", Prent = "PcpiRent",
+  EqiEarn = "EqEarn", Pcnh = "PconsExrent"
+)
+
+compare_coefficients <- function(coefficients,
+                                  baseline_path = "original_estimated_coefficients.csv",
+                                  path = "outputs/coefficient_comparison.csv") {
+  if (!file.exists(baseline_path)) {
+    message("No coefficient baseline found at ", baseline_path,
+            "; skipping the coefficient comparison.")
+    return(invisible(NULL))
+  }
+  baseline <- readr::read_csv(baseline_path, show_col_types = FALSE)
+  if (!all(c("equation", "term", "estimate") %in% names(baseline))) {
+    stop("Coefficient baseline must contain equation, term and estimate columns")
+  }
+  comparison <- coefficients %>%
+    dplyr::transmute(
+      equation, term,
+      current_estimate = estimate,
+      std_error = std_error
+    ) %>%
+    dplyr::full_join(
+      baseline %>%
+        dplyr::mutate(
+          baseline_equation_name = equation,
+          equation = dplyr::coalesce(
+            BASELINE_EQUATION_NAMES[equation], dplyr::if_else(equation %in% names(BASELINE_EQUATION_NAMES), NA_character_, equation)
+          )
+        ) %>%
+        dplyr::filter(!is.na(equation)) %>%
+        dplyr::transmute(
+          equation, term, baseline_estimate = estimate,
+          baseline_equation_name
+        ),
+      by = c("equation", "term")
+    ) %>%
+    dplyr::mutate(
+      abs_change = current_estimate - baseline_estimate,
+      pct_change = dplyr::if_else(
+        abs(baseline_estimate) > 1e-12,
+        100 * (current_estimate / baseline_estimate - 1),
+        NA_real_
+      ),
+      sign_change = !is.na(current_estimate) & !is.na(baseline_estimate) &
+        sign(current_estimate) != sign(baseline_estimate)
+    ) %>%
+    dplyr::arrange(dplyr::desc(abs(abs_change)))
+  readr::write_csv(comparison, path, na = "")
+  invisible(comparison)
+}
