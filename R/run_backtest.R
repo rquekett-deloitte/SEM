@@ -41,21 +41,28 @@ origin <- parse_quarter(start_label)
 model_data <- readRDS("data/model_data.rds")
 model <- load_saved_model(model_data, "outputs/coefficients.csv")
 data_dates <- as.Date(model_data$date)
-horizon <- max(data_dates)
-if (!(origin %in% data_dates) ||
+
+# Actual exogenous paths for the simulation window, from the observed history.
+contract <- mdl_exogenous_contract()
+# Lpop15Plus is not a model_data column; build_ts_database derives it from
+# Lsup/Lpar for history, so the observed path is built the same way here.
+source_columns <- setdiff(contract$forecast_column, "Lpop15Plus")
+complete_exogenous <- Reduce(
+  `&`, lapply(model_data[source_columns], function(x) is.finite(as.numeric(x)))
+) & is.finite(model_data$Lsup) & is.finite(model_data$Lpar)
+if (!any(complete_exogenous)) {
+  stop("No quarter has a complete observed exogenous contract")
+}
+horizon <- max(data_dates[complete_exogenous])
+if (!(origin %in% data_dates) || origin > horizon ||
     !all(seq(origin, horizon, by = "quarter") %in% data_dates)) {
-  stop("The backtest window must lie inside the observed history")
+  stop("The backtest window must lie inside the complete observed history")
 }
 output_dir <- file.path("outputs", paste0("backtest_", start_label))
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
-# Actual exogenous paths for the simulation window, from the observed history.
-contract <- mdl_exogenous_contract()
 window <- model_data %>%
   dplyr::filter(date >= !!origin, date <= !!horizon)
-# Lpop15Plus is not a model_data column; build_ts_database derives it from
-# Lsup/Lpar for history, so the observed path is built the same way here.
-source_columns <- setdiff(contract$forecast_column, "Lpop15Plus")
 exo <- window %>% dplyr::select(date, dplyr::all_of(source_columns))
 exo$Lpop15Plus <- window$Lsup / window$Lpar
 if (anyNA(exo[, setdiff(names(exo), "date")])) {
@@ -94,7 +101,7 @@ readr::write_csv(simulated, file.path(output_dir, "simulated.csv"), na = "")
 headline <- c(
   "Ygdp", "YgdpNom", "Cpr", "Cgov", "Idwell", "Imin", "Inonmin",
   "IvtNonfarm", "Xmin", "Xoth", "Xsvc", "Mtot", "Tpit", "Tcit", "Tgst",
-  "Tprl", "Ytsf", "Lwge", "Lpar", "Lemp", "Lhrs", "LavhMkt", "Pcpi", "Ppcd",
+  "Tprl", "Ytsf", "Lwge", "Lpar", "Lemp", "Lhrs", "LavhMkt", "Lur", "Pcpi", "Ppcd",
   "PhouseSa", "R90d", "R10y", "Rmort", "PcpiRent", "Yhdi", "Whh", "Peq"
 )
 actual <- model_data %>% dplyr::filter(date >= !!origin, date <= !!horizon)
@@ -131,6 +138,41 @@ growth_check <- purrr::map_dfr(c("Ygdp", "Pcpi"), function(nm) {
     max_error_quarter = actual$date[ok][which.max(abs(sim_growth[ok] - act_growth[ok]))]
   )
 })
+readr::write_csv(growth_check,
+                 file.path(output_dir, "growth_summary.csv"), na = "")
+
+gdp_level <- dplyr::filter(comparison, variable == "Ygdp")
+lur_index <- match(as.Date(simulated$date), data_dates)
+lur_actual <- as.numeric(model_data$Lur)[lur_index]
+lur_simulated <- as.numeric(simulated$Lur)
+lur_ok <- is.finite(lur_actual) & is.finite(lur_simulated)
+lur_error_pp <- 100 * (lur_simulated[lur_ok] - lur_actual[lur_ok])
+headline_summary <- dplyr::bind_rows(
+  tibble::tibble(
+    measure = "GDP level",
+    mean_absolute_error = gdp_level$mean_abs_pct_error,
+    maximum_absolute_error = gdp_level$max_abs_pct_error,
+    max_error_quarter = as.Date(gdp_level$max_abs_pct_error_quarter),
+    unit = "per cent"
+  ),
+  growth_check %>%
+    dplyr::transmute(
+      measure = variable,
+      mean_absolute_error = mean_abs_error_pp,
+      maximum_absolute_error = max_abs_error_pp,
+      max_error_quarter = as.Date(max_error_quarter),
+      unit = "percentage points"
+    ),
+  tibble::tibble(
+    measure = "Unemployment rate",
+    mean_absolute_error = mean(abs(lur_error_pp)),
+    maximum_absolute_error = max(abs(lur_error_pp)),
+    max_error_quarter = actual$date[lur_ok][which.max(abs(lur_error_pp))],
+    unit = "percentage points"
+  )
+)
+readr::write_csv(headline_summary,
+                 file.path(output_dir, "headline_summary.csv"), na = "")
 print(as.data.frame(growth_check), digits = 4)
 
 long <- purrr::map_dfr(common, function(nm) {
@@ -148,7 +190,8 @@ cat(
   paste0(lubridate::year(horizon), "Q", lubridate::quarter(horizon)), "\n",
   "Within-sample tracking run: coefficients estimated on the full sample;\n",
   "simulated dynamics driven by actual exogenous paths and corrections.\n",
-  "Outputs in", output_dir, "(simulated, comparison, summary, residuals).\n",
+  "Outputs in", output_dir,
+  "(simulated, comparison, summary, headline/growth summaries, residuals).\n",
   sep = ""
 )
 print(as.data.frame(head(comparison, 15)), row.names = FALSE, digits = 4)

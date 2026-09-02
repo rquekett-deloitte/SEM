@@ -25,7 +25,7 @@ build_lhrs_frame <- function(data, end_date) {
 estimate_model <- function(data, estimation_end = NULL) {
 
   # Estimate every equation to the most recent historical period by default:
-  # every window below follows the data end, so an updated Data.xlsx
+  # every window below follows the sourced-data end, so an updated history
   # re-estimates automatically. Pass estimation_end to pin a vintage.
   end <- if (is.null(estimation_end)) max(as.Date(data$date)) else as.Date(estimation_end)
 

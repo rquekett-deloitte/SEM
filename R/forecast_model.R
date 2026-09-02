@@ -399,17 +399,12 @@ aux_regressors <- function(model, data) {
 
 # ---- forecast contracts ---------------------------------------------------------
 
-# The residual-calibration inputs that must be observed at the conditioning
-# quarter. The workbook's data end is ragged after an update (quarterly
-# national accounts, monthly rates and skipped series end at different
-# quarters), so the model conditions at the last quarter where all of these
-# are finite - the original design's "later rows are for comparison only"
-# rule, generalised.
-CONDITIONING_INPUTS <- c(
-  "Pcpi", "Ppcd", "PcpiRent", "PhouseHpf", "RmortRealHpf", "Lnom", "Lwge",
-  "R90d", "Lur", "LurHpf", "d93", "Lhrs", "KTotal", "Ygdp", "YgdpHpf",
-  "Pgdp", "trend"
-)
+# The observed conditioning contract is shared with data preparation.
+# Exogenous contract variables are allowed to bridge publication-lag gaps and
+# therefore do not determine the dynamic origin.
+if (!exists("OBSERVED_CONDITIONING_INPUTS")) {
+  source("R/model_constants.R", local = TRUE)
+}
 
 forecast_origin <- function(data) {
   dates <- as.Date(data$date)
@@ -424,12 +419,12 @@ forecast_origin <- function(data) {
   if (!all(diff(quarters) == 1L)) {
     stop("Model data dates must be consecutive quarters")
   }
-  missing <- setdiff(CONDITIONING_INPUTS, names(data))
+  missing <- setdiff(OBSERVED_CONDITIONING_INPUTS, names(data))
   if (length(missing)) {
     stop("Model data is missing conditioning inputs: ",
          paste(missing, collapse = ", "))
   }
-  complete <- Reduce(`&`, lapply(data[CONDITIONING_INPUTS],
+  complete <- Reduce(`&`, lapply(data[OBSERVED_CONDITIONING_INPUTS],
                                  function(x) is.finite(as.numeric(x))))
   if (!any(complete)) stop("No quarter has complete conditioning inputs")
   conditioning <- max(dates[complete])
@@ -469,15 +464,75 @@ mdl_realtime_hpf_contract <- function() {
   )
 }
 
+# Fill missing pre-origin exogenous cells in an in-memory conditioning copy.
+# Observed history is never overwritten and the estimation dataset is never
+# modified. Identities that depend on the extended inputs are recomputed only
+# where their historical cells are missing.
+extend_exogenous_conditioning <- function(data, exo, origin) {
+  data <- as.data.frame(data)
+  dates <- as.Date(data$date)
+  exo_dates <- as.Date(exo$date)
+  exo_index <- match(dates, exo_dates)
+  contract <- mdl_exogenous_contract()
+
+  for (i in seq_len(nrow(contract))) {
+    source_name <- contract$forecast_column[i]
+    target_name <- contract$model_variable[i]
+    if (!(target_name %in% names(data))) next
+    values <- rep(NA_real_, nrow(data))
+    matched <- !is.na(exo_index)
+    values[matched] <- suppressWarnings(
+      as.numeric(exo[[source_name]][exo_index[matched]])
+    )
+    fill <- dates < as.Date(origin) & !is.finite(as.numeric(data[[target_name]])) &
+      is.finite(values)
+    data[[target_name]][fill] <- values[fill]
+  }
+
+  fill_identity <- function(name, values) {
+    if (!(name %in% names(data))) return()
+    current <- as.numeric(data[[name]])
+    fill <- dates < as.Date(origin) & !is.finite(current) & is.finite(values)
+    current[fill] <- values[fill]
+    data[[name]] <<- current
+  }
+  lag_n <- function(x, k) dplyr::lag(as.numeric(x), k)
+  fr10y <- (3 / 5) * as.numeric(data$Fr10yUs) +
+    (1 / 6) * as.numeric(data$Fr10yJp) +
+    (3 / 20) * as.numeric(data$Fr10yDe) +
+    (1 / 12) * as.numeric(data$Fr10yUk)
+  fr10y_real <- fr10y -
+    ((lag_n(data$Fpcpi, 2) / lag_n(data$Fpcpi, 6) - 1) +
+       (lag_n(data$Fpcpi, 6) / lag_n(data$Fpcpi, 10) - 1)) / 2
+  fill_identity("Fr10y", fr10y)
+  fill_identity("Fr10yReal", fr10y_real)
+  fill_identity("Rdif10y", as.numeric(data$R10yReal) - fr10y_real)
+  fill_identity("Ivt", as.numeric(data$IvtFar) + as.numeric(data$IvtNonfarm) -
+                  lag_n(data$IvtNonfarm, 1))
+  fill_identity("Rtwi", as.numeric(data$RtwiNom) * lag_n(data$PcpiExGst, 1) /
+                  lag_n(data$Fpcpi, 1))
+
+  lhh_common <- which(is.finite(as.numeric(data$Lhh)) &
+                        is.finite(as.numeric(data$Lpop)))
+  if (length(lhh_common)) {
+    last_common <- tail(lhh_common, 1)
+    ratio_lhh <- as.numeric(data$Lhh[last_common]) /
+      as.numeric(data$Lpop[last_common])
+    fill_identity("Lhh", ratio_lhh * as.numeric(data$Lpop))
+  }
+  data
+}
+
 # ---- database -------------------------------------------------------------------
 
 build_ts_database <- function(data, exo, model, shocks, origin = forecast_origin(data),
                               horizon = as.Date("2036-12-01"),
                               residuals_path = "outputs/residuals.csv",
                               carry_forward = TRUE, observed = NULL) {
-  # The full data set is used for estimation, but forecast conditioning must
-  # stop at 2024Q4. Later actual outcomes are retained only for comparison and
-  # must not enter lags, residual calibrations, trends, or solver seeds.
+  # The full data set is used for estimation, but forecast conditioning stops
+  # one quarter before the dynamically selected origin. Later actual outcomes
+  # remain available only for comparison and never enter the forecast state.
+  data <- extend_exogenous_conditioning(data, exo, origin)
   data <- data[as.Date(data$date) < as.Date(origin), , drop = FALSE]
   expected_last <- seq(as.Date(origin), by = "-3 months", length.out = 2)[2]
   if (max(as.Date(data$date)) != expected_last) {
@@ -487,21 +542,8 @@ build_ts_database <- function(data, exo, model, shocks, origin = forecast_origin
   n <- length(dates); nh <- nrow(data)
   start <- c(lubridate::year(dates[1]), lubridate::quarter(dates[1]))
   mk <- function(x) {
-    if (length(x) < n) {
-      lastv <- tail(x[!is.na(x)], 1)
-      x <- c(x, rep(lastv, n - length(x)))
-    }
-    # carry observations through internal NAs (history only affects lags)
-    i <- which(!is.na(x))
-    if (length(i)) {
-      x[seq_len(i[1] - 1)] <- x[i[1]]
-      for (k in seq_along(i)[-1]) {
-        lo <- i[k - 1] + 1; hi <- i[k] - 1
-        if (lo <= hi) x[lo:hi] <- x[i[k - 1]]
-      }
-      lo <- i[length(i)] + 1
-      if (lo <= length(x)) x[lo:length(x)] <- x[i[length(i)]]
-    }
+    if (length(x) > n) stop("Database series is longer than the model horizon")
+    if (length(x) < n) x <- c(x, rep(NA_real_, n - length(x)))
     ts(x, start = start, frequency = 4)
   }
   db <- list()
@@ -521,9 +563,11 @@ build_ts_database <- function(data, exo, model, shocks, origin = forecast_origin
     data$InonminNom - data$XtotNom))
   # Refilter the latent neutral rate using only observations dated before the
   # forecast origin. model$data$Rstar is RTS-smoothed over the full estimation
-  # vintage and would otherwise leak the 2025-26 outcomes into 2025Q1.
+  # vintage and would otherwise leak post-origin outcomes into the state.
   aux <- aux_regressors(model, data)
-  db$Rstar <- mk(aux$RstarFiltered)
+  forecast_state <- tail(aux$RstarFiltered[is.finite(aux$RstarFiltered)], 1)
+  db$Rstar <- ts(c(aux$RstarFiltered, rep(forecast_state, n - nh)),
+                 start = start, frequency = 4)
   rbiz_real <- as.numeric((1 - data$TcorpRate) * data$Rbiz /
     (data$PconsExrent / dplyr::lag(data$PconsExrent, 4)))
   kdep_allow <- as.numeric((data$KdepRate * (1 + data$R10y)) * (data$R10y + data$KdepRate))
@@ -537,17 +581,6 @@ build_ts_database <- function(data, exo, model, shocks, origin = forecast_origin
   # parse_exogenous_csv() guarantees complete forecast-quarter coverage.
   contract <- mdl_exogenous_contract()
   iexo <- match(exo$date, dates)
-  fill_path <- function(x, variable) {
-    observed <- which(!is.na(x))
-    if (!length(observed)) stop("No actual or scenario value for ", variable)
-    if (observed[1] > 1) x[seq_len(observed[1] - 1)] <- x[observed[1]]
-    if (observed[1] < length(x)) {
-      for (i in seq.int(observed[1] + 1, length(x))) {
-        if (is.na(x[i])) x[i] <- x[i - 1]
-      }
-    }
-    x
-  }
   for (i in seq_len(nrow(contract))) {
     source_name <- contract$forecast_column[i]
     target_name <- contract$model_variable[i]
@@ -563,9 +596,25 @@ build_ts_database <- function(data, exo, model, shocks, origin = forecast_origin
     if (any(is.na(vals[forecast_cells]))) {
       stop("Incomplete forecast-quarter path for ", source_name)
     }
-    use <- !is.na(vals) & exo$date >= origin
+    forecast <- !is.na(vals) & exo$date >= origin & !is.na(iexo)
+    use <- forecast
     x[iexo[use]] <- vals[use]
-    db[[target_name]] <- ts(fill_path(x, target_name), start = start, frequency = 4)
+    db[[target_name]] <- ts(x, start = start, frequency = 4)
+  }
+
+  if (!exists("MODEL_DATA_INPUTS")) source("R/model_constants.R", local = TRUE)
+  required_now <- unique(c(MODEL_DATA_INPUTS, "Ivt", "Rtwi", "Fr10y",
+                           "Fr10yReal", "Rdif10y"))
+  missing_series <- setdiff(required_now, names(db))
+  if (length(missing_series)) {
+    stop("Forecast database is missing required series: ",
+         paste(missing_series, collapse = ", "))
+  }
+  missing_now <- required_now[!vapply(db[required_now], function(x)
+    is.finite(as.numeric(x)[nh]), logical(1))]
+  if (length(missing_now)) {
+    stop("Forecast database has no explicit conditioning value for: ",
+         paste(missing_now, collapse = ", "))
   }
 
   # Equation shocks are zero in history and use equation-native units in the
@@ -609,6 +658,11 @@ build_ts_database <- function(data, exo, model, shocks, origin = forecast_origin
       x[is.na(x)] <- 0
       c(x, rep(0, n - nh))
     }),
+    DumTsfTot = local({
+      x <- as.numeric(data$DumTsfTot)
+      x[is.na(x)] <- 0
+      c(x, rep(0, n - nh))
+    }),
     Sb2001 = as.numeric(q >= as.Date("2002-03-01")),
     Dum2022 = as.numeric(lubridate::year(q) == 2022),
     Dum2023 = as.numeric(lubridate::year(q) == 2023))
@@ -639,7 +693,6 @@ build_ts_database <- function(data, exo, model, shocks, origin = forecast_origin
   # Historical RcashA is the prior state used by each observed-rate equation.
   # The first forecast prior is instead the posterior after assimilating the
   # final conditioning observation (2024Q4), propagated by the random walk.
-  forecast_state <- tail(aux$RstarFiltered[is.finite(aux$RstarFiltered)], 1)
   ra <- c(aux$RcashA, rep(forecast_state, n - nh))
   first_state <- aux$RcashA[which(is.finite(aux$RcashA))[1]]
   missing_history <- seq_len(nh)[!is.finite(ra[seq_len(nh)])]
@@ -818,7 +871,7 @@ parse_exogenous_csv <- function(path = "data-raw/exogenous_forecast.csv",
 }
 
 # The all-zero baseline shocks file must carry exactly one row per forecast
-# quarter. When the forecast origin moves (an updated Data.xlsx), realign the
+# quarter. When the forecast origin moves with updated sourced data, realign the
 # baseline automatically - but only while it is provably the all-zero
 # baseline; a file with scenario values is the user's and must never be
 # rewritten.
@@ -923,12 +976,29 @@ run_bimets_forecast <- function(data, model, exo, shocks, origin = forecast_orig
   for (date in forecast_dates) {
     date <- as.Date(date, origin = "1970-01-01")
     i <- date_index(date)
-    weights <- endpoint_weights(i)
     operators <- lapply(seq_len(nrow(contract)), function(j) {
       values <- as.numeric(db[[contract$source_variable[j]]])[seq_len(i)]
-      if (any(!is.finite(values))) stop("Non-finite HP-filter input")
-      c(intercept = sum(weights[-i] * values[-i]), slope = weights[i])
+      history_values <- values[-i]
+      first <- which(is.finite(history_values))[1]
+      if (is.na(first) || any(!is.finite(history_values[first:length(history_values)]))) {
+        stop("Non-contiguous HP-filter input for ",
+             contract$source_variable[j], " through ", format(date))
+      }
+      sample <- history_values[first:length(history_values)]
+      weights <- endpoint_weights(length(sample) + 1L)
+      last <- length(weights)
+      c(intercept = sum(weights[-last] * sample),
+        slope = weights[last])
     })
+    for (j in seq_len(nrow(contract))) {
+      target <- contract$model_variable[j]
+      if (!is.finite(as.numeric(db[[target]])[i])) {
+        prior <- as.numeric(db[[target]])[seq_len(i - 1L)]
+        prior <- prior[is.finite(prior)]
+        if (!length(prior)) stop("No HP-filter state available for ", target)
+        db[[target]][i] <- tail(prior, 1L)
+      }
+    }
     for (iteration in seq_len(hpf_iterlimit)) {
       mdl <- LOAD_MODEL_DATA(model = mdl, modelData = db, quietly = TRUE)
       result <- SIMULATE(

@@ -365,8 +365,8 @@ Every workbook column is now exactly one of two categories:
 - Ustar removed: it was used by no equation or identity (LurHpf is the
   model's NAIRU); deleted from the Data and Variables sheets.
 - The nine nominal export components are now sourced: ABS 5302.0 Table 6
-  current price (A3534882W/A3534883X/A3534884A/A3533787F/A3533847W/
-  A3533749T/A3533729J/A3533770K-class/A3535395R-class); XonrNom is the
+  seasonally adjusted current price (A3535199W/A3535200V/A3535201W/
+  A3535202X/A3535203A/A3535204C/A3535206J/A3535210X/A3535212C); XonrNom is the
   "other non-rural excluding sugar and beverages" series (reproduces the
   workbook exactly).
 - KdepRate derivation identified but not wired: (non-financial

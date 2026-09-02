@@ -1,84 +1,79 @@
 variable,category,status,note,n_overlap,median_abs_pct_diff,mean_abs_pct_diff,max_abs_pct_diff,worst_quarter,verdict,n_new,new_end
-Lune,sourced,downloaded,1 series; overlap ends 2026-06-01,194,0.001,0.01,0.177,2024-09-01,source confirmed,0,
-Lhh,sourced,skipped,sourcing open: owner derivation required - see the source note for what was tested,NA,NA,NA,NA,,n/a,NA,
-Lpar,sourced,downloaded,1 series; overlap ends 2026-06-01,194,0,0.001,0.012,2022-06-01,source confirmed,0,
-Pcpi,sourced,downloaded,1 series; overlap ends 2026-06-01,159,0,0.003,0.085,2020-12-01,source confirmed,0,
-Ygdp,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0.005,0.01,0.081,2024-03-01,source confirmed,60,1974-06-01
-YgdpNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0.006,0.014,0.114,2021-03-01,source confirmed,60,1974-06-01
-SavHh,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0.023,0.254,7.864,2023-06-01,source confirmed,60,1974-06-01
-Cpr,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.002,0.041,2023-06-01,source confirmed,60,1974-06-01
-Idwell,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.004,0.181,2024-06-01,source confirmed,60,1974-06-01
-Iotc,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.011,0.353,2024-06-01,source confirmed,60,1974-06-01
-Ygne,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0.001,0.004,0.052,2023-06-01,source confirmed,60,1974-06-01
-Xtot,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0.068,0.085,0.405,2020-09-01,source confirmed,60,1974-06-01
-Mtot,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.008,0.26,2024-12-01,source confirmed,60,1974-06-01
-CprNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.002,0.031,2024-06-01,source confirmed,60,1974-06-01
-XtotNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0.064,0.089,0.555,2024-03-01,source confirmed,60,1974-06-01
-MtotNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.016,0.329,2024-06-01,source confirmed,60,1974-06-01
-Ywss,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0.001,0.005,0.084,2022-09-01,source confirmed,60,1974-06-01
-Yhdi,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0.001,0.008,0.139,2023-06-01,source confirmed,60,1974-06-01
-Lwge,sourced,downloaded,1 series; overlap ends 2026-03-01,193,0.039,0.039,0.122,2022-09-01,source confirmed,0,
-Pulc,sourced,downloaded,1 series; overlap ends 2026-03-01,163,0,0.006,0.165,2005-06-01,source confirmed,0,
-Tprl,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.018,0.738,2024-06-01,source confirmed,8,1974-06-01
-Tgst,sourced,downloaded,1 series; overlap ends 2026-03-01,103,0.018,0.084,2.191,2024-12-01,source confirmed,0,
-Ttot,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0.005,0.091,2.422,2023-09-01,source confirmed,60,1974-06-01
-Imin,sourced,downloaded,1 series; overlap ends 2026-03-01,99,0,0.015,0.346,2024-06-01,source confirmed,0,
-IminNom,sourced,downloaded,1 series; overlap ends 2026-03-01,103,0,0.014,0.347,2024-06-01,source confirmed,0,
-Inonmin,sourced,downloaded,1 series; overlap ends 2026-03-01,99,0.002,0.011,0.205,2024-03-01,source confirmed,0,
-InonminNom,sourced,downloaded,1 series; overlap ends 2026-03-01,103,0,0.011,0.206,2024-03-01,source confirmed,0,
-Xmet,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.016,0.625,2024-06-01,source confirmed,0,
-Xccb,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.018,0.667,2024-12-01,source confirmed,0,
-Xomf,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.008,0.26,2024-06-01,source confirmed,0,
-Xagr,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.016,0.579,2024-06-01,source confirmed,0,
-XagrNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.016,0.539,2023-06-01,source confirmed,20,1974-06-01
-Wfor,sourced,downloaded,1 series; overlap ends 2026-03-01,151,0,0,0,1988-09-01,current official vintage adopted (rebenchmarked series),0,
-KMin,sourced,downloaded,1 series; overlap ends 2024-06-01; no new benchmark - extended by the carry convention,50,0,0,0,2013-06-01,source confirmed,15,1974-06-01
-KBiz,sourced,downloaded,1 series; overlap ends 2024-06-01; no new benchmark - extended by the carry convention,50,0,0,0,1981-06-01,source confirmed,15,1974-06-01
-KDwell,sourced,downloaded,1 series; overlap ends 2024-06-01; no new benchmark - extended by the carry convention,50,0,0,0,1980-06-01,source confirmed,15,1974-06-01
-PcpiRent,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0,0,1974-09-01,source confirmed,8,1974-06-01
-Xsvc,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0.317,0.434,2.716,2020-09-01,source confirmed,60,1974-06-01
-Pxsvc,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.041,0.368,1981-03-01,source confirmed,60,1974-06-01
-Xmex,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.007,0.272,2024-06-01,source confirmed,0,
-Xmac,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.025,1.281,2024-12-01,source confirmed,0,
-Xtrn,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.009,0.303,2024-12-01,source confirmed,0,
-Xotm,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.012,0.493,2024-03-01,source confirmed,0,
-Xonr,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.012,0.494,2024-03-01,source confirmed,0,
-Xgpr,sourced,downloaded,1 series; overlap ends 2026-03-01,163,0,0,0,1985-09-01,source confirmed,0,
-R10y,sourced,downloaded,1 series; overlap ends 2026-09-01,54,0,0.221,6.321,2013-06-01,source confirmed,0,
-R90d,sourced,downloaded,1 series; overlap ends 2026-09-01,209,0,0.006,0.251,2021-09-01,source confirmed,21,1974-06-01
-Rusd,sourced,downloaded,1 series; overlap ends 2026-09-01,67,0,0,0,2024-12-01,source confirmed,0,
-RtwiNom,sourced,downloaded,1 series; overlap ends 2026-09-01,67,0,0,0,2020-06-01,source confirmed,0,
-R10yReal,sourced,downloaded,1 series; overlap ends 2026-09-01,48,0,0,0,2023-03-01,source confirmed,0,
-Rmort,sourced,downloaded,1 series; overlap ends 2026-09-01,209,0,0,0.001,2020-03-01,source confirmed,62,1974-06-01
-Whh,sourced,downloaded,rescaled x1000 to workbook units; 1 series; overlap ends 2025-12-01,150,0,0,0.025,2024-03-01,source confirmed,0,
-IdwellNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.004,0.178,2024-06-01,source confirmed,60,1974-06-01
-IotcNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.012,0.504,2024-06-01,source confirmed,60,1974-06-01
-Cgov,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.007,0.071,2024-06-01,source confirmed,60,1974-06-01
-CgovNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.006,0.071,2024-03-01,source confirmed,60,1974-06-01
-Ygoa,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.007,0.163,2024-06-01,source confirmed,60,1974-06-01
-Lsup,sourced,downloaded,1 series; overlap ends 2026-06-01,194,0,0.001,0.012,2022-06-01,source confirmed,0,
-Lpop,sourced,downloaded,1 series; overlap ends 2025-09-01,178,0,0,0.001,2024-12-01,source confirmed,0,
-IvtNonfarm,sourced,downloaded,1 series; overlap ends 2026-03-01,164,0.004,0.018,0.426,2024-06-01,source confirmed,0,
-Tcit,sourced,downloaded,2 series; overlap ends 2026-03-01,207,0,0.458,11.43,2023-09-01,source confirmed,60,1974-06-01
-Ytsf,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0,0,1974-09-01,source confirmed,60,1974-06-01
-Ygdw,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0,0.015,2024-03-01,source confirmed,60,1974-06-01
-LempPub,sourced,downloaded,1 series; overlap ends 2025-12-01,165,0,0,0,1984-12-01,source confirmed,0,
-LempEdu,sourced,downloaded,1 series; overlap ends 2025-12-01,165,0,0,0,1984-12-01,source confirmed,0,
-LempHlt,sourced,downloaded,1 series; overlap ends 2025-12-01,165,0,0,0,1984-12-01,source confirmed,0,
-BizLns,sourced,downloaded,0 series; overlap ends 2025-12-01,151,0.742,0.884,3.047,2007-06-01,revisions - review,0,
-BizBnd,sourced,downloaded,0 series; overlap ends 2025-12-01,151,0,0.036,0.46,2024-09-01,source confirmed,0,
-Ygmi,sourced,downloaded,1 series; overlap ends 2026-03-01,190,1.075,1.441,8.915,1991-03-01,revisions - review,60,1974-06-01
-YprpR,sourced,downloaded,1 series; overlap ends 2026-03-01,190,0.446,0.675,3.635,1980-09-01,source confirmed,60,1974-06-01
-YprpP,sourced,downloaded,1 series; overlap ends 2026-03-01,190,0.568,0.911,5.511,2023-09-01,revisions - review,60,1974-06-01
-Lemp,sourced,downloaded,1 series; overlap ends 2026-06-01,194,0,0,0.009,2022-06-01,source confirmed,0,
-LhrsAll,sourced,downloaded,1 series; overlap ends 2025-12-01,126,0,0,0,1994-12-01,source confirmed,0,
-LhrsPub,sourced,downloaded,1 series; overlap ends 2025-12-01,126,0,0,0,1994-09-01,current official vintage adopted (rebenchmarked series),0,
-LhrsEdu,sourced,downloaded,1 series; overlap ends 2025-12-01,126,0,0,0,2000-03-01,source confirmed,0,
-LhrsHlt,sourced,downloaded,1 series; overlap ends 2025-12-01,126,0,0,0,1995-09-01,source confirmed,0,
-Igov,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.009,0.317,2024-06-01,source confirmed,60,1974-06-01
-Ipubent,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0,0.013,0.456,2024-06-01,source confirmed,60,1974-06-01
-Pgne,sourced,failed,download or transform failed,NA,NA,NA,NA,,n/a,NA,
-Phouse,sourced,downloaded,0 series; overlap ends 2025-12-01,96,0,0,0,2004-03-01,source confirmed,0,
+Lune,sourced,downloaded,195-quarter overlap,195,0.001,0.01,0.177,2024-09-01,source confirmed,0,
+Lpar,sourced,downloaded,rescaled x0.01; 195-quarter overlap,195,0,0.001,0.012,2022-06-01,source confirmed,0,
+Pcpi,sourced,downloaded,159-quarter overlap,159,0,0.003,0.085,2020-12-01,source confirmed,0,
+Ygdp,sourced,downloaded,208-quarter overlap,208,0.005,0.009,0.081,2024-03-01,source confirmed,0,
+YgdpNom,sourced,downloaded,208-quarter overlap,208,0.006,0.014,0.114,2021-03-01,source confirmed,0,
+SavHh,sourced,downloaded,208-quarter overlap,208,0.023,0.253,7.864,2023-06-01,source confirmed,0,
+Cpr,sourced,downloaded,208-quarter overlap,208,0,0.002,0.041,2023-06-01,source confirmed,0,
+Idwell,sourced,downloaded,208-quarter overlap,208,0,0.004,0.181,2024-06-01,source confirmed,0,
+Iotc,sourced,downloaded,208-quarter overlap,208,0,0.011,0.353,2024-06-01,source confirmed,0,
+Ygne,sourced,downloaded,208-quarter overlap,208,0.001,0.004,0.052,2023-06-01,source confirmed,0,
+Xtot,sourced,downloaded,208-quarter overlap,208,0.067,0.084,0.405,2020-09-01,source confirmed,0,
+Mtot,sourced,downloaded,208-quarter overlap,208,0,0.008,0.26,2024-12-01,source confirmed,0,
+CprNom,sourced,downloaded,208-quarter overlap,208,0,0.002,0.031,2024-06-01,source confirmed,0,
+XtotNom,sourced,downloaded,208-quarter overlap,208,0.063,0.089,0.555,2024-03-01,source confirmed,0,
+MtotNom,sourced,downloaded,208-quarter overlap,208,0,0.016,0.329,2024-06-01,source confirmed,0,
+Ywss,sourced,downloaded,208-quarter overlap,208,0.001,0.005,0.084,2022-09-01,source confirmed,0,
+Yhdi,sourced,downloaded,208-quarter overlap,208,0.001,0.008,0.139,2023-06-01,source confirmed,0,
+Lwge,sourced,downloaded,194-quarter overlap,194,0.039,0.039,0.122,2022-09-01,source confirmed,0,
+Pulc,sourced,downloaded,164-quarter overlap,164,0,0.006,0.165,2005-06-01,source confirmed,0,
+Tprl,sourced,downloaded,208-quarter overlap,208,0,0.017,0.738,2024-06-01,source confirmed,0,
+Tgst,sourced,downloaded,104-quarter overlap,104,0.018,0.083,2.191,2024-12-01,source confirmed,0,
+Ttot,sourced,downloaded,208-quarter overlap,208,0.005,0.091,2.422,2023-09-01,source confirmed,0,
+Imin,sourced,downloaded,100-quarter overlap,100,0,0.015,0.346,2024-06-01,source confirmed,0,
+IminNom,sourced,downloaded,104-quarter overlap,104,0,0.014,0.347,2024-06-01,source confirmed,0,
+Inonmin,sourced,downloaded,100-quarter overlap,100,0.002,0.011,0.205,2024-03-01,source confirmed,0,
+InonminNom,sourced,downloaded,104-quarter overlap,104,0,0.011,0.206,2024-03-01,source confirmed,0,
+Xmet,sourced,downloaded,208-quarter overlap,208,0,0.016,0.625,2024-06-01,source confirmed,0,
+Xccb,sourced,downloaded,208-quarter overlap,208,0,0.018,0.667,2024-12-01,source confirmed,0,
+Xomf,sourced,downloaded,208-quarter overlap,208,0,0.008,0.26,2024-06-01,source confirmed,0,
+Xagr,sourced,downloaded,208-quarter overlap,208,0,0.016,0.579,2024-06-01,source confirmed,0,
+XagrNom,sourced,downloaded,208-quarter overlap,208,0,0.016,0.539,2023-06-01,source confirmed,0,
+Wfor,sourced,downloaded,152-quarter overlap,152,0,0,0,1988-09-01,current official vintage adopted,0,
+PcpiRent,sourced,downloaded,208-quarter overlap,208,0,0,0,1974-09-01,source confirmed,0,
+Xsvc,sourced,downloaded,208-quarter overlap,208,0.316,0.432,2.716,2020-09-01,source confirmed,0,
+Pxsvc,sourced,downloaded,208-quarter overlap,208,0,0.041,0.368,1981-03-01,source confirmed,0,
+Xmex,sourced,downloaded,208-quarter overlap,208,0,0.007,0.272,2024-06-01,source confirmed,0,
+Xmac,sourced,downloaded,208-quarter overlap,208,0,0.025,1.281,2024-12-01,source confirmed,0,
+Xtrn,sourced,downloaded,208-quarter overlap,208,0,0.009,0.303,2024-12-01,source confirmed,0,
+Xotm,sourced,downloaded,208-quarter overlap,208,0,0.012,0.493,2024-03-01,source confirmed,0,
+Xonr,sourced,downloaded,208-quarter overlap,208,0,0.012,0.494,2024-03-01,source confirmed,0,
+Xgpr,sourced,downloaded,164-quarter overlap,164,0,0,0,1985-09-01,source confirmed,0,
+R10y,sourced,downloaded,rescaled x0.01; 54-quarter overlap,54,0,0.221,6.321,2013-06-01,source confirmed,0,
+R90d,sourced,downloaded,rescaled x0.01; 209-quarter overlap,209,0,0.006,0.251,2021-09-01,source confirmed,0,
+Rusd,sourced,downloaded,67-quarter overlap,67,0,0,0,2024-12-01,source confirmed,0,
+RtwiNom,sourced,downloaded,rescaled x0.01; 67-quarter overlap,67,0,0,0,2020-06-01,source confirmed,0,
+R10yReal,sourced,downloaded,rescaled x0.01; 48-quarter overlap,48,0,0,0,2023-03-01,source confirmed,0,
+Rmort,sourced,downloaded,rescaled x0.01; 209-quarter overlap,209,0,0,0.001,2020-03-01,source confirmed,0,
+Whh,sourced,downloaded,rescaled x1000; 151-quarter overlap,151,0,0,0.025,2024-03-01,source confirmed,0,
+IdwellNom,sourced,downloaded,208-quarter overlap,208,0,0.004,0.178,2024-06-01,source confirmed,0,
+IotcNom,sourced,downloaded,208-quarter overlap,208,0,0.012,0.504,2024-06-01,source confirmed,0,
+Cgov,sourced,downloaded,208-quarter overlap,208,0,0.007,0.071,2024-06-01,source confirmed,0,
+CgovNom,sourced,downloaded,208-quarter overlap,208,0,0.006,0.071,2024-03-01,source confirmed,0,
+Ygoa,sourced,downloaded,208-quarter overlap,208,0,0.007,0.163,2024-06-01,source confirmed,0,
+Lsup,sourced,downloaded,195-quarter overlap,195,0,0.001,0.012,2022-06-01,source confirmed,0,
+Lpop,sourced,downloaded,179-quarter overlap,179,0,0,0.001,2024-12-01,source confirmed,0,
+IvtNonfarm,sourced,downloaded,165-quarter overlap,165,0.004,0.018,0.426,2024-06-01,source confirmed,0,
+Tcit,sourced,downloaded,208-quarter overlap,208,0,0.456,11.43,2023-09-01,source confirmed,0,
+Ytsf,sourced,downloaded,208-quarter overlap,208,0,0,0,1974-09-01,source confirmed,0,
+Ygdw,sourced,downloaded,208-quarter overlap,208,0,0,0.015,2024-03-01,source confirmed,0,
+LempPub,sourced,downloaded,166-quarter overlap,166,0,0,0,1984-12-01,source confirmed,0,
+LempEdu,sourced,downloaded,166-quarter overlap,166,0,0,0,1984-12-01,source confirmed,0,
+LempHlt,sourced,downloaded,166-quarter overlap,166,0,0,0,1984-12-01,source confirmed,0,
+BizLns,sourced,downloaded,152-quarter overlap,152,0.72,0.878,3.047,2007-06-01,revisions - review,0,
+BizBnd,sourced,downloaded,152-quarter overlap,152,0,0.035,0.46,2024-09-01,source confirmed,0,
+Ygmi,sourced,downloaded,191-quarter overlap,191,1.074,1.434,8.915,1991-03-01,revisions - review,0,
+YprpR,sourced,downloaded,191-quarter overlap,191,0.444,0.672,3.635,1980-09-01,source confirmed,0,
+YprpP,sourced,downloaded,191-quarter overlap,191,0.564,0.907,5.511,2023-09-01,revisions - review,0,
+Lemp,sourced,downloaded,195-quarter overlap,195,0,0,0.009,2022-06-01,source confirmed,0,
+LhrsAll,sourced,downloaded,127-quarter overlap,127,0,0,0,1994-12-01,source confirmed,0,
+LhrsPub,sourced,downloaded,127-quarter overlap,127,0,0,0,1994-09-01,current official vintage adopted,0,
+LhrsEdu,sourced,downloaded,127-quarter overlap,127,0,0,0,2000-03-01,source confirmed,0,
+LhrsHlt,sourced,downloaded,127-quarter overlap,127,0,0,0,1995-09-01,source confirmed,0,
+Igov,sourced,downloaded,208-quarter overlap,208,0,0.009,0.317,2024-06-01,source confirmed,0,
+Ipubent,sourced,downloaded,208-quarter overlap,208,0,0.013,0.456,2024-06-01,source confirmed,0,
+Phouse,sourced,downloaded,97-quarter overlap,97,0,0,0,2004-03-01,source confirmed,0,
 IvtFar,exogenous,skipped,exogenous by design - maintained via exogenous_forecast.csv,NA,NA,NA,NA,,n/a,NA,
 Fpcpi,exogenous,skipped,exogenous by design - maintained via exogenous_forecast.csv,NA,NA,NA,NA,,n/a,NA,
 Fpoil,exogenous,skipped,exogenous by design - maintained via exogenous_forecast.csv,NA,NA,NA,NA,,n/a,NA,
@@ -90,33 +85,38 @@ Fr10yDe,exogenous,skipped,exogenous by design - maintained via exogenous_forecas
 Fr10yUk,exogenous,skipped,exogenous by design - maintained via exogenous_forecast.csv,NA,NA,NA,NA,,n/a,NA,
 FcGdp,exogenous,skipped,exogenous by design - maintained via exogenous_forecast.csv,NA,NA,NA,NA,,n/a,NA,
 FcPpp,exogenous,skipped,exogenous by design - maintained via exogenous_forecast.csv,NA,NA,NA,NA,,n/a,NA,
-KTotal,sourced,downloaded,1 series; overlap ends 2024-06-01; no new benchmark - extended by the carry convention,50,0,0,0,2023-06-01,source confirmed,15,1974-06-01
-PeRatio,sourced,skipped,sourcing open: owner derivation required - see the source note for what was tested,NA,NA,NA,NA,,n/a,NA,
-EqEarn,sourced,skipped,derived - computed from its parents after the merge,NA,NA,NA,NA,,n/a,NA,
-Lnom,sourced,downloaded,1 series; overlap ends 2025-09-01,178,0.055,0.109,1.636,2021-06-01,source confirmed,0,
-XmetNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,2.757,3.336,11.45,1985-03-01,MISMATCH - check source,20,1974-06-01
-XccbNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0.765,1.699,15.699,2010-03-01,revisions - review,20,1974-06-01
-XomfNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,5.385,5.717,15.217,1976-06-01,MISMATCH - check source,20,1974-06-01
-XmexNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,2.482,2.846,8.636,1980-03-01,MISMATCH - check source,20,1974-06-01
-XmacNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,5.64,5.458,14.851,1991-03-01,MISMATCH - check source,20,1974-06-01
-XtrnNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,3.626,5.373,17.722,1983-03-01,MISMATCH - check source,20,1974-06-01
-XotmNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,4.235,4.593,11.579,1986-03-01,MISMATCH - check source,20,1974-06-01
-XonrNom,sourced,downloaded,1 series; overlap ends 2025-12-01,206,0,0,0,1974-09-01,source confirmed,60,1974-06-01
-XgprNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,1.442,1.884,7.407,1976-03-01,revisions - review,60,1974-06-01
-CconsRentNom,sourced,failed,download or transform failed,NA,NA,NA,NA,,n/a,NA,
-CconsRent,sourced,failed,download or transform failed,NA,NA,NA,NA,,n/a,NA,
-GovDef,sourced,skipped,sourcing open: owner derivation required - see the source note for what was tested,NA,NA,NA,NA,,n/a,NA,
-GovDebt,sourced,skipped,sourcing open: owner derivation required - see the source note for what was tested,NA,NA,NA,NA,,n/a,NA,
-Rbiz,sourced,skipped,sourcing open: the documented D8/F7 splice matches no published RBA series - F5's weighted-average business rates ended with D8 and no F7 series reproduces the workbook's continuation; the original derivation is needed,NA,NA,NA,NA,,n/a,NA,
-BizEq,sourced,downloaded,0 series; overlap ends 2025-12-01,151,0.09,0.103,0.266,1990-06-01,source confirmed,0,
-TcorpRate,sourced,skipped,constant - held at its final level (see source note),NA,NA,NA,NA,,n/a,NA,
-KdepRate,sourced,skipped,constant - held at its final level (see source note),NA,NA,NA,NA,,n/a,NA,
-DumTsfTot,sourced,skipped,constant - held at its final level (see source note),NA,NA,NA,NA,,n/a,NA,
-Peq,sourced,downloaded,0 series; overlap ends 2026-09-01,41,0,0.262,3.915,2024-12-01,source confirmed,0,
-LavhMkt,sourced,skipped,sourcing open: owner derivation required - see the source note for what was tested,NA,NA,NA,NA,,n/a,NA,
-Tpit,sourced,downloaded,2 series; overlap ends 2026-03-01,207,0,0.016,0.693,2024-09-01,source confirmed,60,1974-06-01
+Lnom,sourced,downloaded,179-quarter overlap,179,0.055,0.109,1.636,2021-06-01,source confirmed,0,
+XmetNom,sourced,downloaded,208-quarter overlap,208,0,0.113,5.011,2025-03-01,source confirmed,0,
+XccbNom,sourced,downloaded,208-quarter overlap,208,0,0.107,6.457,2025-12-01,source confirmed,0,
+XomfNom,sourced,downloaded,208-quarter overlap,208,0,0.084,5.428,2025-06-01,source confirmed,0,
+XmexNom,sourced,downloaded,208-quarter overlap,208,0,0.107,6.148,2025-03-01,source confirmed,0,
+XmacNom,sourced,downloaded,208-quarter overlap,208,0,0.181,10.721,2026-03-01,source confirmed,0,
+XtrnNom,sourced,downloaded,208-quarter overlap,208,0,0.158,10.951,2026-03-01,source confirmed,0,
+XotmNom,sourced,downloaded,208-quarter overlap,208,0,0.152,10.4,2026-03-01,source confirmed,0,
+XonrNom,sourced,downloaded,206-quarter overlap,206,0,0,0,1974-09-01,source confirmed,0,
+XgprNom,sourced,downloaded,208-quarter overlap,208,0,0,0,1974-09-01,source confirmed,0,
+BizEq,sourced,downloaded,152-quarter overlap,152,0.089,0.102,0.266,1990-06-01,source confirmed,0,
+Peq,sourced,downloaded,41-quarter overlap,41,0,0.261,3.915,2024-12-01,source confirmed,0,
+Tpit,sourced,downloaded,208-quarter overlap,208,0,0.016,0.693,2024-09-01,source confirmed,0,
 IntStu,exogenous,skipped,exogenous by design - maintained via exogenous_forecast.csv,NA,NA,NA,NA,,n/a,NA,
-PcpiExGst,sourced,skipped,sourcing open: owner derivation required - see the source note for what was tested,NA,NA,NA,NA,,n/a,NA,
-ShockGst,sourced,skipped,sourcing open: owner derivation required - see the source note for what was tested,NA,NA,NA,NA,,n/a,NA,
-KNbiz,sourced,skipped,derived - computed from its parents after the merge,NA,NA,NA,NA,,n/a,NA,
-KOther,sourced,skipped,derived - computed from its parents after the merge,NA,NA,NA,NA,,n/a,NA,
+LavhMkt,sourced,derived,ABS 6291.0.55.001 T11: market-sector hours / market-sector employed; overlap fit 0.498% over 141 q,141,0.498,NA,NA,,source confirmed,NA,
+Lhh,sourced,derived,"ABS 6224.0.55.001 T H.1 households, interpolated between published benchmarks; after the final benchmark uses the forecast closure's fixed households/population ratio; overlap fit 0.002% over 81 q",81,0.002,NA,NA,,source confirmed,NA,
+Rbiz,sourced,derived,RBA F7 credit-share-weighted outstanding business lending; overlap fit 0.232% over 28 q,28,0.232,NA,NA,,source confirmed,NA,
+KdepRate,sourced,derived,quarterly interpolation of (PNFC COFC less mining) / (PNFC stock less mining); terminal calibration held after the final published benchmark; overlap fit 11.384% over 193 q,193,11.384,NA,NA,,derived,NA,
+PeRatio,sourced,derived,"DEFERRED: no automatable free source (LSEG subscription ceased; S&P DJI factsheet is PDF-only, bot-walled, no history and runs ~1.25x the LSEG level); held at final observed",0,NA,NA,NA,,derived,NA,
+TcorpRate,sourced,derived,legislated company tax rate; 0.30 held (ATO),0,NA,NA,NA,,derived,NA,
+DumTsfTot,sourced,derived,COVID transfer dummy; zero after the episode,0,NA,NA,NA,,derived,NA,
+ShockGst,sourced,derived,owner COVID GST-base correction (non-zero 2020Q1-2024Q4 only; coverage-wedge and equation-implied reconstructions both tested and rejected); terminal linear decay to zero,0,NA,NA,NA,,derived,NA,
+PcpiExGst,sourced,derived,"Pcpi x k, k held at final observed 0.009658 (GST step 2000Q3); matches the forecast identity",0,NA,NA,NA,,derived,NA,
+EqEarn,sourced,derived,Peq / PeRatio (exact identity),0,NA,NA,NA,,derived,NA,
+GovDef,sourced,derived,observed history preserved; missing quarters linear to June anchors whose financial-year sums tie to GFS net lending,0,NA,NA,NA,,derived,NA,
+GovDebt,sourced,derived,accumulation identity extension (x = 0.12706; GFS net debt vintages do not match the workbook measure),0,NA,NA,NA,,derived,NA,
+KMin,sourced,derived,benchmarks to 2025-06-01 then perpetual-inventory identity,0,NA,NA,NA,,derived,NA,
+KBiz,sourced,derived,KMin + KNbiz; benchmarks then perpetual-inventory identity,0,NA,NA,NA,,derived,NA,
+KDwell,sourced,derived,benchmarks to 2025-06-01 then perpetual-inventory identity,0,NA,NA,NA,,derived,NA,
+KTotal,sourced,derived,KBiz + KDwell + KOther (KOther held; forecast treatment),0,NA,NA,NA,,derived,NA,
+KNbiz,sourced,derived,KBiz - KMin; benchmarks then perpetual-inventory identity,0,NA,NA,NA,,derived,NA,
+KOther,sourced,derived,"KTotal - KBiz - KDwell history, then held",0,NA,NA,NA,,derived,NA,
+Pgne,sourced,derived,100 * GNE nominal / GNE real from downloaded parents,0,NA,NA,NA,,derived,NA,
+CconsRentNom,sourced,derived,consumption share held; model's own closure,0,NA,NA,NA,,derived,NA,
+CconsRent,sourced,derived,consumption share held; model's own closure,0,NA,NA,NA,,derived,NA,

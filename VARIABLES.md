@@ -1,9 +1,9 @@
 # Variable dictionary
 
-Single source of truth for variable names and definitions. The workbook
-(`data-raw/Data.xlsx`) carries the same content in its `Variables` and
-`Calculations` sheets; `outputs/variable_audit.csv` records usage. Rename
-history is documented in `data-raw/VARIABLE_CHANGES.md`.
+Single source of truth for variable names, definitions and direct source IDs.
+The production data pipeline reads this file; `outputs/variable_audit.csv`
+records usage. Rename history is documented in
+`data-raw/VARIABLE_CHANGES.md`.
 
 ## Conventions
 
@@ -98,11 +98,11 @@ through 2026Q1 (some series are shorter). `date` is the quarter index.
 | LempPub | Public Administration and Safety ;  Employed total ; (Seasonally Adjusted, Thousands) | ABS 6291.0.55.001 (A84090242C) |
 | LempEdu | Education and Training ;  Employed total ; (Seasonally Adjusted, Thousands) | ABS 6291.0.55.001 (A84090231W) |
 | LempHlt | Health Care and Social Assistance ;  Employed total ; (Seasonally Adjusted, Thousands) | ABS 6291.0.55.001 (A84090235F) |
-| BizLns |  |  |
-| BizBnd |  |  |
-| Ygmi |  |  |
-| YprpR |  |  |
-| YprpP |  |  |
+| BizLns | Private non-financial corporations loans and placements, $bn | ABS 5232.0 Table 1 (other private non-financial corporations plus private non-financial investment funds) |
+| BizBnd | Private non-financial corporations bonds, $bn | ABS 5232.0 Table 1 (other private non-financial corporations plus private non-financial investment funds) |
+| Ygmi | Household gross mixed income, $m | ABS 5206.0 (A2302887W) |
+| YprpR | Household property income receivable, $m | ABS 5206.0 (A2302889A) |
+| YprpP | Household property income payable, $m | ABS 5206.0 (A2302902J) |
 | Lemp | Employed total ;  Persons ; (Seasonally Adjusted, Thousands) | ABS 6202.0 (A84423043C) |
 | LhrsAll | Volume; Labour Account hours actually worked in all jobs ;  Australia ;  Total all industries ; (Seasonally Adjusted, 000 Hours) | 6150.0.55.003 (A85389483J) |
 | LhrsPub | Volume; Labour Account hours actually worked in all jobs ;  Australia ;  Public administration and safety (O) ; (Seasonally Adjusted, 000 Hours) | 6150.0.55.003 (A85392872W) |
@@ -127,21 +127,21 @@ through 2026Q1 (some series are shorter). `date` is the quarter index.
 | PeRatio | ASX All Ordinaries P/E ratio (Calculated PE Ratio) | LSEG / Refinitiv (via Temp/Masterdata.xlsx sheet 'PEratio') |
 | EqEarn | Listed-company earnings (ASX 200 earnings) | LSEG / Refinitiv (via Temp/Masterdata.xlsx sheet 'Master(SEM)') |
 | Lnom | Net overseas migration, thousands of persons per quarter | ABS / exogenous scenario series |
-| XmetNom | Nominal exports component, $m (identity input) | ABS 5206.0 |
-| XccbNom | Nominal exports component, $m (identity input) | ABS 5206.0 |
-| XomfNom | Nominal exports component, $m (identity input) | ABS 5206.0 |
-| XmexNom | Nominal exports component, $m (identity input) | ABS 5206.0 |
-| XmacNom | Nominal exports component, $m (identity input) | ABS 5206.0 |
-| XtrnNom | Nominal exports component, $m (identity input) | ABS 5206.0 |
-| XotmNom | Nominal exports component, $m (identity input) | ABS 5206.0 |
-| XonrNom | Nominal exports component, $m (identity input) | ABS 5206.0 |
-| XgprNom | Nominal exports component, $m (identity input) | ABS 5206.0 |
+| XmetNom | Metal ores and minerals exports, current prices, seasonally adjusted, $m | ABS 5302.0 Table 6 (A3535199W) |
+| XccbNom | Coal, coke and briquettes exports, current prices, seasonally adjusted, $m | ABS 5302.0 Table 6 (A3535200V) |
+| XomfNom | Other mineral fuels exports, current prices, seasonally adjusted, $m | ABS 5302.0 Table 6 (A3535201W) |
+| XmexNom | Metals excluding non-monetary gold exports, current prices, seasonally adjusted, $m | ABS 5302.0 Table 6 (A3535202X) |
+| XmacNom | Machinery exports, current prices, seasonally adjusted, $m | ABS 5302.0 Table 6 (A3535203A) |
+| XtrnNom | Transport equipment exports, current prices, seasonally adjusted, $m | ABS 5302.0 Table 6 (A3535204C) |
+| XotmNom | Other manufactures exports, current prices, seasonally adjusted, $m | ABS 5302.0 Table 6 (A3535206J) |
+| XonrNom | Other non-rural exports excluding sugar and beverages, current prices, seasonally adjusted, $m | ABS 5302.0 Table 6 (A3535210X) |
+| XgprNom | Goods procured in ports by carriers, current prices, seasonally adjusted, $m | ABS 5302.0 Table 6 (A3535212C) |
 | CconsRentNom | Nominal household consumption of rent, $m | ABS 5206.0 |
 | CconsRent | Real household consumption of rent, $m | ABS 5206.0 |
 | GovDef | Public-sector deficit, quarterly $bn, deficit positive | Derived from annual fiscal balance |
 | GovDebt | Public-sector net debt, $bn | Public-sector fiscal data |
 | Rbiz | Bank lending to business; weighted-average interest rate on credit outstanding; total (Per cent per annum) | RBA D8 (DBLWAT) to 2019Q3; RBA F7 weighted average thereafter |
-| BizEq |  |  |
+| BizEq | Private non-financial corporations shares and other equity, $bn | ABS 5232.0 Table 1 (other private non-financial corporations plus private non-financial investment funds) |
 | TcorpRate | Statutory company income tax rate | ATO |
 | KdepRate | Non-mining capital depreciation rate | Capital-stock calibration |
 | DumTsfTot | Transfers equation COVID correction (EViews DUMMY_TSFTOT) | Scenario model residuals (Temp/Masterdata.xlsx sheet Master(SEM)) |
@@ -285,9 +285,9 @@ are explicit in `data-raw/exogenous_sources.csv`. In particular:
   PPP through their published horizons; OECD supplies long-run China growth
   and the four foreign 10-year rates.
 
-`outputs/exogenous_assumptions.csv` records effective endpoints, historical
-agreement with `Data.xlsx`, source names and URLs, published horizons, and the
-distinction between official values and documented model extensions. No
+`outputs/exogenous_assumptions.csv` records effective endpoints, agreement with
+the persisted sourced history, source names and URLs, published horizons, and
+the distinction between official values and documented model extensions. No
 post-horizon extension is presented as published data.
 
 ## Forecast closures

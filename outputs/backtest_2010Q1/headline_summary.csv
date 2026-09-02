@@ -1,0 +1,5 @@
+measure,mean_absolute_error,maximum_absolute_error,max_error_quarter,unit
+GDP level,3.0182922627810633,6.718213971334323,2013-06-01,per cent
+Ygdp annual growth,1.310419105881312,5.957051159974735,2021-06-01,percentage points
+Pcpi annual growth,0.8676918664933272,3.635488506037965,2022-12-01,percentage points
+Unemployment rate,0.5191504788086565,2.345240802661566,2020-09-01,percentage points

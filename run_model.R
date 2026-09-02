@@ -5,7 +5,7 @@ required_packages <- c(
   "bimets", "lubridate", "openxlsx", "readxl", "seasonal", "tidyverse"
 )
 model_settings <- list(
-  refresh_data = FALSE,       # re-run the data sourcing (R/update_data.R)
+  refresh_data = TRUE,        # refresh official sources, then rebuild history
   refresh_prepared = TRUE,    # re-prepare estimation data from the sourced RDS
   run_estimation = TRUE,
   show_bimets_progress = TRUE,
@@ -70,16 +70,17 @@ coefficients <- extract_coefficients(model)
 horizon <- as.Date("2036-12-01")
 origin <- forecast_origin(model_data)
 exogenous <- parse_exogenous_csv(origin = origin, horizon = horizon)
+conditioning_data <- extend_exogenous_conditioning(model_data, exogenous, origin)
 align_baseline_shocks(model_settings$shocks_path, origin, horizon)
 shocks <- parse_shocks_csv(model_settings$shocks_path, origin, horizon)
 
 # Standalone residual step: calculate the final-quarter equation residuals
 # and export them, then the simulation reads the exported CSV.
-residuals <- calculate_equation_residuals(model_data, model, origin)
+residuals <- calculate_equation_residuals(conditioning_data, model, origin)
 invisible(export_residuals(residuals, model_settings$residuals_path))
 
 forecast_model <- run_bimets_forecast(
-  model_data,
+  conditioning_data,
   model,
   exogenous,
   shocks,

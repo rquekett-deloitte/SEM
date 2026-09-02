@@ -1,0 +1,26 @@
+Error in seq_len(length(gd) - last_anchor) : 
+  argument must be coercible to non-negative integer
+Calls: prepare_model_data -> derive_open_variables
+In addition: Warning messages:
+1: Unknown or uninitialised column: `transformation`. 
+2: In inner_join(num_parts[[1]], num_parts[[2]], by = "date", suffix = c("_a",  :
+  Detected an unexpected many-to-many relationship between `x` and `y`.
+ℹ Row 1 of `x` matches multiple rows in `y`.
+ℹ Row 1 of `y` matches multiple rows in `x`.
+ℹ If a many-to-many relationship is expected, set `relationship =
+  "many-to-many"` to silence this warning.
+3: In inner_join(den_parts[[1]], den_parts[[2]], by = "date", suffix = c("_a",  :
+  Detected an unexpected many-to-many relationship between `x` and `y`.
+ℹ Row 1 of `x` matches multiple rows in `y`.
+ℹ Row 1 of `y` matches multiple rows in `x`.
+ℹ If a many-to-many relationship is expected, set `relationship =
+  "many-to-many"` to silence this warning.
+4: In inner_join(num, den, by = "date", suffix = c("_n", "_d")) :
+  Detected an unexpected many-to-many relationship between `x` and `y`.
+ℹ Row 1 of `x` matches multiple rows in `y`.
+ℹ Row 1 of `y` matches multiple rows in `x`.
+ℹ If a many-to-many relationship is expected, set `relationship =
+  "many-to-many"` to silence this warning.
+5: In max(which(is.finite(gd) & months(dates) == 6)) :
+  no non-missing arguments to max; returning -Inf
+Execution halted

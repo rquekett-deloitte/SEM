@@ -121,7 +121,9 @@ if (!exists("SEM_PIPELINE_SOURCING") || !isTRUE(SEM_PIPELINE_SOURCING)) {
   model_data <- readRDS("data/model_data.rds")
   model <- load_saved_model(model_data, "outputs/coefficients.csv")
   origin <- forecast_origin(model_data)
-  residuals <- calculate_equation_residuals(model_data, model, origin)
+  exogenous <- parse_exogenous_csv(origin = origin)
+  conditioning_data <- extend_exogenous_conditioning(model_data, exogenous, origin)
+  residuals <- calculate_equation_residuals(conditioning_data, model, origin)
   path <- export_residuals(residuals, "outputs/residuals.csv")
   cat(
     "Residuals exported to", path, "\n",

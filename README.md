@@ -29,20 +29,26 @@ modify the checked-in baseline inputs.
 
 ## Model data and forecast
 
-The model has two production inputs:
+The model has three checked-in production inputs plus the official source
+catalog:
 
-- `data-raw/Data.xlsx`
+- `data/sourced_data.rds`
 - `data-raw/exogenous_forecast.csv`
 - `data-raw/shocks.csv`
+- `VARIABLES.md`
 
-`Data.xlsx` supplies the complete estimation and conditioning history.
+`data/sourced_data.rds` is the persisted quarterly history. On a normal run,
+`R/download_data.R` refreshes the official raw series identified in
+`VARIABLES.md`, `R/prepare_model_data.R` merges and transforms them, and
 `run_model.R` estimates each equation once, reads the exogenous forecast, runs
-the simulation and writes the model outputs.
+the simulation and writes the model outputs. `Data.xlsx` is not read by any
+production path.
 
 The forecast implementation is in `R/forecast_model.R`. The forecast origin is
-derived from the data: it starts one quarter after the final observed quarter
-in `Data.xlsx`, currently 2025-03-01 (2025Q1), after the 2024Q4 conditioning
-observation. It uses the explicit scenario contract in
+derived from the data: it starts one quarter after the final quarter in which
+every non-scenario model input needed for conditioning is explicit. In the
+2 September 2026 vintage it starts at 2026-03-01 (2026Q1), after the 2025Q4
+conditioning observation. It uses the explicit scenario contract in
 `data-raw/exogenous_forecast.csv`, and runs a simultaneous dynamic forecast
 through 2036Q4. The scenario CSV is an immutable model input and is not
 generated or modified by production code. Supporting source metadata remains
@@ -52,22 +58,19 @@ feedback block uses a 10 per cent damped Gauss-Seidel update, which changes the
 iteration path but not the fixed-point equations. Forecast closures, units and
 scenario-provenance handling are documented in `VARIABLES.md`.
 
-`Data.xlsx` is ragged after a download run (quarterly national accounts,
-monthly rates and the derived series end at different quarters), so the
+The sourced history is ragged after a download run (quarterly national
+accounts, monthly rates and derived series end at different quarters), so the
 forecast origin and the residual conditioning quarter are derived from the
-last quarter in which every residual-calibration input is observed
-(`CONDITIONING_INPUTS` in `R/forecast_model.R`). Observations beyond the
-conditioning quarter enter estimation (each equation NA-drops to its own
-end) and comparison, never conditioning. The origin advances automatically
-as releases land: today it is bound by the publication lags of quarterly
-net overseas migration (`Lnom`, with the ERP releases) and the labour
-account hours (`Lhrs`), so the forecast runs from the quarter after the
-last quarter those two reach. `Phouse` (the transfer-weighted median
-derivation from the Total Value of Dwellings Table 2, validated to
-reproduce the workbook history exactly), `Lnom` and the capital-stock
-carry convention are implemented in `R/update_data.R`; the all-zero shocks
-baseline realigns itself to the forecast window (a baseline with scenario
-values is never rewritten).
+last quarter in which all `OBSERVED_CONDITIONING_INPUTS` in
+`R/model_constants.R` are finite. Only fields covered by the explicit
+exogenous bridge may be filled before the origin. Observations beyond the
+conditioning quarter enter equation-specific estimation and comparison,
+never the forecast state. The current history includes the June 2026 national
+accounts release; the origin remains 2026Q1 because the complete conditioning
+frontier is 2025Q4. `Phouse`, `Lnom`, the sourced/derived history rules and the
+capital-stock treatment are implemented in `R/prepare_model_data.R`; the
+all-zero shocks baseline realigns itself to the forecast window (a baseline
+with scenario values is never rewritten).
 
 ## Run directly
 
@@ -88,11 +91,13 @@ Preparation and estimation are controlled by `model_settings` at the top of
 
 ```r
 model_settings <- list(
-  refresh_model_data = TRUE,
+  refresh_data = TRUE,
+  refresh_prepared = TRUE,
   run_estimation = TRUE,
   show_bimets_progress = TRUE,
   carry_forward_residuals = TRUE,
   coredata_export = TRUE,
+  sourced_data_path = "data/sourced_data.rds",
   model_data_path = "data/model_data.rds",
   coefficients_path = "outputs/coefficients.csv",
   residuals_path = "outputs/residuals.csv",
@@ -102,8 +107,10 @@ model_settings <- list(
 )
 ```
 
-- Set `refresh_model_data = FALSE` to load the prepared-data cache instead of
-  recalculating it from `Data.xlsx`.
+- Set `refresh_data = FALSE` to skip official-source downloads.
+- Set `refresh_prepared = FALSE` as well to load `data/model_data.rds`
+  directly. With `refresh_prepared = TRUE`, the estimation dataset is rebuilt
+  from `data/sourced_data.rds` without downloading.
 - Set `run_estimation = FALSE` to load saved coefficients instead of estimating
   the equations.
 - Set `show_bimets_progress = FALSE` to suppress BIMETS loading and simulation
@@ -115,8 +122,9 @@ model_settings <- list(
 - Set `carry_forward_residuals = FALSE` to run the forecast with the exported
   residuals set to zero instead of carried into the first forecast quarter and
   faded geometrically.
-- A normal run with both settings `TRUE` refreshes both saved files for later
-  fast runs.
+- A normal run refreshes official sources and both saved data files. Set the
+  environment variable `SEM_USE_DOWNLOAD_CACHE=1` for an intentional offline
+  run using the most recently downloaded source files.
 
 Shock units follow each equation or exogenous series specification. Most
 columns are log innovations, so `log(1.20)` applies a 20 per cent increase. The
@@ -162,24 +170,24 @@ executes data preparation, estimation and forecasting. It writes:
   observed stretch of history driven by the actual exogenous paths and
   compares every headline path with the actuals in
   `outputs/backtest_<start>/`. Within-sample tracking: the coefficients are
-  the current full-sample estimates.
+  the current full-sample estimates. `headline_summary.csv` records GDP-level,
+  GDP-growth, CPI-growth and unemployment errors in their appropriate units.
 - `Rscript R/coredata_export.R` rebuilds the Coredata workbook from the
   current flat output without re-running the model.
-- `Rscript R/update_data.R` downloads the latest observations for every
-  workbook variable with a directly downloadable source - ABS series IDs
+- `Rscript R/download_data.R` downloads the latest raw observations for every
+  model variable with a directly downloadable source - ABS series IDs
   resolve through the ABS Time Series Directory to the current release's
-  time series tables, and RBA series come from the statistical-table CSVs -
-  applies the transformation noted in the workbook's `Variables` sheet
-  (quarterly as published; monthly series take a three-month average, with
-  the noted divide-by-100) and updates `data-raw/Data.xlsx` in place with
-  the new quarters appended. Git is the review and revert mechanism:
-  `outputs/data_download_validation.csv` grades every downloaded series
+  time-series tables, and RBA series come from the statistical-table CSVs.
+  `R/prepare_model_data.R` then applies the documented transformations
+  (quarterly as published; monthly series take a three-month average) and
+  updates `data/sourced_data.rds`. The review artifact,
+  `outputs/data_download_validation.csv`, grades every downloaded series
   against the existing history (the source-correctness check), records
   rescalings and the worst quarter, and lists skipped variables with
-  reasons. Existing history is extended, never rewritten, except for the
-  documented rebenchmarked series in `ADOPT_CURRENT_VINTAGE` inside the
-  script. Downloaded tables are cached under `data-raw/downloads/`
-  (git-ignored).
+  reasons. Existing history is extended, never rewritten, except for the two
+  documented rebenchmarked series in `adopt_series`. Downloaded tables are
+  refreshed by default and cached under `data-raw/downloads/` (git-ignored) as
+  a fallback for transient failures and intentional offline runs.
 
 ## Residual carry-forward
 

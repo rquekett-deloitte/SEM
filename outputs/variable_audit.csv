@@ -9,7 +9,7 @@ SavHh,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
 Cpr,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
 Idwell,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
 Iotc,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
-Ygne,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+Ygne,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
 Xtot,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
 Mtot,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
 CprNom,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
@@ -57,7 +57,7 @@ Cgov,FALSE,FALSE,TRUE,TRUE,TRUE,exogenous scenario input
 CgovNom,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
 Ygoa,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
 Lsup,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
-Lpop,FALSE,FALSE,TRUE,TRUE,FALSE,exogenous scenario input
+Lpop,FALSE,FALSE,TRUE,TRUE,TRUE,exogenous scenario input
 IvtNonfarm,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
 Tcit,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
 Ytsf,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
@@ -77,7 +77,7 @@ LhrsEdu,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
 LhrsHlt,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
 Igov,FALSE,FALSE,TRUE,TRUE,TRUE,exogenous scenario input
 Ipubent,FALSE,FALSE,TRUE,TRUE,TRUE,exogenous scenario input
-Pgne,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+Pgne,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
 Phouse,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
 IvtFar,FALSE,FALSE,TRUE,TRUE,TRUE,exogenous scenario input
 Fpcpi,TRUE,TRUE,TRUE,TRUE,TRUE,exogenous scenario input

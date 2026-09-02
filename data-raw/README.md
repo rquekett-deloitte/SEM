@@ -1,5 +1,7 @@
 # Raw data
 
-`Data.xlsx` is the authoritative historical model input and must not be
-modified by model code. It is used for both estimation and forecast
-conditioning and ends in 2024Q4.
+The production model does not read `Data.xlsx`. Historical observations are
+persisted in `data/sourced_data.rds`, refreshed from the source catalog in
+`VARIABLES.md` by `R/download_data.R` and `R/prepare_model_data.R`, and prepared
+for estimation in `data/model_data.rds`. The former workbook is retired; it is
+not an input to sourcing, estimation, conditioning, forecasting or output.

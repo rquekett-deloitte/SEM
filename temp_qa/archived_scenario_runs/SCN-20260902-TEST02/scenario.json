@@ -1,0 +1,15 @@
+{
+  "id": "SCN-20260902-TEST02",
+  "name": "Oil price +20% (smoke test)",
+  "notes": "Spawned with the dashboard runner mechanism",
+  "createdAt": "2026-09-02T02:38:55Z",
+  "adjustments": [
+    {
+      "variable": "Fpoil",
+      "value": 20,
+      "unit": "percent",
+      "start": "2025-03-01",
+      "end": "2026-12-01"
+    }
+  ]
+}
