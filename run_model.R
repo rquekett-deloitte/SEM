@@ -5,11 +5,13 @@ required_packages <- c(
   "bimets", "lubridate", "openxlsx", "readxl", "seasonal", "tidyverse"
 )
 model_settings <- list(
-  refresh_model_data = TRUE,
+  refresh_data = FALSE,       # re-run the data sourcing (R/update_data.R)
+  refresh_prepared = TRUE,    # re-prepare estimation data from the sourced RDS
   run_estimation = TRUE,
   show_bimets_progress = TRUE,
   carry_forward_residuals = TRUE,
   coredata_export = TRUE,
+  sourced_data_path = "data/sourced_data.rds",
   model_data_path = "data/model_data.rds",
   coefficients_path = "outputs/coefficients.csv",
   residuals_path = "outputs/residuals.csv",
@@ -34,7 +36,7 @@ suppressPackageStartupMessages(library(seasonal))
 # Keeps the standalone block in R/calculate_residuals.R dormant while the
 # pipeline sources it as a module.
 SEM_PIPELINE_SOURCING <- TRUE
-source("R/calculate_estimation_data.R")
+source("R/prepare_model_data.R")
 source("R/model_constants.R")
 source("R/estimation.R")
 source("R/forecast_model.R")
@@ -43,15 +45,18 @@ source("R/model_outputs.R")
 source("R/workbook_output.R")
 source("R/coredata_export.R")
 
-model_data <- if (model_settings$refresh_model_data) {
-  prepared_data <- calculate_estimation_data()
-  dir.create(dirname(model_settings$model_data_path), showWarnings = FALSE)
-  saveRDS(prepared_data, model_settings$model_data_path)
-  prepared_data
+# The data pipeline: R/download_data.R downloads raw series; R/prepare_model_data.R
+# is the single transformation home (raw -> sourced history -> estimation data).
+# refresh_data re-runs both stages; otherwise the prepared cache is re-used.
+if (model_settings$refresh_data) {
+  cat("Downloading raw data (R/download_data.R)...\n")
+  system2(file.path(R.home("bin"), "Rscript"), "R/download_data.R")
+}
+
+model_data <- if (model_settings$refresh_data || model_settings$refresh_prepared ||
+                  !file.exists(model_settings$model_data_path)) {
+  prepare_model_data(refresh = model_settings$refresh_data)
 } else {
-  if (!file.exists(model_settings$model_data_path)) {
-    stop("Prepared model data not found: ", model_settings$model_data_path)
-  }
   readRDS(model_settings$model_data_path)
 }
 
@@ -129,8 +134,11 @@ cat(
     "loaded from saved coefficients.\n"
   },
   "Model data:",
-  if (model_settings$refresh_model_data) {
-    "prepared from Data.xlsx.\n"
+  if (model_settings$refresh_data) {
+    paste0("re-sourced and prepared from ", model_settings$sourced_data_path,
+           ".\n")
+  } else if (model_settings$refresh_prepared) {
+    paste0("prepared from ", model_settings$sourced_data_path, ".\n")
   } else {
     paste("loaded from", model_settings$model_data_path, ".\n")
   },

@@ -243,7 +243,7 @@ audit_variable_usage <- function(data,
   equations_text <- paste(mdl_equations(), collapse = " ")
   identities_text <- paste(mdl_identities(), collapse = " ")
   exogenous <- mdl_exogenous_contract()$model_variable
-  prep_text <- read_source("R/calculate_estimation_data.R")
+  prep_text <- read_source("R/prepare_model_data.R")
   estimation_text <- read_source("R/estimation.R")
   variables <- setdiff(names(data), "date")
   mentions <- function(text, v) grepl(paste0("\\b", v, "\\b"), text)

@@ -31,9 +31,9 @@ Xccb,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
 Xomf,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
 Xagr,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
 XagrNom,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
-Wfor,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+Wfor,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
 KMin,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
-KBiz,FALSE,FALSE,TRUE,FALSE,FALSE,identity-defined
+KBiz,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
 KDwell,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
 PcpiRent,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
 Xsvc,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
@@ -81,18 +81,18 @@ Pgne,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
 Phouse,TRUE,FALSE,FALSE,FALSE,TRUE,estimation-only input
 IvtFar,FALSE,FALSE,TRUE,TRUE,TRUE,exogenous scenario input
 Fpcpi,TRUE,TRUE,TRUE,TRUE,TRUE,exogenous scenario input
-Fpoil,TRUE,TRUE,FALSE,TRUE,FALSE,exogenous scenario input
-Fpcom,TRUE,TRUE,FALSE,TRUE,FALSE,exogenous scenario input
-Fpagr,TRUE,TRUE,FALSE,TRUE,FALSE,exogenous scenario input
+Fpoil,TRUE,TRUE,FALSE,TRUE,TRUE,exogenous scenario input
+Fpcom,TRUE,TRUE,FALSE,TRUE,TRUE,exogenous scenario input
+Fpagr,TRUE,TRUE,FALSE,TRUE,TRUE,exogenous scenario input
 Fr10yUs,FALSE,FALSE,TRUE,TRUE,TRUE,exogenous scenario input
 Fr10yJp,FALSE,FALSE,TRUE,TRUE,TRUE,exogenous scenario input
 Fr10yDe,FALSE,FALSE,TRUE,TRUE,TRUE,exogenous scenario input
 Fr10yUk,FALSE,FALSE,TRUE,TRUE,TRUE,exogenous scenario input
-FcGdp,TRUE,TRUE,FALSE,TRUE,FALSE,exogenous scenario input
-FcPpp,TRUE,TRUE,FALSE,TRUE,FALSE,exogenous scenario input
-KTotal,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+FcGdp,TRUE,TRUE,FALSE,TRUE,TRUE,exogenous scenario input
+FcPpp,TRUE,TRUE,FALSE,TRUE,TRUE,exogenous scenario input
+KTotal,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
 PeRatio,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
-EqEarn,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+EqEarn,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
 Lnom,TRUE,TRUE,FALSE,TRUE,FALSE,exogenous scenario input
 XmetNom,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
 XccbNom,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
@@ -111,9 +111,9 @@ Rbiz,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined
 BizEq,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
 TcorpRate,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
 KdepRate,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
-DumTsfTot,TRUE,TRUE,FALSE,FALSE,FALSE,behavioural equation variable
-Peq,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
-LavhMkt,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
+DumTsfTot,TRUE,TRUE,FALSE,FALSE,TRUE,behavioural equation variable
+Peq,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
+LavhMkt,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
 Tpit,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
 IntStu,TRUE,TRUE,FALSE,TRUE,TRUE,exogenous scenario input
 PcpiExGst,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined

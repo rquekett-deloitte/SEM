@@ -4,7 +4,7 @@
 # the estimated coefficients injected as numbers (the error-correction
 # specs are nonlinear in their coefficients, which bimets' symbolic
 # BEHAVIORAL form does not accept). Identities continue the data-preparation
-# definitions in R/calculate_estimation_data.R plus the expenditure/nominal
+# definitions in R/prepare_model_data.R plus the expenditure/nominal
 # sums and the documented forecast-closure rules in VARIABLES.md. Scenario
 # inputs are declared explicitly by mdl_exogenous_contract(); an omitted model
 # variable is never silently promoted to exogenous status.

@@ -11,7 +11,7 @@
 # forecast, hairline horizontal gridlines, end-of-line value labels.
 #
 # Tabs:
-#   - Headlines: key aggregates, KPI strip, history and forecast on one chart.
+#   - Headlines: four key aggregates with history and forecast on each chart.
 #   - All variables: every model variable (outputs/model_results_flat.xlsx)
 #     over the full span, level and annual-growth views, CSV download.
 #   - Scenario library: lists runs in scenario-runs/ and overlays any
@@ -213,7 +213,8 @@ sem_chart <- function(segments, origin = NULL, log_y = FALSE, y_fmt = NULL,
   pad <- 0.04 * (lim[2] - lim[1])
   span <- as.numeric(diff(range(xs)))
   xlim <- range(xs)
-  if (end_label) xlim[2] <- xlim[2] + 0.045 * span
+  compact_label <- dev.size("px")[[1]] < 520
+  if (end_label && !compact_label) xlim[2] <- xlim[2] + 0.075 * span
   chart_par()
   plot(NA, xlim = xlim, ylim = c(lim[1] - pad, lim[2] + pad),
        log = if (log_y) "y" else "", axes = FALSE, ann = FALSE)
@@ -230,7 +231,8 @@ sem_chart <- function(segments, origin = NULL, log_y = FALSE, y_fmt = NULL,
   if (forecast_visible) {
     abline(v = origin, col = chart_col$origin, lwd = 1.4, lty = 3)
     text(origin, usr[4] - 0.055 * (usr[4] - usr[3]), "FORECAST",
-         pos = 4, offset = 0.45, cex = 0.58, font = 2,
+         pos = 4, offset = if (compact_label) 0.25 else 0.45,
+         cex = if (compact_label) 0.50 else 0.58, font = 2,
          col = chart_col$muted)
   }
   ax <- date_axis(xs)
@@ -248,7 +250,9 @@ sem_chart <- function(segments, origin = NULL, log_y = FALSE, y_fmt = NULL,
         points(s$x[length(s$x)], s$y[length(s$y)], pch = 16, cex = 0.55,
                col = s$col)
         text(s$x[length(s$x)], s$y[length(s$y)], y_fmt(s$y[length(s$y)]),
-             pos = 4, offset = 0.5, font = 2, cex = 0.75, col = chart_col$ink)
+             pos = if (compact_label) 2 else 4, offset = 0.5,
+             font = 2, cex = if (compact_label) 0.68 else 0.75,
+             col = chart_col$ink)
       }
     }
   }
@@ -310,20 +314,8 @@ status_value <- function(status) {
 # have valid year-on-year rates.
 gdp_growth <- annual_growth(flat$Ygdp)
 cpi_growth <- annual_growth(flat$Pcpi)
-last_i <- nrow(flat)
-origin_i <- which(flat$date == forecast_origin)
 headline_start <- forecast_origin - 20 * 365.25
 headline_rows <- flat$date >= headline_start
-
-fmt_1p <- function(x) paste0(formatC(x, format = "f", digits = 1), "%")
-fmt_2p <- function(x) paste0(formatC(x, format = "f", digits = 2), "%")
-
-kpi_tile <- function(label, value, sub) {
-  div(class = "kpi",
-      span(class = "kpi-label", label),
-      div(class = "kpi-value", value),
-      div(class = "kpi-sub", HTML(sub)))
-}
 
 # ---- ui helpers -------------------------------------------------------------------
 svg_icon <- function(...) {
@@ -422,26 +414,6 @@ ui <- fluidPage(
               p(paste0("Twenty years of history and the central forecast to ",
                        quarter_label(forecast_horizon), "."))
             ),
-            div(class = "kpi-strip",
-              kpi_tile("Real GDP, annual growth",
-                      fmt_1p(gdp_growth[last_i]),
-                      sprintf("From %s in %s", fmt_1p(gdp_growth[origin_i]),
-                              quarter_label(forecast_origin))),
-              kpi_tile("CPI, annual inflation",
-                      fmt_1p(cpi_growth[last_i]),
-                      sprintf("From %s in %s", fmt_1p(cpi_growth[origin_i]),
-                              quarter_label(forecast_origin))),
-              kpi_tile("Unemployment rate",
-                      fmt_1p(100 * flat$Lur[last_i]),
-                      sprintf("From %s in %s",
-                              fmt_1p(100 * flat$Lur[origin_i]),
-                              quarter_label(forecast_origin))),
-              kpi_tile("Cash rate",
-                      fmt_2p(100 * flat$R90d[last_i]),
-                      sprintf("From %s in %s",
-                              fmt_2p(100 * flat$R90d[origin_i]),
-                              quarter_label(forecast_origin)))
-            ),
             div(class = "page-grid grid-2",
               chart_panel("plot_ygdp", "Real GDP, annual growth",
                           "Per cent, quarterly",
@@ -484,13 +456,6 @@ ui <- fluidPage(
                   selectInput("var_transform", NULL,
                               c("Level" = "level",
                                 "Annual growth (%)" = "growth"))),
-              div(class = "field slider-field",
-                  field_label("var_years", "Years shown"),
-                  sliderInput("var_years", NULL,
-                              min = quarter_year(min(flat$date)),
-                              max = quarter_year(forecast_horizon),
-                              value = c(1990, quarter_year(forecast_horizon)),
-                              step = 1, width = "100%")),
               div(class = "field checkbox-field",
                   checkboxInput("var_log", "Log scale", FALSE)),
               downloadButton("var_download", "Download CSV",
@@ -504,7 +469,7 @@ ui <- fluidPage(
               div(class = "panel-head",
                 div(h3("Recent quarters"),
                     p(class = "panel-sub",
-                      "Latest 16 in the selected range"))
+                      "Latest 16 observations"))
               ),
               tableOutput("var_table")
             )
@@ -617,7 +582,7 @@ ui <- fluidPage(
                 div(class = "panel",
                   div(class = "panel-head",
                     div(h3("Adjustments"), uiOutput("adj_count")),
-                    actionButton("adj_clear", "Clear all", class = "btn btn-compact")
+                    uiOutput("adj_clear_control")
                   ),
                   uiOutput("adj_list")
                 ),
@@ -695,9 +660,7 @@ server <- function(input, output, session) {
 
   # -- all variables tab -------------------------------------------------------------
   var_window <- reactive({
-    years <- as.integer(format(flat$date, "%Y"))
-    flat[years >= input$var_years[1] & years <= input$var_years[2], ,
-         drop = FALSE]
+    flat
   })
 
   var_values <- reactive({
@@ -722,8 +685,8 @@ server <- function(input, output, session) {
           div(h3(lab %||% v),
               p(class = "panel-sub",
                 HTML(paste0("<code>", esc(v), "</code> - ", unit, " - ",
-                            input$var_years[1], " to ",
-                            input$var_years[2]))))),
+                            quarter_label(min(flat$date)), " to ",
+                            quarter_label(max(flat$date))))))),
       div(class = "chart-legend", sem_legend)
     )
   })
@@ -962,12 +925,12 @@ server <- function(input, output, session) {
       }
       return(NULL)
     }
+    adjustment_count <- length(sc$meta$adjustments %||% list())
     div(class = "panel-foot", HTML(paste0(
-      "<b>", esc(sc$meta$name), "</b> - ",
-      "run <code>", esc(sc$meta$id %||% basename(input$scen_pick)),
-      "</code>, created ", fmt_timestamp(sc$meta$createdAt %||% ""),
-      " - ", length(sc$meta$adjustments %||% list()), " adjustment(s)",
-      " - status: ", esc(status_value(sc$status))
+      "Run <code>", esc(sc$meta$id %||% basename(input$scen_pick)),
+      "</code> &middot; ", adjustment_count, " adjustment",
+      if (adjustment_count == 1) "" else "s",
+      " &middot; ", esc(status_value(sc$status))
     )))
   })
 
@@ -999,17 +962,28 @@ server <- function(input, output, session) {
                       selected = default_unit_mode(input$adj_variable))
   })
 
-  output$adj_count <- renderUI(
-    p(class = "panel-sub", paste(length(adjustments()), "applied")))
+  output$adj_count <- renderUI({
+    count <- length(adjustments())
+    if (!count) return(NULL)
+    p(class = "panel-sub", paste(count, "applied"))
+  })
+
+  output$adj_clear_control <- renderUI({
+    if (!length(adjustments())) return(NULL)
+    actionButton(
+      "adj_clear", "Clear all", class = "btn btn-compact",
+      onclick = paste0(
+        "setTimeout(function(){var e=document.getElementById('adj_add');",
+        "if(e)e.focus();},300)"
+      )
+    )
+  })
 
   output$adj_list <- renderUI({
     entries <- adjustments()
     if (!length(entries)) {
       return(div(class = "panel-body",
-                 div(class = "empty-note",
-                     strong("No adjustments yet"),
-                     p(paste0("Add an adjustment on the left. A scenario ",
-                              "needs at least one adjustment.")))))
+                 div(class = "empty-note", "No adjustments added.")))
     }
     rows <- lapply(entries, function(e) {
         div(class = "ledger-row",

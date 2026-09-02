@@ -94,15 +94,15 @@ KTotal,sourced,downloaded,1 series; overlap ends 2024-06-01; no new benchmark - 
 PeRatio,sourced,skipped,sourcing open: owner derivation required - see the source note for what was tested,NA,NA,NA,NA,,n/a,NA,
 EqEarn,sourced,skipped,derived - computed from its parents after the merge,NA,NA,NA,NA,,n/a,NA,
 Lnom,sourced,downloaded,1 series; overlap ends 2025-09-01,178,0.055,0.109,1.636,2021-06-01,source confirmed,0,
-XmetNom,sourced,downloaded,1 series; overlap ends 2024-12-01,202,2.802,3.418,11.45,1985-03-01,MISMATCH - check source,25,2026-03-01
-XccbNom,sourced,downloaded,1 series; overlap ends 2024-12-01,202,0.768,1.741,15.699,2010-03-01,revisions - review,25,2026-03-01
-XomfNom,sourced,downloaded,1 series; overlap ends 2024-12-01,202,5.524,5.858,15.217,1976-06-01,MISMATCH - check source,25,2026-03-01
-XmexNom,sourced,downloaded,1 series; overlap ends 2024-12-01,202,2.531,2.917,8.636,1980-03-01,MISMATCH - check source,25,2026-03-01
-XmacNom,sourced,downloaded,1 series; overlap ends 2024-12-01,202,5.677,5.594,14.851,1991-03-01,MISMATCH - check source,25,2026-03-01
-XtrnNom,sourced,downloaded,1 series; overlap ends 2024-12-01,202,4.068,5.506,17.722,1983-03-01,MISMATCH - check source,25,2026-03-01
-XotmNom,sourced,downloaded,1 series; overlap ends 2024-12-01,202,4.405,4.707,11.579,1986-03-01,MISMATCH - check source,25,2026-03-01
-XonrNom,sourced,downloaded,1 series; overlap ends 2024-12-01,202,0,0,0,1974-09-01,source confirmed,64,2025-12-01
-XgprNom,sourced,downloaded,1 series; overlap ends 2024-12-01,202,1.471,1.93,7.407,1976-03-01,revisions - review,65,2026-03-01
+XmetNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,2.757,3.336,11.45,1985-03-01,MISMATCH - check source,20,1974-06-01
+XccbNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,0.765,1.699,15.699,2010-03-01,revisions - review,20,1974-06-01
+XomfNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,5.385,5.717,15.217,1976-06-01,MISMATCH - check source,20,1974-06-01
+XmexNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,2.482,2.846,8.636,1980-03-01,MISMATCH - check source,20,1974-06-01
+XmacNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,5.64,5.458,14.851,1991-03-01,MISMATCH - check source,20,1974-06-01
+XtrnNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,3.626,5.373,17.722,1983-03-01,MISMATCH - check source,20,1974-06-01
+XotmNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,4.235,4.593,11.579,1986-03-01,MISMATCH - check source,20,1974-06-01
+XonrNom,sourced,downloaded,1 series; overlap ends 2025-12-01,206,0,0,0,1974-09-01,source confirmed,60,1974-06-01
+XgprNom,sourced,downloaded,1 series; overlap ends 2026-03-01,207,1.442,1.884,7.407,1976-03-01,revisions - review,60,1974-06-01
 CconsRentNom,sourced,failed,download or transform failed,NA,NA,NA,NA,,n/a,NA,
 CconsRent,sourced,failed,download or transform failed,NA,NA,NA,NA,,n/a,NA,
 GovDef,sourced,skipped,sourcing open: owner derivation required - see the source note for what was tested,NA,NA,NA,NA,,n/a,NA,
@@ -112,7 +112,7 @@ BizEq,sourced,downloaded,0 series; overlap ends 2025-12-01,151,0.09,0.103,0.266,
 TcorpRate,sourced,skipped,constant - held at its final level (see source note),NA,NA,NA,NA,,n/a,NA,
 KdepRate,sourced,skipped,constant - held at its final level (see source note),NA,NA,NA,NA,,n/a,NA,
 DumTsfTot,sourced,skipped,constant - held at its final level (see source note),NA,NA,NA,NA,,n/a,NA,
-Peq,sourced,downloaded,0 series; overlap ends 2026-09-01,41,0,0.261,3.915,2024-12-01,source confirmed,0,
+Peq,sourced,downloaded,0 series; overlap ends 2026-09-01,41,0,0.262,3.915,2024-12-01,source confirmed,0,
 LavhMkt,sourced,skipped,sourcing open: owner derivation required - see the source note for what was tested,NA,NA,NA,NA,,n/a,NA,
 Tpit,sourced,downloaded,2 series; overlap ends 2026-03-01,207,0,0.016,0.693,2024-09-01,source confirmed,60,1974-06-01
 IntStu,exogenous,skipped,exogenous by design - maintained via exogenous_forecast.csv,NA,NA,NA,NA,,n/a,NA,
