@@ -221,7 +221,10 @@ DERIVED_SOURCES$BizEq <- function() fetch_biz("Shares and other equity held by:"
 # over the whole history by construction).
 POSTMERGE_DERIVED <- list(
   KNbiz = function(updated) updated$KBiz - updated$KMin,
-  KOther = function(updated) updated$KTotal - updated$KBiz - updated$KDwell
+  KOther = function(updated) updated$KTotal - updated$KBiz - updated$KDwell,
+  # EqEarn = Peq / PeRatio exactly (the model's EqYield identity, verified
+  # at 0.000% over 82 quarters); fills automatically once PeRatio extends.
+  EqEarn = function(updated) updated$Peq / updated$PeRatio
 )
 
 abs_series_ids <- function(source) {

@@ -318,3 +318,28 @@ constructs), Rbiz (prior finding). Variables-sheet sources updated with
 each finding. 83 of 122 workbook columns are now auto-sourced; the
 remaining 39 are documented skips (the exogenous scenario series, the
 subscription/derivation list above, and undetailed raw input components).
+
+## Sourcing audit completed: every remaining input dispositioned (2026-09-02)
+
+The "unsourced" labels were re-examined - data always comes from somewhere.
+Reverse-engineering the workbook's own patterns resolved more of them:
+- EqEarn = Peq / PeRatio exactly (0.000% over 82 quarters - the model's
+  EqYield identity); wired as a post-merge derivation, so EqEarn extends
+  automatically the moment PeRatio does.
+- GovDebt: structure identified - linear interpolation between June-quarter
+  annual net debt levels (validated exactly: +26.9/quarter from 661.7 at
+  Jun-2023 to 769.3 at Jun-2024). The current GFS annual net debt
+  (783.8/846.6/954.9) does not match the workbook's vintage, so the
+  owner's annual source is needed to extend it.
+- GovDef: annual sums track general-government net lending (2022 ~80.6,
+  2023 ~28.2, 2024 ~45.8 $b) interpolated quarterly; the GFS quarterly
+  net-lending series differs, so the owner's kernel is needed.
+- PcpiExGst: the ratio to Pcpi drifts - a genuinely separate AEM splice,
+  not derivable from published ABS series.
+- Ustar: unused by the model (superseded by LurHpf; variable audit) -
+  legacy EViews series, no sourcing needed.
+- PeRatio: free endpoints exhausted with evidence - the ASX public
+  archive carries index/market-cap only (checked), marketindex.com.au is
+  Cloudflare-gated, the RBA share-market tables were discontinued in
+  2011, and Yahoo/FRED carry no P/E. Remains LSEG/Refinitiv via
+  Masterdata, with the full test record in the source note.
