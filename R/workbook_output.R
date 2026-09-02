@@ -77,13 +77,13 @@ build_results_workbook <- function(
   path
 }
 
-# One flat sheet: every model variable, historical and forecast, one row per
+# One flat table: every model variable, historical and forecast, one row per
 # quarter. Deterministic estimation scaffolding (trends, dummies, indicators)
 # is excluded; every other variable in the estimation data and the forecast
 # is preserved. History is marked "Actual" up to the conditioning quarter
-# and "Forecast" from the origin.
-build_flat_output <- function(forecast, history, origin,
-                              path = "outputs/model_results_flat.xlsx") {
+# and "Forecast" from the origin. Used by the flat workbook below, the
+# Coredata export and the Shiny dashboard.
+build_flat_table <- function(forecast, history, origin) {
   deterministic <- c(
     "trend", "trend_piret", "trend_98", "trend_01", "trend_08",
     "d93", "q3", "sb_2001",
@@ -107,11 +107,13 @@ build_flat_output <- function(forecast, history, origin,
     dplyr::filter(date < as.Date(origin))
   forecast_part <- forecast %>%
     dplyr::mutate(period = "Forecast")
-  flat <- dplyr::bind_rows(
+  dplyr::bind_rows(
     dplyr::select(history_part, date, period, dplyr::everything()),
     dplyr::select(forecast_part, date, period, dplyr::everything())
   )
+}
 
+write_flat_output <- function(flat, path = "outputs/model_results_flat.xlsx") {
   workbook <- openxlsx::createWorkbook()
   openxlsx::addWorksheet(workbook, "Data")
   openxlsx::writeData(workbook, "Data", flat)

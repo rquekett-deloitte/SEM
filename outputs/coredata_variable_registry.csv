@@ -1,0 +1,870 @@
+"code","description","class","row"
+"TIME SERIES DATA","0","...3",1
+"Quarterly Periods","Change this 0% to a 1 and then change back so that formulas update",NA,2
+"Variable Name",NA,NA,3
+"Epoch Listing (History / Forecast)",NA,NA,4
+"Variable Name","Description","Old sheet",5
+"EXF","OECD industrial production index","exos",6
+"NA14","GDP (A)","endos",7
+"NA14ch","GDP (A) quarterly change",NA,8
+"NA14ch4","GDP (A) 4 quarter to change",NA,9
+"NA16","GDP (A) - nominal","endos",10
+"NA16ch","GDP (A) - nominal quarterly change",NA,11
+"PGDPT","GDP deflator","endos",12
+"PGDPTch","GDP deflator change",NA,13
+"NFGDPlev","GDP (A) - non farm","basegdpa",14
+"NFGDPlch","GDP (A) - non farm change",NA,15
+"GDPAPClev","GDP (A) per capita","basegdpa",16
+"GDPFC","GDP at factor cost (nom)","endos",17
+"GDPZ","GDP (nom)","endos",18
+"NA11","GNE","endos",19
+"NA11ch","GNE change (%)","fybo",20
+"NA11chq","GNE quarterly change",NA,21
+"GNEZ","GNE (nom)","endos",22
+"YD","Domestic production","endos",23
+"TSR","Equilibrium gross output","endos",24
+"NA10","Statistical discrepancy","endos",25
+"GDPAch","GDP (A) % change","basegdpa",26
+"NFGDPch","GDP (A) - non farm % change","basegdpa",27
+"GDPAPCch","GDP (A) per capita % change","basegdpa",28
+"GDPAyrto","GDP year to % change","basegdpa",29
+"NFGDPyrto","GDP (A) non farm % change","basegdpa",30
+"GDPAPCyrto","GDP (A) per capita year to % change","basegdpa",31
+"NA1","Private consumption (ABS)","endos",32
+"NA1ch4q","Private consumption (ABS) 4 quarter to change",NA,33
+"NA1ch","Private consumption (ABS) quarterly change",NA,34
+"CON","Derived private consumption","endos",35
+"CONH","Private consumption - rental services","endos",36
+"CONO","Derived private consumption - other","endos",37
+"CONOCh","Derived private consumption - other, change",NA,38
+"NAPC","Private consumption deflator","endos",39
+"NAPCch","Private consumption deflator change",NA,40
+"LPCON","Private consumption constant utility price index","endos",41
+"WTCON","Rental services (ratio to consumption)","endos",42
+"NA2","General government consumption","endos",43
+"NA2ch","General government consumption quarterly change",NA,44
+"NA3","Private dwelling investment","endos",45
+"NA3ch4q","Private dwelling investment 4 quarter to change",NA,46
+"NA3ch","Private dwelling investment quarterly change",NA,47
+"NA31","Private dwelling investment (one quarter lead)","endos",48
+"NA4A","Private non-dwelling construction investment (headline)","endos",49
+"OutNacIcoUnd","Private non-dwelling construction investment (underlying)","endos",50
+"OutNacIcoUndch4q","Private non-dwelling construction investment (underlying) 4 quarter to change",NA,51
+"NA4AR","Private non dwelling constr. inv. underlying (ratio to bus. inv.)","exos",52
+"NA4B","Private equipment investment (headline)","endos",53
+"NA4","Private business investment (headline)","endos",54
+"NA4C","Private bus. investment (headline - ratio to GDP)","endos",55
+"NA4ch4","Private business investment (underlying) year to change",NA,56
+"IBF","Private bus. investment (underlying)","endos",57
+"IBFch","Private bus. investment (underlying) quarterly change",NA,58
+"OutInvPriGdp","Private bus. investment (und - ratio to GDP)","endos",59
+"OutNacIeqUnd","Private equipment investment (underlying)","endos",60
+"OutNacleqUndch4q","Private equipment investment (underlying) 4 quarter to change",NA,61
+"OutNacIeqUndch","Private equipment investment (underlying) quarterly change",NA,62
+"NA8","Private non-farm inventory investment","endos",63
+"NA9","Farm and pub. auth. inventory investment","endos",64
+"IIF","Farm inventory investment","exos",65
+"OutIvtNfa","Non farm inventory investment","endos",66
+"IINF","Non farm inventory investment","exos",67
+"OutExoNacIeqIpr","Machinery & equipment inv. - ratio to total inv.","exos",68
+"RFIF","Foreign business investment (ratio to total inv.)","exos",69
+"CompSftLvs (headline)","Computer, software and livestock (headline)",NA,70
+"CompSftLvsCh","Computer, software and livestock change (headline)",NA,71
+"CompSftLvsUnd","Computer, software and livestock (underlying)",NA,72
+"CompSftLvsUndCh","Computer, software and livestock change (underlying)",NA,73
+"OutInvResShr","Resource investment (share of total investment)","endos",74
+"OutInvRes","Business investment (resources)","endos",75
+"OutInvNonRes","Business investment (non resource)","endos",76
+"AR","Long run rate of return on business capital","endos",77
+"IvtToT","Total change inventories",NA,78
+"NA7","General government investment","endos",79
+"NA7ch","General government investment quarterly change",NA,80
+"NA6","Public enterprise investment (headline)","endos",81
+"OutNacIpeUnd","Public enterprise fixed investment (underlying)","endos",82
+"OutNacIpeUndch","Public enterprise fixed investment (underlying) quarterly change",NA,83
+"IBFT","Total business investment","endos",84
+"RPRSH","Profit share (ratio to GDP at factor cost)","endos",85
+"UnderlyingPubContrCh4","Underlying public contribution 4 quarter to change",NA,86
+"DFDContrCh4q",NA,NA,87
+"GSPEND","Government spending (nom)","endos",88
+"RRT","Retail turnover","endos",89
+"RRTCh","Retail turnover % change",NA,90
+"RRTCh4q","Retail turnover % 4 quarter to change",NA,91
+"NA12","Exports of goods and services","endos",92
+"NA12ch","Exports of goods and services quarterly change",NA,93
+"NA13","Imports of goods and services","endos",94
+"NetXContribCh4","Contribution of net exports, 4 quarter to change",NA,95
+"NA13ch","Imports of goods and services change (%)","fybo",96
+"NA13chq","Imports of goods and services quarterly change (%)",NA,97
+"IHCM","Housing commencements (number)","endos",98
+"IHCMch","Housing commencements (number) change",NA,99
+"IHCP","Housing completions (number)","endos",100
+"RCOMP","Index of competitiveness","endos",101
+"GOS","Gross operating surplus of private sector (nom)","endos",102
+"GOSZ","Gross operating surplus - ABS definition (nom)","endos",103
+"NA14A","Public final demand (underlying)","endos",104
+"NA14Ach","Public final demand (underlying) quarterly change",NA,105
+"PUBDEMund","Derived public final demand (underlying)","endos",106
+"NA14B","Domestic final demand","endos",107
+"NA14Bch","Domestic final demand (moved forward 9 months)",NA,108
+"NA14Bchq","Domestic final demand quarterly change",NA,109
+"DEM","Derived domestic final demand","endos",110
+"OutNacFdr","Private final demand (underlying)","endos",111
+"DFDCont","Domestic final demand contribution to growth",NA,112
+"DFDch4","Domestic final demand, 4 quarter change",NA,113
+"SPRIDI","Private saving - net of depreciation and inflation adjustment (nom)","endos",114
+"SPUBDI","Public saving - net of depreciation and inflation adjustment (nom)","endos",115
+"STOTDI","National saving - net of depreciation and inflation adjustment (nom)","endos",116
+"SRPRI","Net private saving (ratio to income)","endos",117
+"SSHPRI","Net private saving (ratio to GDP)","endos",118
+"SSHPUB","Net public saving (ratio to GDP)","endos",119
+"SSHTOT","Net national saving (ratio to GDP)","endos",120
+"SPRI","Private saving - gross (nom)","endos",121
+"SPRID","Private saving - net of depreciation (nom)","endos",122
+"SPUB","Public saving - gross (nom)","endos",123
+"SPUBD","Public saving - net of depreciation (nom)","endos",124
+"SRPUB","Net public saving (ratio to consumption and saving)","endos",125
+"STOT","National saving - gross (nom)","endos",126
+"STOTD","National saving - net of depreciation (nom)","endos",127
+"RSAV","Household saving (ratio to h'hold disposable inc.)","endos",128
+"SPUBBL","SavPug balancing item","exos",129
+"K","Total stock of business capital","endos",130
+"KF","Private stock of business capital","endos",131
+"KH","Stock of dwellings","endos",132
+"KIF","Stock of farm inventories","endos",133
+"KINF","Stock of private non farm inventories","endos",134
+"KINFch4","Change in stock of private non farm inventories",NA,135
+"RSS","Private non farm inventories (ratio to sales)","endos",136
+"POL14O","Transfers - foreign to private - other (ratio to GDP)","exos",137
+"RGGCD","Gen govt dep. Nac defn (ratio to model defn)","exos",138
+"NA5","Real estate transfer expenses","endos",139
+"NA5ch","Real estate transfer expenses quarterly change",NA,140
+"IPMINElev","Industrial prod. - mining (index)","basegdpa",141
+"IPMANUlev","Industrial prod. - manufact. (index)","basegdpa",142
+"IPUTILlev","Industrial prod. - utilities (index)","basegdpa",143
+"IPTOTlev","Industrial prod. - total (index)","basegdpa",144
+"IPMINEch","Industrial prod. - mining % change","basegdpa",145
+"IPMANUch","Industrial prod. - manufacturing % change","basegdpa",146
+"IPUTILch","Industrial prod. - utilities % change","basegdpa",147
+"IPTOTch","Industrial prod. - total % change","basegdpa",148
+"IPMINEyrto","Industrial prod. - mining year to % change","basegdpa",149
+"IPMANUyrto","Industrial prod. - manufacturing year to % change","basegdpa",150
+"IPUTILyrto","Industrial prod. - utilities year to % change","basegdpa",151
+"IPTOTyrto","Industrial prod. - total year to % change","basegdpa",152
+"Indprod","Ind prodn","baseind",153
+"Indprodch","Ind prodn ch","baseind",154
+"WAWE","Average weekly earnings (nom)","endos",155
+"WAWEch","Average weekly earnings 4 quarter to change",NA,156
+"WAWEqch","Average weekly earnings quarterly change",NA,157
+"WOTE","Ave. weekly ordinary time earnings (nom)","endos",158
+"WOTEch","Ave. weekly ordinary time earnings (nom) 4 quarter to change",NA,159
+"WOTEqch","Ave. weekly ordinary time earnings (nom) quarterly change",NA,160
+"W","Average quarterly earnings (nom)","endos",161
+"WA","Average quarterly earnings incl. payroll tax (nom)","endos",162
+"WT","Average earnings (national account basis) change","endos",163
+"WTch","Average earnings (national account basis) quarterly change",NA,164
+"WT4ch","Average earnings (national account basis) 4 quarter to change",NA,165
+"RealWTch4q","Real wage, 4 quarter to change",NA,166
+"WNULC","Unit labour cost index (nom)","endos",167
+"WNULCqch","Unit labour cost index quarterly change",NA,168
+"WNULCch","Unit labour cost index 4 quarter to change",NA,169
+"WRULC","Real unit labour cost index","endos",170
+"WRULCch","Real unit labour cost index 4 qurater to change",NA,171
+"YWZ","Wages salaries and supplements (nom)","endos",172
+"RWASH","Wage share of GDP at factor cost","endos",173
+"YHDZ","Household disposable income (nom)","endos",174
+"YHDZch","Household disposable income change",NA,175
+"YHDZch4","Household disposable income 4 quarter to change",NA,176
+"RYHDZ","Real household disposable income",NA,177
+"RYHDZCh","Real household disposable income % change",NA,178
+"RYHDZCh4","Real household disposable income % year to change",NA,179
+"UNB","Unemployment benefit recipients ('000)","endos",180
+"PCPIT","Consumer price index (headline - original)","endos",181
+"PCPITch","CPI change",NA,182
+"PCPITch4",NA,NA,183
+"PCPIO","Consumer price index ( headline - original)","endos",184
+"PCPIOch",NA,NA,185
+"PCPIOch4",NA,NA,186
+"PCPIF","World consumer price index","endos",187
+"PCPIFch","World inflation rate 4 quarter to",NA,188
+"PEXC","Commodity exports","endos",189
+"PEXNR","Non rural exports","endos",190
+"PEXO","Non commodity gds and svcs exports","endos",191
+"PEXRU","Rural exports","endos",192
+"PEXSV","Service exports","endos",193
+"PIMGD","Goods imports","endos",194
+"PIMSV","Service imports","endos",195
+"PKLR","Ideal price index - capital","endos",196
+"PIM","Imports","endos",197
+"PIMch","Quarterly change in import price","endos",198
+"PM","Imports including import duty","endos",199
+"OutPceMatHse","House building materials","endos",200
+"OutPceMatMan","Materials used in manufacturing","endos",201
+"PX","Exports","endos",202
+"PXch","Quarterly change in export price","endos",203
+"PYD","Domestic production","endos",204
+"PYDMR","Equilibrium price index - domestic production","endos",205
+"PYLR","Ideal price index - domestic factors","endos",206
+"PYSR","Equilibrium price index - domestic factors","endos",207
+"PTLR","Ideal price index - gross output","endos",208
+"PTSR","Equilibrium price index - gross output","endos",209
+"PCONH","Price index - rental services","endos",210
+"PCONHD","Equilibrium price index - rental services","endos",211
+"PTU","Price index - underlying private sector prices","endos",212
+"PTUqch","Underlying private sector prices quarterly change",NA,213
+"PTUch","Underlying private sector prices 4 quarter to change",NA,214
+"OutPcePreDom","Preliminary stage domestic commodities","endos",215
+"OutPcePreImp","Preliminary stage imported commodities","endos",216
+"OutPcePreTot","Preliminary stage total commodities","endos",217
+"OutPceWpi","Wage Price Index","endos",218
+"OutPceWpiOri","Wage Price Index (Original)","endos",219
+"OutPceCar","New motor vehicles","endos",220
+"PEXCF","Foreign price of commodity exports","exos",221
+"PEXOF","Foreign price of non comm gds and svcs exports","exos",222
+"PIMF","Foreign price of imports","exos",223
+"INFE","Expected domestic inflation rate","endos",224
+"INFEF","Expected foreign inflation rate","endos",225
+"OutExoPceGst","GST price effect (first round impact)","exos",226
+"OutExoPceGstch4","GST price effect (first round impact) 4 quarter to change",NA,227
+"PTUExclGST","Underlying inflation excluding GST 4 quarter to change",NA,228
+"PCPITExclGST",NA,NA,229
+"OutExoPceGstch","GST price effect (first round impact) 4 quarter to change",NA,230
+"PTUExclGSTch","Underlying inflation excluding GST quarter change",NA,231
+"PCPITGSTadj","GST-adjusted headline CPI",NA,232
+"RBAT","Reserve Bank of Australia target inflation rate","exos",233
+"OutExoPceOil","Price of Tapis crude oil  ($US/barrel)","exos",234
+"OutExoPceOilCh","Price of Tapis crude oil  ($US/barrel) change",NA,235
+"Petrol","Price at pump (Cents/litre)","MVRegos",236
+"PetrolCh","Price at pump (Cents/litre) change",NA,237
+"WPTPERH","Post-tax average wages per worker",NA,238
+"RWPTPERH","Real post-tax average wages per worker",NA,239
+"PNATSPDEF","Gross national spending deflator",NA,240
+"PNATSPDEFch","Gross national spending deflator (%ch)",NA,241
+"ETWIT","Trade weighted index exchange rate","endos",242
+"EUSAT","$US/$A exchange rate","endos",243
+"EJA","Japanese Yen/$A exchange rate","endos",244
+"EWG","Euro/$A exchange rate","endos",245
+"EUK","UK Pound/$A exchange rate","endos",246
+"OutExrNzl","$NZ/$A exchange rate","endos",247
+"ESW","Swiss Franc/$A exchange rate","endos",248
+"EJAUS","Japanese Yen/$US exchange rate","exos",249
+"EWGUS","Euro/$US exchange rate","exos",250
+"EUKUS","UK Pound/$US exchange rate","exos",251
+"REUS","$US/$A (ratio to TWI exchange rate)","exos",252
+"E","Exchange rate for trade conversion","endos",253
+"ED","Exchange rate for debt conversion","endos",254
+"RCS","90 day bill rate","endos",255
+"RL","10 year bond rate","endos",256
+"RCSF","90 day bill rate - foreign","exos",257
+"RLF","10 year bond rate - foreign","exos",258
+"RLFIndex","10 year indexed bonds",NA,259
+"RCSG","Real 90 day rate differential (domestic - foreign)","endos",260
+"RI","Real 10 year bond rate","endos",261
+"RI4",NA,NA,262
+"RLG","Real 10 year rate differential (domestic - foreign)","endos",263
+"YCURVE","Yield curve (90 day bill rate - 10 year bond rate)","endos",264
+"RCSUS","90 day bill rate - USA","exos",265
+"RCSJA","90 day bill rate - Japan","exos",266
+"RCSWG","Official short rate - Europe","exos",267
+"RCSUK","90 day bill rate - UK","exos",268
+"RLUS","10 year bond rate - USA","exos",269
+"RLJA","10 year bond rate - Japan","exos",270
+"RLWG","10 year bond rate - Germany","exos",271
+"RLUK","10 year bond rate - UK","exos",272
+"USCURVE",NA,NA,273
+"JPCURVE",NA,NA,274
+"WGCURVE",NA,NA,275
+"UKCURVE",NA,NA,276
+"AVCURVE",NA,NA,277
+"RealRCS",NA,NA,278
+"AusUSspread","Basis points",NA,279
+"TGSBQ","Balance of trade - volume (ratio to GDP)","endos",280
+"TOT","Terms of trade index","endos",281
+"TGSB","Balance of trade - value (ratio to GDP)","endos",282
+"TGSBNom","Balance of trade (nom $m)",NA,283
+"TRB","Net unrequited transfers (ratio to GDP)","endos",284
+"TRBNom","Net unrequited transfers (nom $m)",NA,285
+"NIB","Net income balance (ratio to GDP)","endos",286
+"NIBNom","Net income balance (nom $m)",NA,287
+"OutBopCab","Current account balance (nom $b)","endos",288
+"CURB","Current account balance (ratio to GDP)","endos",289
+"CURBNom","Current account balance (nom $m)",NA,290
+"FODEBT","Net foreign debt (nom - $b)","endos",291
+"FODEBTRat","Net foreign debt (ratio to GDP)",NA,292
+"OutIipDbtGdp","Net foreign debt (ratio to GDP)","endos",293
+"OutIipEquGdp","Net foreign equities (ratio to GDP)","endos",294
+"OutIipLiaGdp","Net foreign liabilities (ratio to GDP)","endos",295
+"ZG","Public sector for. debt in for. currency (nom)","endos",296
+"ZGA","Public sector foreign debt in $A (nom)","endos",297
+"ZP","Private sector for. debt in for. currency (nom)","endos",298
+"ZPA","Private sector foreign debt in $A (nom)","endos",299
+"M","Money supply (private holdings of curr. - nom)","endos",300
+"POL13","Money supply growth",NA,301
+"ITLS","Indirect taxes less subsidies (nom)","endos",302
+"BAL","Balancing item in the balance of payments (nom)","exos",303
+"PUBD","Public sector underlying deficit (nom)","endos",304
+"PUBDE","Stock of interest bearing public sector debt (nom)","endos",305
+"PUBLI","Stock of public sector financial liabilities (nom)","endos",306
+"PUDOS1","Pub. borrowing from for. sector, last qtr (nom)","endos",307
+"TRPUPR","Transfers (public sector to private sector - nom)","endos",308
+"PNETADV","Public sector net advances (nom)","exos",309
+"DOS","Flow of foreign borrowing (nom)","endos",310
+"FIF","Foreign business investment","endos",311
+"FOEQ","Net foreign equities (nom - $b)","endos",312
+"FOLI","Net foreign liabilities (nom - $b)","endos",313
+"OutExoIipDbtAus","For. debt denom.in $A (ratio to total for. debt)","exos",314
+"OutExoIipDbtJap","For. debt denom.in Yen (ratio to for. denom. debt)","exos",315
+"OutExoIipDbtUsa","For. debt denom.in $US (ratio to for. denom. debt)","exos",316
+"OutExoIipDbtEur","For. debt denom.in Eur (ratio to for. denom. debt)","exos",317
+"OutExoIipDbtUkg","For. debt denom.in UK (ratio to for. denom. debt)","exos",318
+"SIPROS","Expected capital gain - private foreign debt (nom)","endos",319
+"SIPUOS","Expected capital gain - public foreign debt (nom)","endos",320
+"SIPUPR","Expected capital gain - public domestic debt (nom)","endos",321
+"EX","Supply of exports","endos",322
+"EXC","Exports - commodities","endos",323
+"EXCS","Supply of commodity exports","endos",324
+"EXNR","Exports - non rural","endos",325
+"EXNRZ","Exports - non rural (nom)","endos",326
+"EXO","Exports - non commodity goods and services","endos",327
+"EXRU","Exports - rural","endos",328
+"EXRUZ","Exports - rural (nom)","endos",329
+"OutExpSvcTou","Exports - short term tourist arrivals ('000)","endos",330
+"EXSR","Supply of exports - equilibrium","endos",331
+"EXSV","Exports - services","endos",332
+"EXSVZ","Exports - services (nom)","endos",333
+"IM","Imports - total","endos",334
+"IMGD","Imports - goods","endos",335
+"IMGDZ","Imports - goods (nom)","endos",336
+"IMSR","Equilibrium imports","endos",337
+"IMSV","Imports  - services","endos",338
+"IMSVZ","Imports - services (nom)","endos",339
+"NA12Z","Exports of goods and services (nom)","endos",340
+"NA13Z","Imports of goods and services (nom)","endos",341
+"RIMS","Imports - goods (ratio to sales)","endos",342
+"PIM2",NA,NA,343
+"PIM2ch",NA,NA,344
+"PIM2ch4",NA,NA,345
+"MerchTrdBal","Merchandise Trade Balance",NA,346
+"NRSH","Public sector net revenue (ratio to GDP)","endos",347
+"OutPubRvuGdp","Public sector underlying net revenue (ratio to GDP)","endos",348
+"PSBRT","Net PSBR (ratio to GDP)","endos",349
+"OutPubPsb","Net PSBR (nom)","endos",350
+"OutPubDefGdp","Public sector underlying deficit (ratio to GDP)","endos",351
+"RPUBDE","Public sector debt (target ratio to GDP)","exos",352
+"PUDEBT","Stock of public sector debt (nom)","endos",353
+"B","Stock of public debt held by private sector (nom)","endos",354
+"GGCDZ","Gen govt depreciation (nom)","endos",355
+"GGGF","General government stock of capital","endos",356
+"PUBCont","Public sector contribution to growth (underlying)",NA,357
+"GGCSH","Gen govt consumption (ratio to GDP)","endos",358
+"GGCZ","Gen govt consumption (nom)","endos",359
+"GGCO","Gen govt purchases of consumption gds","exos",360
+"GGIFSH","Gen govt investment (ratio to GDP)","endos",361
+"GEISH","Public enterprise investment (ratio to GDP)","endos",362
+"GEIF","Public enterprise business investment","endos",363
+"GEII","Public enterprise inventory investment","endos",364
+"GEKF","Public enterprise stock of business capital","endos",365
+"GEKI","Stock of public enterprise inventories","endos",366
+"GGIF","Gen govt purchases of investment gds","exos",367
+"TotPubSpend","Total Public Spending (% of GDP)",NA,368
+"OutExoInvConTsf","Non-dwelling construction investment (transfer from public to private)","exos",369
+"OutExoInvEquTsf","Equipment investment (transfer from public to private)","exos",370
+"NGG","Gen govt employment ('000)","exos",371
+"RGEIF","Pub ent business inv. underlying  (ratio to total inv.)","exos",372
+"POL8","Aged and service pension (ratio to after tax wage)","exos",373
+"POL9","Unemployment benefit (ratio to after tax wage)","exos",374
+"POL10","Family allowance (ratio to after tax wage)","exos",375
+"POL11","Other personal benefits (ratio to after tax wage)","exos",376
+"POL12","Transfers - pub. sector to for. sector (ratio to GDP)","exos",377
+"POL14M","Transfers - for. to priv. - migrants (ratio to GDP)","exos",378
+"POL1","Rate of tax on labour income","endos",379
+"POL1X","Rate of tax on labour income - exogenous comp.","exos",380
+"POL2","Rate of tax on companies","exos",381
+"POL3","Rate of lump sum tax","exos",382
+"POL4","Rate of tax on consumption","exos",383
+"POL5","Rate of import duty","exos",384
+"POL6","Rate of payroll tax","exos",385
+"POL7","Rate of tax on rental services","exos",386
+"NTT","Employment ('000)","endos",387
+"NTTch","Employment ('000) quarterly change",NA,388
+"NTTch4","Employment ('000) 4 quarter to change",NA,389
+"NT","Employment, incl. defence force ('000)","endos",390
+"URT","Unemployment rate","endos",391
+"URTregch","percentage point change",NA,392
+"URTch","Unemployment rate change",NA,393
+"NUN","Unemployment ('000)","endos",394
+"NUNch","Unemployment ('000) change",NA,395
+"PARTT","Participation rate","endos",396
+"OutLabFte","Full time employment ('000)","endos",397
+"OutLabFtech","Full time employment ('000) change",NA,398
+"OutLabFtech4","Full time employment ('000) 4 quarter to change",NA,399
+"OutLabPte","Part time employment ('000)","endos",400
+"OutLabPtech","Part time employment ('000) change",NA,401
+"OutLabPtech4","Part time employment ('000) 4 quarter to change",NA,402
+"NTS","Labour supply ('000)","endos",403
+"NTSch","Labour supply ('000) quarterly change",NA,404
+"NTSch4","Labour supply ('000) 4 quarter to change",NA,405
+"NWSE","Wage and salary earners ('000)","endos",406
+"NDF","Defence employment ('000)","exos",407
+"GDPPech","Change in employment","baseind",408
+"NSR","Equilibrium private sector employment ('000)","endos",409
+"NRPT","Part time employment (ratio to total emp)","endos",410
+"NRPTch","Part time employment (ratio to total emp) change",NA,411
+"DIFD","Diff. in unemp. rates (benefit recipients - survey)","exos",412
+"OutPopCiv","Adult population ('000)","endos",413
+"OutPopCivch","Adult population ('000) % change",NA,414
+"OutPopCivch_lag","Adult population ('000) % change lag",NA,415
+"OutPopTot","Total population ('000)","endos",416
+"OutPopTotch","Total population ('000) % change",NA,417
+"OutPopTotch4",NA,NA,418
+"POPGR","Rate of population growth (aged 15-64)","endos",419
+"POP1","Population aged 0 to 4 ('000)","exos",420
+"POP2","Population aged 5 to 14 ('000)","exos",421
+"POP3","Population aged 15 to 64 ('000)","exos",422
+"POP4","Population aged 65 and over ('000)","exos",423
+"POPGRch","Rate of population growth (aged 15-64)",NA,424
+"POP1ch","Population aged 0 to 4 ('000) change",NA,425
+"POP2ch","Population aged 5 to 14 ('000) change",NA,426
+"POP3ch","Population aged 15 to 64 ('000) change",NA,427
+"POP3ch4","Population aged 15 to 64 ('000) 4 quarter to change",NA,428
+"POP4ch","Population aged 65 and over ('000)",NA,429
+"IHCMratio","IHCM/Popn>15",NA,430
+"FARMLev","Output","baseind",431
+"FARMch","Change in output","baseind",432
+"FARMch4q","year to change in output",NA,433
+"FARMEmp","Employment","baseind",434
+"FARMEmpch","Change in employment","baseind",435
+"MINELev","Output","baseind",436
+"MINEch","Change in output","baseind",437
+"MINEch4q","year to change in output",NA,438
+"MINEEmp","Employment","baseind",439
+"MINEEmpch","Change in employment","baseind",440
+"MANULev","Output","baseind",441
+"MANUch","Change in output","baseind",442
+"MANUch4q","year to change in output",NA,443
+"MANUEmp","Employment","baseind",444
+"MANUEmpch","Change in employment","baseind",445
+"FOODLev","Output","baseind",446
+"FOODch","Change in output","baseind",447
+"FOODch4q","year to change in output",NA,448
+"FOODEmp","Employment","baseind",449
+"FOODEmpch","Change in employment","baseind",450
+"TCOLev","Output","baseind",451
+"TCOch","Change in output","baseind",452
+"TCOch4q","year to change in output",NA,453
+"TCOEmp","Employment","baseind",454
+"TCOEmpch","Change in employment","baseind",455
+"WOODLev","Output","baseind",456
+"WOODch","Change in output","baseind",457
+"WOODch4q","year to change in output",NA,458
+"WOODEmp","Employment","baseind",459
+"WOODEmpch","Change in employment","baseind",460
+"PRINTLev","Output","baseind",461
+"PRINTch","Change in output","baseind",462
+"PRINTch4q","year to change in output",NA,463
+"PRINTEmp","Employment","baseind",464
+"PRINTEmpch","Change in employment","baseind",465
+"PETROLLev","Output","baseind",466
+"PETROLch","Change in output","baseind",467
+"PETROLch4q","year to change in output",NA,468
+"PETROLEmp","Employment","baseind",469
+"PETROLEmpch","Change in employment","baseind",470
+"NONMLev","Output","baseind",471
+"NONMch","Change in output","baseind",472
+"NONMch4q","year to change in output",NA,473
+"NONMEmp","Employment","baseind",474
+"NONMEmpch","Change in employment","baseind",475
+"METALLev","Output","baseind",476
+"METALch","Change in output","baseind",477
+"METALch4q","year to change in output",NA,478
+"METALEmp","Employment","baseind",479
+"METALEmpch","Change in employment","baseind",480
+"MACHLev","Output","baseind",481
+"MACHch","Change in output","baseind",482
+"MACHch4q","year to change in output",NA,483
+"MACHEmp","Employment","baseind",484
+"MACHEmpch","Change in employment","baseind",485
+"UTILLev","Output","baseind",486
+"UTILch","Change in output","baseind",487
+"UTILch4q","year to change in output",NA,488
+"UTILEmp","Employment","baseind",489
+"UTILEmpch","Change in employment","baseind",490
+"CONSLev","Output","baseind",491
+"CONSch","Change in output","baseind",492
+"CONSch4q","year to change in output",NA,493
+"CONSEmp","Employment","baseind",494
+"CONSEmpch","Change in employment","baseind",495
+"WHOLELev","Output","baseind",496
+"WHOLEch","Change in output","baseind",497
+"WHOLEch4q","year to change in output",NA,498
+"WHOLEEmp","Employment","baseind",499
+"WHOLEEmpch","Change in employment","baseind",500
+"TRANSLev","Output","baseind",501
+"TRANSch","Change in output","baseind",502
+"TRANSch4q","year to change in output",NA,503
+"TRANSEmp","Employment","baseind",504
+"TRANSEmpch","Change in employment","baseind",505
+"INFOLev","Output","baseind",506
+"INFOch","Change in output","baseind",507
+"INFOch4q","year to change in output",NA,508
+"INFOEmp","Employment","baseind",509
+"INFOEmpch","Change in employment","baseind",510
+"FINLev","Output","baseind",511
+"FINch","Change in output","baseind",512
+"FINch4q","year to change in output",NA,513
+"FINEmp","Employment","baseind",514
+"FINEmpch","Change in employment","baseind",515
+"PROPLev","Output","baseind",516
+"PROPch","Change in output","baseind",517
+"PROPch4q","year to change in output","baseind",518
+"PROPEmp","Employment","baseind",519
+"PROPEmpch","Change in employment","baseind",520
+"BUSLev","Output","baseind",521
+"BUSch","Change in output","baseind",522
+"BUSch4q","year to change in output","baseind",523
+"BUSEmp","Employment","baseind",524
+"BUSEmpch","Change in employment","baseind",525
+"RECLev","Output","baseind",526
+"RECch","Change in output","baseind",527
+"RECch4q","year to change in output","baseind",528
+"RECEmp","Employment","baseind",529
+"RECEmpch","Change in employment","baseind",530
+"PUBLev","Output","baseind",531
+"PUBch","Change in output","baseind",532
+"PUBch4q","year to change in output","baseind",533
+"PUBEmp","Employment","baseind",534
+"PUBEmpch","Change in employment","baseind",535
+"EDUCLev","Output","baseind",536
+"EDUCch","Change in output","baseind",537
+"EDUCch4q","year to change in output",NA,538
+"EDUCEmp","Employment","baseind",539
+"EDUCEmpch","Change in employment","baseind",540
+"HEALLev","Output","baseind",541
+"HEALch","Change in output","baseind",542
+"HEALch4q","year to change in output",NA,543
+"HEALEmp","Employment","baseind",544
+"HEALEmpch","Change in employment",NA,545
+"DWELLev","Output",NA,546
+"DWELLch","Change in output",NA,547
+"DWELLch4q","year to change in output",NA,548
+"ImpDuties",NA,NA,549
+"ComWhe","Wheat production",NA,550
+"ComWhech","Change in production",NA,551
+"ComIro","Iron production",NA,552
+"ComIroch","Change in production",NA,553
+"ComBau","Bauxite production",NA,554
+"ComBauch","Change in production",NA,555
+"ComCoa","Coal production",NA,556
+"ComCoach","Change in production",NA,557
+"ComGol","Gold production",NA,558
+"ComGolch","Change in production",NA,559
+"MtrVhcReg","Motor vehicle registrations","MVRegos",560
+"MtrVhcRegCh","Change in motor vehicle registrations",NA,561
+"MtrVhcRegCh4q","Change in motor vehicle registrations 4 quarter to change",NA,562
+"OutIndTax","Taxes less subsidies","baseind",563
+"OutIndOutDis",NA,"baseind",564
+"Farmratio","Farm","baseind",565
+"Minratio","Mining","baseind",566
+"Manratio","Manufacturing","baseind",567
+"Foodratio","Food beverage and tobacco","baseind",568
+"TCFratio","Textile, clothing and other","baseind",569
+"Woodratio","Wood and paper","baseind",570
+"Printratio","Printing and recorded media","baseind",571
+"Petrolratio","Petroleum, coal, chemical etc","baseind",572
+"Nonmratio","Non-metallic mineral product","baseind",573
+"Metalratio","Metal product","baseind",574
+"Machratio","Machinery and equipment","baseind",575
+"Utilratio","Utilities","baseind",576
+"Consratio","Construction","baseind",577
+"Wholeratio","Wholesale and retail trade","baseind",578
+"Transratio","Transport and storage","baseind",579
+"Inforatio","Information services","baseind",580
+"Finratio","Finance and Insurance services","baseind",581
+"Propratio","Property services","baseind",582
+"Pubratio","Public Administration","baseind",583
+"Recratio","Recreational services","baseind",584
+"Educratio","Education","baseind",585
+"Healratio","Health","baseind",586
+"Dwelratio","Dwellings","baseind",587
+"Servicesratio","Service sectors","baseind",588
+"NSWGSPlev","Gross state product","Basestat",589
+"NSWGSPch",NA,"Basestat",590
+"NSWNOMlev","Nominal gross state product","Basestat",591
+"NSWNOMch",NA,"Basestat",592
+"NSWGSPshare","Share of real GDP","Basestat",593
+"NSWPOPlev","Total population","Basestat",594
+"NSWPOPch",NA,"Basestat",595
+"NSWPOPshare",NA,NA,596
+"NSWCIVlev","Civilian population > 15","Basestat",597
+"NSWCIVch",NA,"Basestat",598
+"NSWEMPlev","Employment","Basestat",599
+"NSWEMPch",NA,"Basestat",600
+"NSWUNElev","Unemployment","Basestat",601
+"NSWUNEch",NA,"Basestat",602
+"NSWURTlev","Unemployment rate","Basestat",603
+"NSWURTch",NA,"Basestat",604
+"VICGSPlev","Gross state product","Basestat",605
+"VICGSPch",NA,"Basestat",606
+"VICNOMlev","Nominal gross state product","Basestat",607
+"VICNOMch",NA,"Basestat",608
+"VICGSPshare","Share of real GDP","Basestat",609
+"VICPOPlev","Total population","Basestat",610
+"VICPOPch",NA,"Basestat",611
+"VICPOPshare",NA,NA,612
+"VICCIVlev","Civilian population > 15","Basestat",613
+"VICCIVch",NA,"Basestat",614
+"VICEMPlev","Employment","Basestat",615
+"VICEMPch",NA,"Basestat",616
+"VICUNElev","Unemployment","Basestat",617
+"VICUNEch",NA,"Basestat",618
+"VICURTlev","Unemployment rate","Basestat",619
+"VICURTch",NA,"Basestat",620
+"QLDGSPlev","Gross state product","Basestat",621
+"QLDGSPch",NA,"Basestat",622
+"QLDNOMlev","Nominal gross state product","Basestat",623
+"QLDNOMch",NA,"Basestat",624
+"QLDGSPshare","Share of real GDP","Basestat",625
+"QLDPOPlev","Total population","Basestat",626
+"QLDPOPch",NA,"Basestat",627
+"QLDPOPshare",NA,NA,628
+"QLDCIVlev","Civilian population > 15","Basestat",629
+"QLDCIVch",NA,"Basestat",630
+"QLDEMPlev","Employment","Basestat",631
+"QLDEMPch",NA,"Basestat",632
+"QLDUNElev","Unemployment","Basestat",633
+"QLDUNEch",NA,"Basestat",634
+"QLDURTlev","Unemployment rate","Basestat",635
+"QLDURTch",NA,"Basestat",636
+"SAGSPlev","Gross state product","Basestat",637
+"SAGSPch",NA,"Basestat",638
+"SANOMlev","Nominal gross state product","Basestat",639
+"SANOMch",NA,"Basestat",640
+"SAGSPshare","Share of real GDP","Basestat",641
+"SAPOPlev","Total population","Basestat",642
+"SAPOPch",NA,"Basestat",643
+"SAPOPshare",NA,NA,644
+"SACIVlev","Civilian population > 15","Basestat",645
+"SACIVch",NA,"Basestat",646
+"SAEMPlev","Employment","Basestat",647
+"SAEMPch",NA,"Basestat",648
+"SAUNElev","Unemployment","Basestat",649
+"SAUNEch",NA,"Basestat",650
+"SAURTlev","Unemployment rate","Basestat",651
+"SAURTch",NA,"Basestat",652
+"WAGSPlev","Gross state product","Basestat",653
+"WAGSPch",NA,"Basestat",654
+"WANOMlev","Nominal gross state product","Basestat",655
+"WANOMch",NA,"Basestat",656
+"WAGSPshare","Share of real GDP","Basestat",657
+"WAPOPlev","Total population","Basestat",658
+"WAPOPch",NA,"Basestat",659
+"WAPOPshare",NA,NA,660
+"WACIVlev","Civilian population > 15","Basestat",661
+"WACIVch",NA,"Basestat",662
+"WAEMPlev","Employment","Basestat",663
+"WAEMPch",NA,"Basestat",664
+"WAUNElev","Unemployment","Basestat",665
+"WAUNEch",NA,"Basestat",666
+"WAURTlev","Unemployment rate","Basestat",667
+"WAURTch",NA,"Basestat",668
+"TASGSPlev","Gross state product","Basestat",669
+"TASGSPch",NA,"Basestat",670
+"TASNOMlev","Nominal gross state product","Basestat",671
+"TASNOMch",NA,"Basestat",672
+"TASGSPshare","Share of real GDP","Basestat",673
+"TASPOPlev","Total population","Basestat",674
+"TASPOPch",NA,"Basestat",675
+"TASPOPshare",NA,NA,676
+"TASCIVlev","Civilian population > 15","Basestat",677
+"TASCIVch",NA,"Basestat",678
+"TASEMPlev","Employment","Basestat",679
+"TASEMPch",NA,"Basestat",680
+"TASUNElev","Unemployment","Basestat",681
+"TASUNEch",NA,"Basestat",682
+"TASURTlev","Unemployment rate","Basestat",683
+"TASURTch","534.86659807589183","Basestat",684
+"NTGSPlev","Gross state product","Basestat",685
+"NTGSPch",NA,"Basestat",686
+"NTNOMlev","Nominal gross state product","Basestat",687
+"NTNOMch",NA,"Basestat",688
+"NTGSPshare","Share of real GDP","Basestat",689
+"NTPOPlev","Total population","Basestat",690
+"NTPOPch",NA,"Basestat",691
+"NTPOPshare",NA,NA,692
+"NTCIVlev","Civilian population > 15","Basestat",693
+"NTCIVch",NA,"Basestat",694
+"NTEMPlev","Employment","Basestat",695
+"NTEMPch",NA,"Basestat",696
+"NTUNElev","Unemployment","Basestat",697
+"NTUNEch",NA,"Basestat",698
+"NTURTlev","Unemployment rate","Basestat",699
+"NTURTch",NA,"Basestat",700
+"ACTGSPlev","Gross state product","Basestat",701
+"ACTGSPch",NA,"Basestat",702
+"ACTNOMlev","Nominal gross state product","Basestat",703
+"ACTNOMch",NA,"Basestat",704
+"ACTGSPshare","Share of real GDP","Basestat",705
+"ACTPOPlev","Total population","Basestat",706
+"ACTPOPch",NA,"Basestat",707
+"ACTPOPshare",NA,NA,708
+"ACTCIVlev","Civilian population > 15","Basestat",709
+"ACTCIVch",NA,"Basestat",710
+"ACTEMPlev","Employment","Basestat",711
+"ACTEMPch",NA,"Basestat",712
+"ACTUNElev","Unemployment","Basestat",713
+"ACTUNEch",NA,"Basestat",714
+"ACTURTlev","Unemployment rate","Basestat",715
+"ACTURTch",NA,"Basestat",716
+"Misc.",NA,NA,717
+"TRBASE","Quantity (transfer share times recipients)","endos",718
+"TRBAS1","Adjusted quantity (transfer share times recipients)","endos",719
+"YSR","Equilibrium level of primary factors","endos",720
+"TFx","Time trend held fixed in forecast period","exos",721
+"TV","Time trend","exos",722
+"SOI","Southern oscillation index","exos",723
+"Housing_ratio",NA,NA,724
+"Trend",NA,"endos",725
+"Cum_difference",NA,"endos",726
+"Z_EX","Residual - Supply of exports","exos",727
+"Z_PEXC","Residual - Price of commodity exports","exos",728
+"Z_PEXO","Residual - Price of non comm. gds and svcs exports","exos",729
+"Z_IM","Residual - Imports - total","exos",730
+"Z_CON","Residual - Private consumption","exos",731
+"Z_IH","Residual - Dwelling investment","exos",732
+"Z_IBFT","Residual - Total business investment","exos",733
+"Z_IINF","Residual - Non farm inventory investment","exos",734
+"Z_W","Residual - Average quarterly earnings (nom)","exos",735
+"Z_PYD","Residual - Price of domestic production","exos",736
+"Z_PCONH","Residual - Price of rental services","exos",737
+"Z_M","Residual - Money supply (nom)","exos",738
+"Z_NT","Residual - Total persons employed","exos",739
+"Z_INFE","Residual - Expected domestic inflation rate","exos",740
+"Z_RCS","Residual - 90 day bill rate","exos",741
+"Z_RL","Residual - 10 year bond rate","exos",742
+"Z_NA1","Residual - Private consumption","exos",743
+"Z_NA2","Residual - General government consumption","exos",744
+"Z_NA3","Residual - Private dwelling investment","exos",745
+"Z_NA4","Residual - Private business investment","exos",746
+"Z_NA5","Residual - Real estate transfer expenses","exos",747
+"Z_NA6","Residual - Public enterprise investment","exos",748
+"Z_NA7","Residual - General government investment","exos",749
+"Z_NA8","Residual - Private non-farm inventory investment","exos",750
+"Z_NA9","Residual - Farm and pub. auth. inventory inv.","exos",751
+"Z_NA10","Residual - Statistical discrepancy","exos",752
+"Z_NA12","Residual - Exports of goods and services","exos",753
+"Z_NA13","Residual - Imports of goods and services","exos",754
+"Z_NA16","Residual - GDP (nom)","exos",755
+"Z_PCPIT","Residual - Consumer price index","exos",756
+"Z_ETWIT","Residual - Real trade weighted index exchange rate","exos",757
+"Z_TRB","Residual - Net unrequited transfers (ratio to GDP)","exos",758
+"Z_NIB","Residual - Net income balance (ratio to GDP)","exos",759
+"Z_FDEBT","Residual - Foreign debt (nom)","exos",760
+"Z_FOEQ","Residual - Foreign equities (nom)","exos",761
+"Z_EXRU","Residual - Exports - rural","exos",762
+"Z_EXSV","Residual - Exports - services","exos",763
+"Z_IHCM","Residual - Housing commencements","exos",764
+"Z_IMSV","Residual - Imports  - services","exos",765
+"Z_PTU","Residual - Treasury underlying price index","exos",766
+"Z_RRT","Residual - Retail turnover","exos",767
+"OutResLabPteRte","Residual - Part time emp (ratio to total emp)","exos",768
+"OutResExrNzl","Residual - $NZ/$A exchange rate","exos",769
+"OutResExpSvcTou","Residual - short term overseas arrivals","exos",770
+"OutResTaxCon","Residual - Consumption tax","exos",771
+"OutResTaxCpy","Residual - Company tax","exos",772
+"OutResTaxImp","Residual - Import duty","exos",773
+"OutResTaxInc","Residual - Labour income tax","exos",774
+"OutResTaxLsm","Residual - Lump sum tax","exos",775
+"OutResTaxPay","Residual - Payroll tax","exos",776
+"OutResTaxRen","Residual - Rental services tax","exos",777
+"OutResTsfFam","Residual - Family allowance","exos",778
+"OutResTsfFpm","Residual - For. to priv. transfers - migrants","exos",779
+"OutResTsfFpo","Residual - For. to priv. transfers - other","exos",780
+"OutResTsfOth","Residual - Other personal benefits","exos",781
+"OutResTsfPen","Residual - Aged and service pension","exos",782
+"OutResTsfPuf","Residual - Pub. to for. sector transfers","exos",783
+"OutResTsfUnb","Residual - Unemployment benefit","exos",784
+"Z_SUPERAQE","Labour Cost adjustment for SGC","exos",785
+"Z_SUPERAWE","Wage adjustment for SGC","exos",786
+"Z_WAWE","Residual - Average weekly earnings (nom)","exos",787
+"Z_WOTE","Residual - Ave weekly ordinary time earnings (nom)","exos",788
+"Z_YHDZ","Residual - Household disposable income (nom)","exos",789
+"CMV_Actual",NA,NA,790
+"ABSDwellRt","ABS Dwelling Rent",NA,791
+"OutPceMatHseCh","House building materials, change",NA,792
+"OutPceMatHseCh4","House building materials, year to change",NA,793
+"OutPceMatManCh","Materials used in manufacturing, change",NA,794
+"OutPceMatManCh4","Materials used in manufacturing, year to change",NA,795
+"OutNacIenUnd","Engineering construction",NA,796
+"OutNacInbUnd","Non-residential building",NA,797
+"OutNacIcoUndch","Private non-dwelling construction investment change",NA,798
+"OutPceWpiCh","Wage Price Index change, change",NA,799
+"OutPceWpiCh4","Wage Price Index year-to change",NA,800
+"OutPceWpiOriCh","Wage Price Index - original change, change",NA,801
+"OutPceWpiOriCh4","Wage Price Index original year-to change",NA,802
+"OutPcePreDomCh","Preliminary stage domestic commodities, change",NA,803
+"OutPcePreImpCh","Preliminary stage imported commodities, change",NA,804
+"OutPcePreTotCh","Preliminary stage total commodities, change",NA,805
+"NNEP","Labour Productivity",NA,806
+"NNEPch","Labour Productivity, % change",NA,807
+"NNEPch2","Labour Productivity, % year to change",NA,808
+"NNE","Non-farm employment (pers. '000)",NA,809
+"NNEch","Non-farm employment (pers. '000), % change",NA,810
+"NFE","Farm employment (pers. '000)",NA,811
+"NFEch","Farm employment (pers. '000), % change",NA,812
+"Misery","Misery index (unemp. + inf. excl. GST effects)",NA,813
+"PARTT64","Participation rate 15 - 64",NA,814
+"PubBalGDP","Public sector underlying balance",NA,815
+"NA8ch","Private non-farm inventory investment one period level change",NA,816
+"NA9ch","Farm and pub. auth. inventory investment one period level change",NA,817
+"AveTaxGDP","Average personal income taxes as a % of GDP",NA,818
+"PUBDEMundch","Derived public final demand change",NA,819
+"PARTTDes",NA,NA,820
+"PUBTrans","Public sector transfers (% of GDP)",NA,821
+"NRSHTrans","Public sector net revenue including transfers (% of GDP)",NA,822
+"OutPubRvuGdpTrans","Public sector underlying net revenue including transfers (ratio to GDP)",NA,823
+"TotPubSpendTrans","Public sector spending including transfers (% of GDP)",NA,824
+"ABS Industries",NA,NA,825
+"WTDLev","Output",NA,826
+"WTDch","Change in output",NA,827
+"WTDch4q","year to change in output",NA,828
+"WTDEmp","Employment",NA,829
+"WTDEmpch","Change in employment",NA,830
+"RETLev","Output",NA,831
+"RETch","Change in output",NA,832
+"RETch4q","year to change in output",NA,833
+"RETEmp","Employment",NA,834
+"RETEmpch","Change in employment",NA,835
+"ACCLev","Output",NA,836
+"ACCch","Change in output",NA,837
+"ACCch4q","year to change in output",NA,838
+"ACCEmp","Employment",NA,839
+"ACCEmpch","Change in employment",NA,840
+"PROLev","Output",NA,841
+"PROch","Change in output",NA,842
+"PROch4q","year to change in output",NA,843
+"PROEmp","Employment",NA,844
+"PROEmpch","Change in employment",NA,845
+"ADMLev","Output",NA,846
+"ADMch","Change in output",NA,847
+"ADMch4q","year to change in output",NA,848
+"ADMEmp","Employment",NA,849
+"ADMEmpch","Change in employment",NA,850
+"ARTLev","Output",NA,851
+"ARTch","Change in output",NA,852
+"ARTch4q","year to change in output",NA,853
+"ARTEmp","Employment",NA,854
+"ARTEmpch","Change in employment",NA,855
+"OTHLev","Output",NA,856
+"OTHch","Change in output",NA,857
+"OTHch4q","year to change in output",NA,858
+"OTHEmp","Employment",NA,859
+"OTHEmpch","Change in employment",NA,860
+"NSWPOP15",NA,NA,861
+"VICPOP15",NA,NA,862
+"QLDPOP15",NA,NA,863
+"SAPOP15",NA,NA,864
+"WAPOP15",NA,NA,865
+"TASPOP15",NA,NA,866
+"NTPOP15",NA,NA,867
+"ACTPOP15",NA,NA,868
+"Population 15+ by State - Australia",NA,NA,869

@@ -9,8 +9,6 @@ renv/staging/
 renv/local/
 renv/cellar/
 
-# Frontend and local scenario runtime
-node_modules/
-dist/
+# Scenario runtime
 scenario-runs/
 *.log

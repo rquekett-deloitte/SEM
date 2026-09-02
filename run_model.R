@@ -9,11 +9,13 @@ model_settings <- list(
   run_estimation = TRUE,
   show_bimets_progress = TRUE,
   carry_forward_residuals = TRUE,
+  coredata_export = TRUE,
   model_data_path = "data/model_data.rds",
   coefficients_path = "outputs/coefficients.csv",
   residuals_path = "outputs/residuals.csv",
   shocks_path = "data-raw/shocks.csv",
-  flat_output_path = "outputs/model_results_flat.xlsx"
+  flat_output_path = "outputs/model_results_flat.xlsx",
+  coredata_output_path = "outputs/sem_coredata.xlsx"
 )
 
 missing_packages <- required_packages[
@@ -39,6 +41,7 @@ source("R/forecast_model.R")
 source("R/calculate_residuals.R")
 source("R/model_outputs.R")
 source("R/workbook_output.R")
+source("R/coredata_export.R")
 
 model_data <- if (model_settings$refresh_model_data) {
   prepared_data <- calculate_estimation_data()
@@ -97,9 +100,18 @@ coefficient_comparison <- compare_coefficients(coefficients)
 workbook_path <- build_results_workbook(
   forecast, model_data, coefficients
 )
-flat_path <- build_flat_output(
-  forecast, model_data, origin, model_settings$flat_output_path
-)
+flat_table <- build_flat_table(forecast, model_data, origin)
+flat_path <- write_flat_output(flat_table, model_settings$flat_output_path)
+coredata_written <- model_settings$coredata_export &&
+  file.exists("data-raw/sem_to_coredata.csv")
+if (coredata_written) {
+  invisible(build_coredata_export(
+    flat_table,
+    path = model_settings$coredata_output_path
+  ))
+} else {
+  message("No Coredata mapping found; skipping the Coredata export.")
+}
 
 sign_changes <- if (!is.null(coefficient_comparison)) {
   sum(coefficient_comparison$sign_change, na.rm = TRUE)
@@ -128,5 +140,8 @@ cat(
     paste0(sum(!is.na(coefficient_comparison$abs_change)), " coefficients compared, ",
            sign_changes, " sign changes (outputs/coefficient_comparison.csv).")),
   "\n",
-  "Outputs written to outputs/, including", workbook_path, "and", flat_path, ".\n"
+  "Outputs written to outputs/, including", workbook_path, ",",
+  flat_path,
+  if (coredata_written) paste("and", model_settings$coredata_output_path) else "",
+  ".\n"
 )

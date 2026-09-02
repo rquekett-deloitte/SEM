@@ -455,7 +455,7 @@ mdl_realtime_hpf_contract <- function() {
 build_ts_database <- function(data, exo, model, shocks, origin = forecast_origin(data),
                               horizon = as.Date("2036-12-01"),
                               residuals_path = "outputs/residuals.csv",
-                              carry_forward = TRUE) {
+                              carry_forward = TRUE, observed = NULL) {
   # The full data set is used for estimation, but forecast conditioning must
   # stop at 2024Q4. Later actual outcomes are retained only for comparison and
   # must not enter lags, residual calibrations, trends, or solver seeds.
@@ -599,6 +599,19 @@ build_ts_database <- function(data, exo, model, shocks, origin = forecast_origin
           Dum2000q4 = "2000-12-01", Dum2012q4 = "2012-12-01", Dum2022q1 = "2022-03-01")
   for (nm in names(ev)) det[[nm]] <- as.numeric(q == as.Date(ev[[nm]]))
   for (nm in names(det)) db[[nm]] <- ts(det[[nm]], start = start, frequency = 4)
+
+  # Historical tracking runs may supply observed values for the data-driven
+  # equation inputs that the production forecast holds at zero or their last
+  # historical value (the COVID tax and transfer corrections ShockGst and
+  # DumTsfTot). Without this, a simulation window over 2020-2022 would miss
+  # the corrections the equations were estimated with.
+  if (!is.null(observed)) {
+    for (nm in intersect(c("ShockGst", "DumTsfTot"), names(observed))) {
+      idx <- match(as.Date(observed$date), dates)
+      cells <- !is.na(idx) & idx > nh & !is.na(observed[[nm]])
+      db[[nm]][idx[cells]] <- as.numeric(observed[[nm]][cells])
+    }
+  }
 
   # auxiliary regressors (zero in forecast)
   for (nm in c("CprDum", "LavhDum", "LavhDum1"))
@@ -825,7 +838,7 @@ parse_shocks_csv <- function(path = "data-raw/shocks.csv",
 run_bimets_forecast <- function(data, model, exo, shocks, origin = forecast_origin(data),
                                 horizon = as.Date("2036-12-01"),
                                 residuals_path = "outputs/residuals.csv",
-                                carry_forward = TRUE,
+                                carry_forward = TRUE, observed = NULL,
                                 convergence = 1e-6, iterlimit = 1000,
                                 hpf_convergence = 1e-5, hpf_iterlimit = 12,
                                 show_progress = TRUE) {
@@ -834,7 +847,7 @@ run_bimets_forecast <- function(data, model, exo, shocks, origin = forecast_orig
   mdl <- LOAD_MODEL(modelText = mdl_text(model), quietly = TRUE)
   if (show_progress) message("BIMETS: building simulation database")
   db <- build_ts_database(data, exo, model, shocks, origin, horizon,
-                          residuals_path, carry_forward)
+                          residuals_path, carry_forward, observed)
   forecast_dates <- seq(as.Date(origin), as.Date(horizon), by = "quarter")
   all_dates <- seq(min(as.Date(data$date)), as.Date(horizon), by = "quarter")
   contract <- mdl_realtime_hpf_contract()

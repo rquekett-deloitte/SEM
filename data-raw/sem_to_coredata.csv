@@ -1,0 +1,51 @@
+coredata_code,description,kind,sem_expression,status,note
+NA1,Private consumption (ABS),endos,Cpr,mapped,
+NA2,General government consumption,endos,Cgov,mapped,
+NA3,Private dwelling investment,endos,Idwell,mapped,
+NA5,Real estate transfer expenses,endos,Iotc,mapped,
+NA7,General government investment,endos,Igov,mapped,
+NacIpeUnd,Public enterprise fixed investment (underlying),endos,Ipubent,needs-review,"Coredata underlying (asset-sales adjusted); SEM Ipubent is headline - confirm"
+NA8,Private non-farm inventory investment,endos,Ivt - IvtFar,derived,"Flow; FYBO tables present it as a contribution to growth"
+NA9,Farm and pub. auth. inventory investment,endos,IvtFar,mapped,
+NA11,GNE,endos,Ygne,mapped,
+NA12,Exports of goods and services,endos,Xtot,mapped,
+NA13,Imports of goods and services,endos,Mtot,mapped,
+NA14,GDP (A),endos,Ygdp,mapped,
+NA14B,Domestic final demand,endos,"Cpr + Cgov + Idwell + Iotc + Imin + Inonmin + Igov + Ipubent",derived,"Final demand excludes inventories and net exports"
+NA16,GDP (A) - nominal,endos,YgdpNom,mapped,
+PGDPT,GDP deflator,endos,Pgdp,mapped,
+PCPIT,Consumer price index (headline - original),endos,Pcpi,mapped,
+PTU,Underlying consumer price index,endos,,no-sem-counterpart,"SEM has PcpiExGst (CPI excluding GST effects) - not the same concept as underlying (trimmed/weighted) CPI"
+WT,Average earnings (national account basis) change,endos,Lwge,needs-review,"RAW description says change; confirm whether Coredata WT is the level or the quarterly change"
+WOTE,Ave. weekly ordinary time earnings,endos,,no-sem-counterpart,"No SEM counterpart"
+WAWE,Average weekly earnings,endos,,no-sem-counterpart,"No SEM counterpart"
+NTT,Employment ('000),endos,Lemp,mapped,
+NFT,Full-time employment,endos,,no-sem-counterpart,"SEM does not split employment"
+NPT,Part-time employment,endos,,no-sem-counterpart,"SEM does not split employment"
+PARTT,Participation rate,endos,Lpar,mapped,"Both decimal fractions"
+URT,Unemployment rate,endos,Lur,mapped,"Both decimal fractions"
+NUN,Unemployment ('000),endos,Lune,mapped,
+RCS,90 day bill rate,endos,R90d,mapped,"Both decimal fractions"
+RL,10 year bond rate,endos,R10y,mapped,"Both decimal fractions"
+ETWIT,Trade weighted index exchange rate,endos,Rtwi,mapped,"Both normalised around 0.6-0.7 - confirm rebasing"
+EUSAT,$US/$A exchange rate,endos,Rusd,mapped,
+TOT,Terms of trade index,endos,Ptot,mapped,
+PUBD,Public sector underlying deficit (nom),endos,GovDef,mapped,"Deficit-positive in both conventions"
+PUBD/GDP,Public sector underlying deficit (ratio to GDP),endos,GovDef / YgdpNom,derived,"Deficit-positive; Coredata notes surplus shows as negative"
+PUDEBT,Stock of public sector debt (nom),endos,GovDebt,needs-review,"Confirm SEM GovDebt definition matches Coredata public net debt ($m)"
+RSAV,Household saving (ratio to h'hold disposable inc.),endos,SavHh / Yhdi,derived,"Both decimal ratios"
+GGCSH,Gen govt consumption (ratio to GDP),endos,CgovNom / YgdpNom,derived,"Nominal ratio"
+GGIFSH,Gen govt investment (ratio to GDP),endos,,no-sem-counterpart,"No nominal Igov series in the SEM output"
+GEISH,Public enterprise investment (ratio to GDP),endos,,no-sem-counterpart,"No nominal Ipubent series in the SEM output"
+NRSH,Public sector net revenue (ratio to GDP),endos,,no-sem-counterpart,"Definition of net revenue to be confirmed before mapping"
+POL1T,Rate of tax on labour income,endos,,no-sem-counterpart,
+IBF,Private bus. investment (underlying),endos,Imin + Inonmin,needs-review,"Coredata underlying; SEM mining + non-mining headline - confirm whether IBF includes mining"
+IHCM,Housing starts,endos,,no-sem-counterpart,"No housing starts variable in SEM"
+TGSBQ,Balance of trade - volume (ratio to GDP),endos,,no-sem-counterpart,"Balance of payments components are not modelled individually in SEM"
+TGSB,Balance of trade - value (ratio to GDP),endos,,no-sem-counterpart,"Balance of payments components are not modelled individually in SEM"
+TRB,Net unrequited transfers (ratio to GDP),endos,,no-sem-counterpart,
+NIB,Net income balance (ratio to GDP),endos,,no-sem-counterpart,
+CURB,Current account balance (ratio to GDP),endos,,no-sem-counterpart,
+CURBNom,Current account balance (nom - $b),endos,,no-sem-counterpart,
+FODEBTRat,Net foreign debt (ratio to GDP),endos,,no-sem-counterpart,
+FODEBT,Net foreign debt (nom - $b),endos,,no-sem-counterpart,
