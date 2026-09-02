@@ -1,0 +1,5 @@
+equation,boundary_variable,residual,conditioning_date,persistence
+Pcpi,PcpiBoundary,-0.006714722136976412,2024-12-01,0.9
+PcpiRent,PcpiRentBoundary,-0.010696046776060592,2024-12-01,0.9
+Rcash,RcashBoundary,0.006207411145270297,2024-12-01,0.9
+Lhrs,LhrsBoundary,0.01170671243984067,2024-12-01,0.9
