@@ -73,7 +73,7 @@ shock_variables <- setdiff(names(read.csv(baseline_shocks_path, nrows = 1)), "da
 labelled_choices <- function(variables) {
   labels <- vapply(variables, function(v) {
     lab <- if (v %in% names(variable_labels)) unname(variable_labels[[v]]) else v
-    paste0(v, " - ", lab)
+    paste0(lab, "  (", v, ")")
   }, character(1))
   setNames(variables, labels)
 }
@@ -113,8 +113,8 @@ default_unit_mode <- function(variable) {
 # clean-number axes, and a selective end-of-line value label in ink.
 
 chart_col <- list(
-  ink = "#242424", muted = "#626262", grid = "#e7e7e2", baseline = "#c5c5c0",
-  teal = "#008a83", origin = "#d8d8d4", empty = "#8a8a85"
+  ink = "#242424", muted = "#53534f", grid = "#deded8", baseline = "#b8b8b2",
+  teal = "#007f78", origin = "#86bc25", forecast = "#f3f6ec", empty = "#757570"
 )
 
 chart_family <- local({
@@ -134,14 +134,14 @@ chart_family <- local({
 
 chart_par <- function() {
   par(
-    mar = c(3.6, 5.4, 0.4, 2.6), mgp = c(2.6, 0.55, 0), tck = 0,
-    las = 1, bty = "n", xpd = NA, ps = 11,
+    mar = c(3.4, 5.0, 0.8, 4.2), mgp = c(2.5, 0.58, 0), tck = 0,
+    las = 1, bty = "n", xpd = FALSE, ps = 11,
     col.axis = chart_col$muted, col.lab = chart_col$muted,
     fg = chart_col$baseline, family = chart_family()
   )
 }
 
-# One-, two- or three-decimal axis formatting, thousands-comma'd above 1000.
+# Two- or one-decimal axis formatting, thousands-comma'd above 1000.
 make_y_fmt <- function(values) {
   top <- max(abs(values[is.finite(values)]))
   if (top < 10) function(x) sprintf("%.2f", x) else
@@ -151,12 +151,14 @@ make_y_fmt <- function(values) {
 
 # Year ticks at a step that keeps the label count readable.
 date_axis <- function(dates, max_labels = 9) {
-  yrs <- as.integer(format(min(dates), "%Y")):as.integer(format(max(dates), "%Y"))
+  lo <- as.integer(format(min(dates), "%Y"))
+  hi <- as.integer(format(max(dates), "%Y"))
+  yrs <- lo:hi
   step <- if (length(yrs) <= max_labels) 1 else
           if (length(yrs) <= 2 * max_labels) 2 else
           if (length(yrs) <= 5 * max_labels) 5 else 10
   at <- as.Date(sprintf("%d-01-01", yrs[yrs %% step == 0]))
-  at <- at[at >= min(dates)]
+  at <- at[at >= min(dates) & at <= max(dates)]
   list(at = at, lab = format(at, "%Y"))
 }
 
@@ -197,7 +199,7 @@ sem_chart <- function(segments, origin = NULL, log_y = FALSE, y_fmt = NULL,
          col = chart_col$empty, cex = 0.85)
     return(invisible())
   }
-  xs <- do.call(c, lapply(segments, function(s) range(s$x)))
+  xs <- do.call(c, lapply(segments, function(s) s$x))
   ys <- do.call(c, lapply(segments, function(s) s$y))
   all_vals <- ys[is.finite(ys)]
   if (log_y && all(all_vals > 0)) {
@@ -210,19 +212,28 @@ sem_chart <- function(segments, origin = NULL, log_y = FALSE, y_fmt = NULL,
   lim <- range(ticks)
   pad <- 0.04 * (lim[2] - lim[1])
   span <- as.numeric(diff(range(xs)))
-  xlim <- c(xs[1], xs[2] + if (end_label) 0.04 * span else 0)
+  xlim <- range(xs)
+  if (end_label) xlim[2] <- xlim[2] + 0.045 * span
   chart_par()
   plot(NA, xlim = xlim, ylim = c(lim[1] - pad, lim[2] + pad),
        log = if (log_y) "y" else "", axes = FALSE, ann = FALSE)
-  abline(h = ticks, col = chart_col$grid, lwd = 1)
   usr <- par("usr")
-  segments(usr[1], usr[3], usr[2], usr[3], col = chart_col$baseline, lwd = 1)
-  if (!is.null(origin) && origin >= xlim[1] && origin <= xlim[2]) {
-    abline(v = origin, col = chart_col$origin, lwd = 1, lty = "18")
-    text(origin, usr[4] - 0.07 * (usr[4] - usr[3]), "Forecast",
-         pos = 4, offset = 0.25, cex = 0.6, col = chart_col$empty)
+  forecast_visible <- !is.null(origin) && origin >= xlim[1] && origin <= max(xs)
+  if (forecast_visible) {
+    rect(origin, usr[3], max(xs), usr[4], col = chart_col$forecast, border = NA)
   }
-  ax <- date_axis(c(min(xs), max(xs)))
+  abline(h = ticks, col = chart_col$grid, lwd = 1)
+  if (min(ticks) < 0 && max(ticks) > 0) {
+    abline(h = 0, col = chart_col$baseline, lwd = 1.15)
+  }
+  segments(usr[1], usr[3], usr[2], usr[3], col = chart_col$baseline, lwd = 1)
+  if (forecast_visible) {
+    abline(v = origin, col = chart_col$origin, lwd = 1.4, lty = 3)
+    text(origin, usr[4] - 0.055 * (usr[4] - usr[3]), "FORECAST",
+         pos = 4, offset = 0.45, cex = 0.58, font = 2,
+         col = chart_col$muted)
+  }
+  ax <- date_axis(xs)
   axis(1, at = ax$at, labels = ax$lab, tck = -0.012, col = NA,
        col.axis = chart_col$muted, cex.axis = 0.66, gap.axis = 0.08)
   axis(2, at = ticks, labels = vapply(ticks, y_fmt, ""),
@@ -234,8 +245,10 @@ sem_chart <- function(segments, origin = NULL, log_y = FALSE, y_fmt = NULL,
   if (end_label) {
     for (s in segments) {
       if (isTRUE(s$label)) {
+        points(s$x[length(s$x)], s$y[length(s$y)], pch = 16, cex = 0.55,
+               col = s$col)
         text(s$x[length(s$x)], s$y[length(s$y)], y_fmt(s$y[length(s$y)]),
-             pos = 4, offset = 0.35, font = 2, cex = 0.72, col = chart_col$ink)
+             pos = 4, offset = 0.5, font = 2, cex = 0.75, col = chart_col$ink)
       }
     }
   }
@@ -273,10 +286,23 @@ run_status_of <- function(run_dir, meta) {
 }
 
 fmt_timestamp <- function(ts) {
-  if (!nzchar(ts)) return("-")
-  tryCatch(format(as.POSIXct(ts, tz = "UTC", origin = "1970-01-01"),
-                  "%d %b %Y %H:%M", tz = Sys.timezone()),
+  if (is.null(ts) || !nzchar(ts)) return("-")
+  tryCatch(format(as.POSIXct(ts, tz = "UTC"), "%d %b %Y %H:%M",
+                  tz = Sys.timezone()),
            error = function(e) ts)
+}
+
+esc <- function(x) {
+  x <- as.character(x)
+  x <- gsub("&", "&amp;", x, fixed = TRUE)
+  x <- gsub("<", "&lt;", x, fixed = TRUE)
+  x <- gsub(">", "&gt;", x, fixed = TRUE)
+  x
+}
+
+status_value <- function(status) {
+  value <- tolower(trimws(as.character(status %||% "running")[[1]]))
+  if (value %in% c("running", "completed", "failed")) value else "running"
 }
 
 # ---- headline data (computed once, shared by ui and server) -----------------------
@@ -286,7 +312,7 @@ gdp_growth <- annual_growth(flat$Ygdp)
 cpi_growth <- annual_growth(flat$Pcpi)
 last_i <- nrow(flat)
 origin_i <- which(flat$date == forecast_origin)
-headline_start <- forecast_horizon - 20 * 365.25
+headline_start <- forecast_origin - 20 * 365.25
 headline_rows <- flat$date >= headline_start
 
 fmt_1p <- function(x) paste0(formatC(x, format = "f", digits = 1), "%")
@@ -328,6 +354,11 @@ legend_chip <- function(label, style) {
   tags$span(tags$i(class = style), label)
 }
 
+sem_legend <- list(
+  legend_chip("Actual", ""),
+  legend_chip("Forecast", "dashed-teal")
+)
+
 chart_panel <- function(output_id, title, subtitle, height = "290px",
                        legend = NULL) {
   div(class = "panel",
@@ -337,26 +368,37 @@ chart_panel <- function(output_id, title, subtitle, height = "290px",
       plotOutput(output_id, height = height))
 }
 
-sem_legend <- c(
-  legend_chip("Actual", ""),
-  legend_chip("Forecast", "dashed-teal")
-)
-
-ref_row <- function(term, text) {
-  div(class = "ref-row", strong(term), p(text))
+field_label <- function(id, text) {
+  tags$label(`for` = id, class = "lbl", text)
 }
+
+adj_choices <- labelled_choices(unique(c(
+  c("Fpoil", "Lnom", "Cgov", "R90d"), shock_variables
+)))
+
+central_choice_html <- HTML(paste0(
+  '<span class="scen-name">Central forecast only',
+  '<small>No overlay; the central forecast is shown alone</small></span>',
+  '<span class="status completed"><i></i>ready</span>'
+))
 
 # ---- ui ----------------------------------------------------------------------------
 
 ui <- fluidPage(
   tags$head(
+    tags$title("Scenario Economic Model | Deloitte Access Economics"),
     includeCSS("www/styles.css"),
     tags$meta(name = "viewport",
-              content = "width=device-width, initial-scale=1")
+              content = "width=device-width, initial-scale=1"),
+    tags$meta(name = "description",
+              content = paste0("Australian macroeconomic scenario analysis, ",
+                               "forecasting and model results.")),
+    tags$script(HTML("document.documentElement.lang = 'en-AU';"))
   ),
+  tags$a(href = "#main-content", class = "skip-link", "Skip to main content"),
   div(class = "app-shell",
     uiOutput("sidebar"),
-    div(class = "sem-main",
+    tags$main(id = "main-content", class = "sem-main", tabindex = "-1",
       div(class = "sem-topbar",
         div(
           h1("Scenario Economic Model"),
@@ -377,9 +419,8 @@ ui <- fluidPage(
           div(class = "page",
             div(class = "page-head",
               h2("Headlines"),
-              p(paste0("Key aggregates over the past 20 years, with the ",
-                       "central forecast from ", quarter_label(forecast_origin),
-                       " to ", quarter_label(forecast_horizon), "."))
+              p(paste0("Twenty years of history and the central forecast to ",
+                       quarter_label(forecast_horizon), "."))
             ),
             div(class = "kpi-strip",
               kpi_tile("Real GDP, annual growth",
@@ -416,11 +457,8 @@ ui <- fluidPage(
                           legend = sem_legend)
             ),
             div(class = "page-foot",
-              HTML(paste0(
-                "Source: Deloitte Access Economics macro scenario model. ",
-                "Central forecast from <code>outputs/model_results_flat.xlsx</code> ",
-                "(updated ", flat_updated, "). Re-run ",
-                "<code>Rscript run_model.R</code> to refresh the data."))
+              paste0("Source: Deloitte Access Economics macro scenario model. ",
+                     "Updated ", flat_updated, ".")
             )
           )
         ),
@@ -430,32 +468,35 @@ ui <- fluidPage(
           div(class = "page",
             div(class = "page-head",
               h2("All variables"),
-              p(paste0("Every model variable over the full historical and ",
-                       "forecast span, as a level or annual growth."))
+              p("History and forecast for every model variable.")
             ),
             div(class = "filter-bar",
               div(class = "field grow",
-                  tags$span(class = "lbl", "Variable"),
+                  field_label("var_pick", "Variable"),
                   selectizeInput("var_pick", NULL, labelled_choices(variable_names),
-                                 selected = "Ygdp", width = "100%")),
-              div(class = "field",
-                  tags$span(class = "lbl", "Transform"),
+                                 selected = "Ygdp", width = "100%",
+                                 options = list(
+                                   placeholder = "Search by variable name or code",
+                                   maxOptions = 2000
+                                 ))),
+              div(class = "field compact-field",
+                  field_label("var_transform", "Transform"),
                   selectInput("var_transform", NULL,
                               c("Level" = "level",
                                 "Annual growth (%)" = "growth"))),
               div(class = "field slider-field",
-                  tags$span(class = "lbl", "Years shown"),
+                  field_label("var_years", "Years shown"),
                   sliderInput("var_years", NULL,
                               min = quarter_year(min(flat$date)),
                               max = quarter_year(forecast_horizon),
                               value = c(1990, quarter_year(forecast_horizon)),
-                              sep = "", width = "100%")),
+                              step = 1, width = "100%")),
               div(class = "field checkbox-field",
                   checkboxInput("var_log", "Log scale", FALSE)),
               downloadButton("var_download", "Download CSV",
-                             class = "btn btn-compact")
+                             class = "btn btn-compact filter-download")
             ),
-            div(class = "panel",
+            div(class = "panel recent-panel",
               uiOutput("var_panel_head"),
               plotOutput("var_plot", height = "430px")
             ),
@@ -463,10 +504,9 @@ ui <- fluidPage(
               div(class = "panel-head",
                 div(h3("Recent quarters"),
                     p(class = "panel-sub",
-                      "Last 16 quarters of the selected window")),
-              tableOutput("var_table"),
-              div(class = "panel-foot",
-                  "Download the CSV for the full window.")
+                      "Latest 16 in the selected range"))
+              ),
+              tableOutput("var_table")
             )
           )
         ),
@@ -476,28 +516,27 @@ ui <- fluidPage(
           div(class = "page",
             div(class = "page-head",
               h2("Scenario library"),
-              p(paste0("Select a stored run to overlay it on the central ",
-                       "forecast for any variable. Runs appear here ",
-                       "automatically as they complete."))
+              p("Compare a stored scenario with the central forecast.")
             ),
-            uiOutput("library_summary"),
             div(class = "library-grid",
               div(class = "panel",
                 div(class = "panel-head",
-                  div(h3("Stored runs"),
-                      p(class = "panel-sub",
-                        "Click a run to compare it with the central forecast"))),
+                  h3("Stored runs")),
                 uiOutput("scen_list")
               ),
               div(class = "panel",
                 div(class = "filter-bar",
                   div(class = "field grow",
-                      tags$span(class = "lbl", "Variable"),
+                      field_label("scen_var", "Variable"),
                       selectizeInput("scen_var", NULL,
                                      labelled_choices(variable_names),
-                                     selected = "Ygdp", width = "100%")),
+                                     selected = "Ygdp", width = "100%",
+                                     options = list(
+                                       placeholder = "Search by variable name or code",
+                                       maxOptions = 2000
+                                     ))),
                   downloadButton("scen_download", "Overlay CSV",
-                                 class = "btn btn-compact")
+                                 class = "btn btn-compact filter-download")
                 ),
                 uiOutput("scen_panel_head"),
                 plotOutput("scen_plot", height = "430px"),
@@ -512,10 +551,7 @@ ui <- fluidPage(
           div(class = "page",
             div(class = "page-head",
               h2("Build a scenario"),
-              p(paste0("Adjustments are applied to the shock file for the ",
-                       "chosen quarters and the model runs in the background ",
-                       "via R/run_scenario.R. Completed runs appear in the ",
-                       "Scenario library."))
+              p("Set adjustments, run the model, then compare the result.")
             ),
             div(class = "build-grid",
 
@@ -523,43 +559,48 @@ ui <- fluidPage(
                 div(class = "panel",
                   div(class = "panel-body",
                     div(class = "field",
-                        tags$span(class = "lbl", "Scenario name"),
+                        field_label("scen_name", "Scenario name"),
                         textInput("scen_name", NULL, "",
                                   placeholder = "e.g. Higher oil prices")),
                     div(class = "field",
-                        tags$span(class = "lbl", "Notes (optional)"),
+                        field_label("scen_notes", "Notes (optional)"),
                         textAreaInput("scen_notes", NULL, "", rows = 2,
                                       placeholder = "Purpose or key assumptions")),
                     hr(class = "divider"),
                     div(class = "rule-heading",
                         h3("Add adjustment"),
-                        p("Each adjustment applies from its start quarter to its end quarter, inclusive.")),
+                        p("Applies to every quarter in the selected range.")),
                     div(class = "field",
-                        tags$span(class = "lbl", "Variable"),
+                        field_label("adj_variable", "Variable"),
                         selectizeInput("adj_variable", NULL, adj_choices,
-                                       selected = "Fpoil", width = "100%")),
+                                       selected = "Fpoil", width = "100%",
+                                       options = list(
+                                         placeholder = paste0(
+                                           "Search by variable name or code"),
+                                         maxOptions = 2000
+                                       ))),
                     div(class = "hint", textOutput("adj_hint")),
                     div(class = "two-col",
                       div(class = "field",
-                          tags$span(class = "lbl", "Value"),
+                          field_label("adj_value", "Value"),
                           numericInput("adj_value", NULL, value = 0, step = 0.5,
                                        width = "100%")),
                       div(class = "field",
-                          tags$span(class = "lbl", "Entered as"),
+                          field_label("adj_unit_mode", "Entered as"),
                           selectInput("adj_unit_mode", NULL,
                                       c("Percentage change (log shocks)" = "percent",
                                         "Model units (additive shocks)" = "units")))
                     ),
                     div(class = "two-col",
                       div(class = "field",
-                          tags$span(class = "lbl", "Start quarter"),
+                          field_label("adj_start", "Start quarter"),
                           selectInput("adj_start", NULL,
                                       choices = setNames(format(forecast_quarters),
                                                          vapply(forecast_quarters,
                                                                 quarter_label, "")),
                                       width = "100%")),
                       div(class = "field",
-                          tags$span(class = "lbl", "End quarter"),
+                          field_label("adj_end", "End quarter"),
                           selectInput("adj_end", NULL,
                                       choices = setNames(format(forecast_quarters),
                                                          vapply(forecast_quarters,
@@ -567,24 +608,7 @@ ui <- fluidPage(
                                       selected = first_year_end, width = "100%"))
                     ),
                     actionButton("adj_add", "Add adjustment",
-                                 class = "btn btn-primary")
-                  )
-                ),
-                div(class = "panel",
-                  div(class = "panel-head",
-                    div(h3("Shock units"),
-                        p(class = "panel-sub",
-                          "How the entered value is interpreted, by variable"))),
-                  div(class = "panel-body",
-                    ref_row("Percentage change (log shocks)",
-                            shock_hint("Fpoil")),
-                    ref_row("Model units (additive shocks)",
-                            shock_hint("R90d")),
-                    ref_row("Ratio (Ynli)",
-                            shock_hint("Ynli")),
-                    p(class = "hint",
-                      paste0("Ustar (NAIRU) is no longer a scenario input; ",
-                             "see data-raw/VARIABLE_CHANGES.md."))
+                                 class = "btn-add")
                   )
                 )
               ),
@@ -595,26 +619,21 @@ ui <- fluidPage(
                     div(h3("Adjustments"), uiOutput("adj_count")),
                     actionButton("adj_clear", "Clear all", class = "btn btn-compact")
                   ),
-                  uiOutput("adj_list"),
-                  div(class = "panel-foot",
-                      paste0("The scenario run applies these adjustments to a ",
-                             "copy of data-raw/shocks.csv for the chosen ",
-                             "quarters."))
+                  uiOutput("adj_list")
                 ),
                 div(class = "panel",
                   div(class = "panel-body",
                     actionButton("scen_run", "Run scenario", class = "btn-primary"),
-                    uiOutput("run_status"),
+                    uiOutput("run_status", container = function(...) {
+                      div(`aria-live` = "polite", `aria-atomic` = "true", ...)
+                    }),
                     p(class = "hint",
-                      paste0("The model runs in the background; a run takes a ",
-                             "few minutes. It gets a unique run ID and a ",
-                             "complete input snapshot."))
+                      "Runs in the background and saves its inputs and results.")
                   )
                 ),
                 div(class = "panel",
                   div(class = "panel-head",
-                    div(h3("Run log"), p(class = "panel-sub",
-                                         "Latest output from the run"))),
+                    h3("Run log")),
                   tags$pre(id = "run_log", class = "shiny-text-output log-console")
                 )
               )
@@ -625,11 +644,6 @@ ui <- fluidPage(
     )
   )
 )
-
-# adj_choices is used by the ui builder; define it before ui renders.
-adj_choices <- labelled_choices(unique(c(
-  c("Fpoil", "Lnom", "Cgov", "R90d"), shock_variables
-)))
 
 # ---- server -------------------------------------------------------------------------
 
@@ -646,13 +660,15 @@ server <- function(input, output, session) {
   output$sidebar <- renderUI({
     div(class = "sem-sidebar",
       div(class = "sem-brand", "Deloitte", span(class = "sem-brand-dot")),
-      div(class = "sem-nav",
+      tags$nav(class = "sem-nav", `aria-label` = "Dashboard sections",
         lapply(seq_along(tab_titles), function(i) {
           title <- tab_titles[[i]]
           actionButton(
             paste0("nav_", i), label = tagList(nav_icons[[title]], title),
             class = paste("nav-item",
-                         if (identical(active_nav(), title)) "active"))
+                         if (identical(active_nav(), title)) "active"),
+            onclick = "window.scrollTo(0, 0)",
+            `aria-current` = if (identical(active_nav(), title)) "page" else NULL)
         })
       ),
       div(class = "sem-sidebar-foot",
@@ -663,7 +679,7 @@ server <- function(input, output, session) {
   })
 
   observe({
-    q <- isolate(parseQueryString(session$clientData$url_search))
+    q <- parseQueryString(session$clientData$url_search %||% "")
     if (!is.null(q$tab) && q$tab %in% c("headlines", "all-variables",
                                         "library", "build")) {
       title <- switch(q$tab,
@@ -700,39 +716,48 @@ server <- function(input, output, session) {
     v <- input$var_pick
     lab <- variable_label(v)
     unit <- if (input$var_transform == "growth")
-      "Annual growth, per cent, quarterly" else "Level, model units, quarterly"
-    div(class = "panel-head",
-        div(h3(lab %||% v),
-            p(class = "panel-sub",
-              HTML(paste0("<code>", v, "</code> - ", unit, " - ",
-                          input$var_years[1], " to ",
-                          input$var_years[2])))))
+      "annual growth, per cent, quarterly" else "level, model units, quarterly"
+    tagList(
+      div(class = "panel-head",
+          div(h3(lab %||% v),
+              p(class = "panel-sub",
+                HTML(paste0("<code>", esc(v), "</code> - ", unit, " - ",
+                            input$var_years[1], " to ",
+                            input$var_years[2]))))),
+      div(class = "chart-legend", sem_legend)
+    )
   })
 
   output$var_plot <- renderPlot({
     d <- var_window()
     sem_chart(
       split_segments(d$date, var_values(), d$period,
-                     col = chart_col$teal, lwd = 2.2),
+                     col = chart_col$teal, lwd = 2.5),
       origin = forecast_origin, log_y = input$var_log
     )
   }, res = 110)
 
   output$var_table <- renderTable({
     d <- utils::tail(var_window(), 16)
+    values <- utils::tail(var_values(), 16)
     data.frame(
       Quarter = vapply(d$date, quarter_label, ""),
       Period = d$period,
-      Value = round(as.numeric(d[[input$var_pick]]), 4)
+      Value = round(values, 4)
     )
-  }, align = "llr", digits = 4, spacing = "xs")
+  }, align = "llr", digits = 4, spacing = "xs", width = "100%")
 
   output$var_download <- downloadHandler(
     filename = function() paste0("sem_", input$var_pick, ".csv"),
     content = function(file) {
       d <- var_window()
       out <- data.frame(date = format(d$date), period = d$period)
-      out[[input$var_pick]] <- as.numeric(d[[input$var_pick]])
+      column <- if (input$var_transform == "growth") {
+        paste0(input$var_pick, "_annual_growth_pct")
+      } else {
+        input$var_pick
+      }
+      out[[column]] <- var_values()
       utils::write.csv(out, file, row.names = FALSE, na = "")
     }
   )
@@ -741,14 +766,14 @@ server <- function(input, output, session) {
   output$plot_ygdp <- renderPlot(
     sem_chart(split_segments(flat$date[headline_rows], gdp_growth[headline_rows],
                              flat$period[headline_rows],
-                             col = chart_col$teal, lwd = 2.2),
+                             col = chart_col$teal, lwd = 2.5),
               origin = forecast_origin),
     res = 110)
 
   output$plot_pcpi <- renderPlot(
     sem_chart(split_segments(flat$date[headline_rows], cpi_growth[headline_rows],
                              flat$period[headline_rows],
-                             col = chart_col$teal, lwd = 2.2),
+                             col = chart_col$teal, lwd = 2.5),
               origin = forecast_origin),
     res = 110)
 
@@ -756,7 +781,7 @@ server <- function(input, output, session) {
     sem_chart(split_segments(flat$date[headline_rows],
                              100 * flat$Lur[headline_rows],
                              flat$period[headline_rows],
-                             col = chart_col$teal, lwd = 2.2),
+                             col = chart_col$teal, lwd = 2.5),
               origin = forecast_origin),
     res = 110)
 
@@ -764,7 +789,7 @@ server <- function(input, output, session) {
     sem_chart(split_segments(flat$date[headline_rows],
                              100 * flat$R90d[headline_rows],
                              flat$period[headline_rows],
-                             col = chart_col$teal, lwd = 2.2),
+                             col = chart_col$teal, lwd = 2.5),
               origin = forecast_origin),
     res = 110)
 
@@ -807,53 +832,39 @@ server <- function(input, output, session) {
     }
   )
 
-  # Radio rows need the current choice set to detect changes without
-  # re-rendering (and resetting selection) on every poll.
-  scen_choice_set <- reactiveVal(character(0))
   auto_follow <- reactiveVal(NULL)
 
   run_row <- function(s) {
+    status <- status_value(s$status)
     HTML(paste0(
-      '<span class="scen-name">', htmlEscape(s$name),
-      '<small>', s$n_adjust,
-      if (s$n_adjust == 1) ' adjustment</small>' else ' adjustments</small>',
+      '<span class="scen-name">', esc(s$name),
+      '<small>', s$n_adjust, if (s$n_adjust == 1) ' adjustment' else ' adjustments',
+      ' &middot; ', esc(fmt_timestamp(s$created)), '</small>',
       '</span>',
-      '<span class="scen-id">', htmlEscape(s$id), '</span>',
-      '<span class="scen-date">', htmlEscape(fmt_timestamp(s$created)), '</span>',
-      '<span class="status ', s$status, '"><i></i>', s$status, '</span>'
+      '<span class="status ', status, '"><i></i>', esc(status), '</span>'
     ))
   }
 
   output$scen_list <- renderUI({
     s <- scenarios()
-    choice_names <- list(
-      HTML('<span class="scen-name">Central forecast only',
-           '<small>No overlay - central shown alone</small></span>',
-           '<span class="scen-id">-</span>',
-           '<span class="scen-date">current</span>',
-           '<span class="status completed"><i></i>ready</span>')
-    )
     choice_values <- "central"
+    choice_names <- list(central_choice_html)
     if (!is.null(s)) {
-      choice_names <- c(choice_names, lapply(seq_len(nrow(s)), function(i)
-        run_row(s[i, ])))
-      choice_values <- c(choice_values, s$dir)
+      choice_values <- c("central", s$dir)
+      choice_names <- c(list(central_choice_html),
+                        lapply(seq_len(nrow(s)), function(i) run_row(s[i, ])))
     }
-    if (!identical(sort(choice_values), sort(scen_choice_set()))) {
-      scen_choice_set(choice_values)
-      selected <- if (input$scen_pick %in% choice_values) input$scen_pick
-                 else "central"
-      updateRadioButtons(session, "scen_pick",
-                         choiceNames = choice_names,
-                         choiceValues = choice_values,
-                         selected = selected)
+    current <- isolate(input$scen_pick) %||% "central"
+    selected <- if (length(current) == 1 && current %in% choice_values) {
+      current
+    } else {
+      "central"
     }
     div(class = "scen-list",
         radioButtons("scen_pick", NULL,
                      choiceNames = choice_names,
                      choiceValues = choice_values,
-                     selected = isolate(input$scen_pick) %||%
-                       "central"))
+                     selected = selected))
   })
 
   # When a run started from the Build tab completes, select it here.
@@ -867,21 +878,11 @@ server <- function(input, output, session) {
     }
   })
 
-  output$library_summary <- renderUI({
-    s <- scenarios()
-    n_runs <- if (is.null(s)) 0 else nrow(s)
-    n_done <- if (is.null(s)) 0 else sum(s$forecast)
-    div(class = "summary-strip",
-      div(strong(n_runs), "stored runs"),
-      div(strong(n_done), "completed"),
-      div(strong(quarter_label(forecast_origin)), "forecast origin"),
-      div(strong(quarter_label(forecast_horizon)), "forecast horizon")
-    )
-  })
-
   selected_scenario <- reactive({
     d <- input$scen_pick
     if (is.null(d) || identical(d, "central")) return(NULL)
+    available <- scenarios()
+    if (is.null(available) || !d %in% available$dir) return(NULL)
     forecast_path <- file.path(d, "forecast.csv")
     if (!file.exists(forecast_path)) return(NULL)
     list(
@@ -897,44 +898,56 @@ server <- function(input, output, session) {
     title <- variable_label(input$scen_var) %||% input$scen_var
     if (is.null(sc)) {
       legend <- div(class = "chart-legend",
-                    legend_chip("Central forecast", "solid-ink"))
-      sub <- paste0(input$scen_var, " - central forecast, quarterly")
+                    sem_legend)
+      sub <- "history and central forecast, quarterly"
     } else {
       legend <- div(class = "chart-legend",
+                    legend_chip("Actual", "solid-ink"),
                     legend_chip(sc$meta$name, ""),
                     legend_chip("Central forecast", "dashed-ink"))
-      sub <- paste0(input$scen_var, " - central vs scenario, quarterly")
+      sub <- paste0("history, central and ", esc(sc$meta$name), ", quarterly")
     }
     tagList(
       div(class = "panel-head",
-        div(h3(title), p(class = "panel-sub", HTML(
-          paste0("<code>", input$scen_var, "</code> - ",
-                 "central forecast", if (!is.null(sc))
-                   paste0(" vs ", htmlEscape(sc$meta$name)),
-                 " - ", quarter_label(forecast_origin), " to ",
-                 quarter_label(forecast_horizon))))),
+        div(h3(title),
+            p(class = "panel-sub",
+              HTML(paste0("<code>", esc(input$scen_var), "</code> - ", sub,
+                          " - ", quarter_label(forecast_origin), " to ",
+                          quarter_label(forecast_horizon)))))),
       legend
     )
   })
 
   output$scen_plot <- renderPlot({
-    central <- flat[flat$period == "Forecast", ]
     var <- input$scen_var
     sc <- selected_scenario()
-    segments <- list(list(
-      x = central$date, y = as.numeric(central[[var]]),
-      col = chart_col$ink, lwd = 1.8,
-      lty = if (is.null(sc)) 1 else 2,
-      label = is.null(sc)
-    ))
-    if (!is.null(sc)) {
+    comparison_rows <- flat$date >= headline_start
+    if (is.null(sc)) {
+      segments <- split_segments(
+        flat$date[comparison_rows], as.numeric(flat[[var]][comparison_rows]),
+        flat$period[comparison_rows], col = chart_col$teal, lwd = 2.5
+      )
+    } else {
+      actual <- flat[comparison_rows & flat$period == "Actual", ]
+      central <- flat[flat$period == "Forecast", ]
       sf <- sc$forecast
-      segments[[2]] <- list(
-        x = as.Date(sf$date), y = as.numeric(sf[[var]]),
-        col = chart_col$teal, lwd = 2.3, lty = 1, label = TRUE
+      sf$date <- as.Date(sf$date)
+      sf <- sf[sf$date >= forecast_origin & sf$date <= forecast_horizon, ]
+      segments <- list(
+        list(x = actual$date, y = as.numeric(actual[[var]]),
+             col = chart_col$ink, lwd = 2.1, lty = 1, label = FALSE),
+        list(x = c(utils::tail(actual$date, 1), central$date),
+             y = c(utils::tail(as.numeric(actual[[var]]), 1),
+                   as.numeric(central[[var]])),
+             col = chart_col$ink, lwd = 1.9, lty = 2, label = FALSE),
+        list(
+          x = c(utils::tail(actual$date, 1), sf$date),
+          y = c(utils::tail(as.numeric(actual[[var]]), 1), as.numeric(sf[[var]])),
+          col = chart_col$teal, lwd = 2.6, lty = 1, label = TRUE
+        )
       )
     }
-    sem_chart(segments)
+    sem_chart(segments, origin = forecast_origin)
   }, res = 110)
 
   output$scen_foot <- renderUI({
@@ -947,15 +960,14 @@ server <- function(input, output, session) {
                           run_status_of(d, list()),
                           "). The overlay appears once it completes.")))
       }
-      return(div(class = "panel-foot",
-                 "Select a stored run to overlay it on the central forecast."))
+      return(NULL)
     }
     div(class = "panel-foot", HTML(paste0(
-      "<b>", htmlEscape(sc$meta$name), "</b> - ",
-      "run <code>", htmlEscape(sc$meta$id %||% basename(input$scen_pick)),
+      "<b>", esc(sc$meta$name), "</b> - ",
+      "run <code>", esc(sc$meta$id %||% basename(input$scen_pick)),
       "</code>, created ", fmt_timestamp(sc$meta$createdAt %||% ""),
       " - ", length(sc$meta$adjustments %||% list()), " adjustment(s)",
-      " - status: ", sc$status
+      " - status: ", esc(status_value(sc$status))
     )))
   })
 
@@ -977,8 +989,8 @@ server <- function(input, output, session) {
 
   # -- build scenario -------------------------------------------------------------------
   adjustments <- reactiveVal(list())
-  entry_counter <- new.env()
-  entry_counter$n <- 0
+  entry_counter <- 0
+  removers <- list()
 
   output$adj_hint <- renderText(shock_hint(input$adj_variable))
 
@@ -1000,9 +1012,9 @@ server <- function(input, output, session) {
                               "needs at least one adjustment.")))))
     }
     rows <- lapply(entries, function(e) {
-      div(class = "ledger-row",
-        div(class = "ledger-name", e$label,
-            small(e$variable)),
+        div(class = "ledger-row",
+          div(class = "ledger-name", e$label,
+            tags$small(e$variable)),
         div(class = "ledger-value",
             if (e$unit_mode == "percent")
               paste0(if (e$value >= 0) "+" else "", format(e$value), "%")
@@ -1010,33 +1022,32 @@ server <- function(input, output, session) {
         div(class = "ledger-period",
             paste0(quarter_label(as.Date(e$start)), " to ",
                    quarter_label(as.Date(e$end)))),
-        actionButton(paste0("adj_del_", e$id), "Remove", class = "btn-remove")
+        actionButton(paste0("adj_del_", e$id), "Remove", class = "btn-remove",
+                     `aria-label` = paste("Remove", e$label, "adjustment"))
       )
     })
     div(class = "panel-body", rows)
   })
 
-  # Per-entry removal; observers are scoped to the render cycle that
-  # created their buttons.
-  observe({
-    entries <- adjustments()
-    for (e in entries) {
-      local({
-        id <- paste0("adj_del_", e$id)
-        observeEvent(input[[id]], {
-          current <- adjustments()
-          kept <- Filter(function(x) x$id != e$id, current)
-          adjustments(kept)
-        })
-      })
-    }
-  })
-
   observeEvent(input$adj_add, {
-    if (!is.finite(input$adj_value)) return()
-    entry_counter$n <- entry_counter$n + 1
+    if (is.null(input$adj_value) || length(input$adj_value) != 1 ||
+        !is.finite(input$adj_value)) {
+      showNotification("Enter a valid adjustment value.", type = "error")
+      return()
+    }
+    if (identical(input$adj_unit_mode, "percent") && input$adj_value <= -100) {
+      showNotification("Percentage changes must be greater than -100%.",
+                       type = "error")
+      return()
+    }
+    if (as.Date(input$adj_start) > as.Date(input$adj_end)) {
+      showNotification("The end quarter must not precede the start quarter.",
+                       type = "error")
+      return()
+    }
+    entry_counter <<- entry_counter + 1
     entry <- list(
-      id = paste0("e", entry_counter$n),
+      id = paste0("e", entry_counter),
       variable = input$adj_variable,
       label = variable_label(input$adj_variable) %||% input$adj_variable,
       value = input$adj_value,
@@ -1044,6 +1055,11 @@ server <- function(input, output, session) {
       start = input$adj_start,
       end = input$adj_end
     )
+    # One remove observer per entry, created with the entry; ids are never
+    # reused, so removed entries leave their observer dormant.
+    removers[[entry$id]] <<- observeEvent(
+      input[[paste0("adj_del_", entry$id)]],
+      adjustments(Filter(function(x) x$id != entry$id, adjustments())))
     adjustments(c(adjustments(), list(entry)))
   })
 
@@ -1114,7 +1130,7 @@ server <- function(input, output, session) {
     invalidateLater(3000, session)
     d <- latest_run()
     if (is.null(d)) return(NULL)
-    status <- run_status_of(d, list())
+    status <- status_value(run_status_of(d, list()))
     div(class = "run-status",
         tags$span(class = paste0("status ", status), tags$i(), status),
         span(class = "scen-id", basename(d)))

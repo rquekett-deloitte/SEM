@@ -21,7 +21,7 @@
 #          outputs/data_download_validation.csv,
 #          data-raw/downloads/ (table cache, git-ignored).
 
-required_packages <- c("openxlsx", "readr", "tidyverse")
+required_packages <- c("jsonlite", "openxlsx", "readr", "tidyverse")
 missing_packages <- required_packages[
   !vapply(required_packages, requireNamespace, logical(1), quietly = TRUE)
 ]
@@ -79,7 +79,7 @@ DERIVED_PHOUSE_URL <- paste0(
   "price-indexes-and-inflation/total-value-dwellings/",
   "latest-release/643202.xlsx")
 CARRY_TREND <- c("KMin", "KBiz", "KDwell", "KTotal")
-CARRY_HOLD <- c("KOther")
+CARRY_HOLD <- c("TcorpRate", "KdepRate", "DumTsfTot")
 
 fetch_phouse <- function() {
   dest <- file.path(download_dir, basename(DERIVED_PHOUSE_URL))
@@ -123,6 +123,107 @@ fetch_phouse <- function() {
 }
 DERIVED_SOURCES <- list(Phouse = fetch_phouse)
 
+# Peq: the ASX All Ordinaries index (points), end-of-quarter close, via the
+# Yahoo Finance chart API (free, undocumented - browser user agent
+# required). Validated: 34 quarters reproduced with 0.000% median
+# difference. The FRED SPASTT01AUQ661N series is a differently-based OECD
+# index and does not track it (correlation 0.63).
+fetch_peq <- function() {
+  url <- paste0("https://query1.finance.yahoo.com/v8/finance/chart/%5EAORD",
+               "?range=10y&interval=1d")
+  dest <- file.path(download_dir, "yahoo_aord.json")
+  ok <- tryCatch({
+    download.file(url, dest, quiet = TRUE, mode = "wb", headers = c(
+      "User-Agent" = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"))
+    TRUE
+  }, error = function(e) FALSE)
+  if (!ok) return(NULL)
+  raw_bytes <- readBin(dest, "raw", file.size(dest))
+  raw <- jsonlite::fromJSON(
+    rawToChar(raw_bytes[raw_bytes != as.raw(0)]), simplifyVector = TRUE)
+  res <- raw$chart$result
+  dates <- as.Date(as.POSIXct(res$timestamp[[1]], origin = "1970-01-01",
+                              tz = "UTC"))
+  close <- as.numeric(res$indicators$quote[[1]]$close[[1]])
+  frame <- data.frame(date = dates, close = close)
+  frame <- frame[is.finite(frame$close), ]
+  frame$qdate <- repo_quarter(frame$date)
+  ends <- vapply(split(frame[order(frame$date), ], frame$qdate[order(frame$date)]),
+                 function(g) utils::tail(g$close, 1), numeric(1))
+  tibble(date = as.Date(names(ends)), value = as.numeric(ends))
+}
+DERIVED_SOURCES$Peq <- fetch_peq
+
+# Business finance (BizLns, BizBnd, BizEq): the workbook holds the
+# old-definition private non-financial corporations sector ($bn) - the sum
+# of today's "other private non-financial corporations" and "private
+# non-financial investment funds" sectors in ABS 5232.0 Table 1 ($m),
+# divided by 1000. Validated: bonds and equity reproduce the workbook
+# exactly; loans to 0.7% (classification drift between vintages).
+FW_TABLE_URL <- paste0(
+  "https://www.abs.gov.au/statistics/economy/national-accounts/",
+  "australian-national-accounts-finance-and-wealth/latest-release/5232001.xlsx")
+
+read_fw_table <- function() {
+  dest <- file.path(download_dir, "5232001.xlsx")
+  if (!file.exists(dest)) {
+    ok <- tryCatch({
+      download.file(FW_TABLE_URL, dest, quiet = TRUE, mode = "wb")
+      TRUE
+    }, error = function(e) FALSE)
+    if (!ok) return(NULL)
+  }
+  sheets <- getSheetNames(dest)
+  data_sheet <- grep("^Data", sheets, value = TRUE)[1]
+  n <- nrow(read.xlsx(dest, sheet = data_sheet, colNames = FALSE, cols = 1))
+  head <- read.xlsx(dest, sheet = data_sheet, colNames = FALSE,
+                    rows = seq_len(min(14, n)))
+  id_row <- which(apply(head, 1, function(r)
+    any(grepl("Series ID", r, fixed = TRUE))))[1]
+  ids <- as.character(unlist(head[id_row, ]))
+  descs <- as.character(unlist(head[1, ]))
+  body <- read.xlsx(dest, sheet = data_sheet, colNames = FALSE,
+                    rows = (id_row + 1):n, detectDates = FALSE)
+  dates <- as.Date(as.numeric(body[[1]]), origin = "1899-12-30")
+  list(ids = ids, descs = descs, body = body, dates = dates)
+}
+
+fetch_biz <- function(instrument) {
+  tbl <- read_fw_table()
+  if (is.null(tbl)) return(NULL)
+  cols <- vapply(
+    c("Other private non-financial corporations",
+      "Private non-financial investment funds"),
+    function(sector) {
+      j <- which(grepl(paste0(sector, " ;  ", instrument, " ;  Total"),
+                       tbl$descs, fixed = TRUE) &
+                   grepl("Total (Counterparty sectors)", tbl$descs,
+                         fixed = TRUE))
+      if (length(j)) j[1] else NA_integer_
+    }, integer(1))
+  if (any(is.na(cols))) {
+    message("FW: could not find ", instrument, " series")
+    return(NULL)
+  }
+  total <- rep(NA_real_, length(tbl$dates))
+  for (j in cols) {
+    v <- as.numeric(tbl$body[[j]])
+    total[is.finite(v)] <- rowSums(cbind(total[is.finite(v)], v[is.finite(v)]),
+                                   na.rm = TRUE)
+  }
+  tibble(date = repo_quarter(tbl$dates), value = total / 1000)
+}
+DERIVED_SOURCES$BizLns <- function() fetch_biz("Loans and placements borrowed from:")
+DERIVED_SOURCES$BizBnd <- function() fetch_biz("Bonds, etc. held by:")
+DERIVED_SOURCES$BizEq <- function() fetch_biz("Shares and other equity held by:")
+
+# Post-merge internal derivations, applied to the merged columns (exact
+# over the whole history by construction).
+POSTMERGE_DERIVED <- list(
+  KNbiz = function(updated) updated$KBiz - updated$KMin,
+  KOther = function(updated) updated$KTotal - updated$KBiz - updated$KDwell
+)
+
 abs_series_ids <- function(source) {
   unique(unlist(regmatches(source, gregexpr(ABS_ID, source))))
 }
@@ -150,6 +251,10 @@ route <- variables_sheet %>%
         !variable %in% names(DERIVED_SOURCES) ~
         "exogenous scenario series (maintained via exogenous_forecast.csv)",
       is.na(source) | !nzchar(source) ~ "no documented source",
+      variable %in% CARRY_HOLD ~
+        "constant series - held at its final level (see source note)",
+      variable %in% names(POSTMERGE_DERIVED) ~
+        "internal derivation - computed from its parents after the merge",
       variable == "Rbiz" ~
         paste0("investigated: the documented D8/F7 splice matches no published ",
                "RBA series - F5's weighted-average business rates ended with ",
@@ -628,6 +733,15 @@ if (anything_downloaded) {
     if (is.null(series)) next
     updated[[variable]] <- merge_column(updated[[variable]], all_dates,
                                         series, merge_policy(variable))
+  }
+  # Held constants extend by level regardless of download status.
+  for (variable in CARRY_HOLD) {
+    updated[[variable]] <- merge_column(updated[[variable]], all_dates,
+                                        tibble(date = as.Date(NA), value = NA),
+                                        "carry-hold")
+  }
+  for (nm in intersect(names(POSTMERGE_DERIVED), names(updated))) {
+    updated[[nm]] <- POSTMERGE_DERIVED[[nm]](updated)
   }
   wb <- loadWorkbook(WORKBOOK)
   removeWorksheet(wb, "Data")

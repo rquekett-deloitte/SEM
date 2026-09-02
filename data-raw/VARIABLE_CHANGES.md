@@ -285,3 +285,36 @@ input.
 - Rbiz investigated: the documented D8/F7 splice matches no published
   RBA series and needs the original derivation; skipped with that
   finding recorded.
+
+## Remaining inputs sourced or dispositioned (2026-09-02, final)
+
+Nine more workbook inputs now have validated, pipeline-wired sources:
+- Peq: the ASX All Ordinaries index (end-of-quarter close) via the free
+  Yahoo Finance chart API - 34 quarters reproduced with 0.000% median
+  difference; extends through 2026Q3, the freshest series in the workbook.
+  FRED SPASTT01AUQ661N was tested and rejected (a differently-based OECD
+  index, correlation 0.63).
+- BizLns, BizBnd, BizEq: the old-definition private non-financial
+  corporations sector ($bn) = today's "other private non-financial
+  corporations" + "private non-financial investment funds" in ABS 5232.0
+  Table 1, summed and divided by 1000. Bonds reproduce exactly; equity
+  0.09%; loans 0.78% (classification drift between vintages).
+- Ygmi, YprpR, YprpP: ABS 5206.0 Table 20 household income series
+  A2302887W / A2302889A / A2302902J (0.5-1.1% vintage revisions); the
+  early-history gaps in these columns are also filled.
+- KNbiz and KOther: internal derivations (KBiz-KMin; KTotal-KBiz-KDwell),
+  validated exact over 199 quarters, computed after the merge.
+- TcorpRate (ATO statutory 0.30), KdepRate (calibrated) and DumTsfTot
+  (zero after the correction period): constant series, held at their
+  final levels.
+Checked and documented as genuinely unsourced without the original
+derivation or a subscription: PeRatio and EqEarn (LSEG/Refinitiv; free
+endpoints tested and found wanting), LavhMkt (the workbook's labour-
+account series reproduce it only to ~4.7% - the detailed-LFS industry
+derivation is needed), Lhh (ceased annual series; June 2025 experimental
+estimate extends it to 2025Q2 only), GovDef and GovDebt (ABS GFS checked;
+custom annual-fiscal derivations), Ustar, PcpiExGst, ShockGst (internal
+constructs), Rbiz (prior finding). Variables-sheet sources updated with
+each finding. 83 of 122 workbook columns are now auto-sourced; the
+remaining 39 are documented skips (the exogenous scenario series, the
+subscription/derivation list above, and undetailed raw input components).
