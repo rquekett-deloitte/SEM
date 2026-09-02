@@ -112,7 +112,7 @@ through 2026Q1 (some series are shorter). `date` is the quarter index.
 | Ipubent | Public corporations ;  Gross fixed capital formation ; (Seasonally Adjusted, $ Millions) | ABS 5206.0 (A2304103X) |
 | Pgne | Gross national expenditure implicit price deflator, index (base 100) | ABS 5206.0 |
 | Phouse | Median price of established dwelling transfers, transfer-weighted ; (Original, $'000) | ABS 6432.0 (Table 2, derived from Median Price & Number of Transfers series) |
-| IvtFar | Farm inventories | Exogenous |
+| IvtFar | Change in farm inventories, quarterly chain-volume $m | Exogenous |
 | Fpcpi | World consumer prices | Exogenous |
 | Fpoil | World oil price, USD | Exogenous scenario series |
 | Fpcom | World commodity price index (real) | Exogenous |
@@ -168,7 +168,7 @@ through 2026Q1 (some series are shorter). `date` is the quarter index.
 | Fr10yReal | Fr10y - average of two 4-quarter world CPI inflation rates (lags 2-6 and 6-10) |
 | GovDem | Igov + Ipubent + Cgov (public demand) |
 | InflExp | hp_filter(log(Pcpi / lag(Pcpi, 4))) (HP-filtered annual CPI inflation; expectations proxy) |
-| Ivt | IvtFar + IvtNonfarm |
+| Ivt | IvtFar + IvtNonfarm - lag(IvtNonfarm) (total quarterly change in inventories) |
 | KdepAllow | (KdepRate * (1 + R10y)) * (R10y + KdepRate) (depreciation allowance) |
 | KDwellDepRate | 1 - (KDwell - lag(Idwell)) / lag(KDwell) |
 | KMinDepRate | 1 - (KMin - lag(Imin)) / lag(KMin) |

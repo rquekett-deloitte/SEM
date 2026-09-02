@@ -21,7 +21,7 @@ mdl_equations <- function() { c(
 
 "Imin = Imin[1]*EXP( Imin_c1 + Imin_c2*(LOG(Imin[1]) - LOG(Ygdp[1]) - Imin_c3*LOG(Pxmin[1]/Pgdp[1])) + Imin_c4*(LOG(Pxmin)-LOG(Pxmin[1])) + Imin_c5*(LOG(Pxmin[1])-LOG(Pxmin[2])) + Imin_c6*(LOG(Pxmin[2])-LOG(Pxmin[3])) + Imin_c7*(LOG(Imin[1])-2*LOG(Imin[2])+LOG(Imin[3])) )",
 
-"IvtNonfarm = IvtNonfarm[1]*EXP( IvtNonfarm_c1 + IvtNonfarm_c2*(LOG(IvtNonfarm[1]) - LOG(Ygdp[1]) + IvtNonfarm_c3*Trend + IvtNonfarm_c4*Trend*Trend + IvtNonfarm_c5*Trend*Trend*Trend) + IvtNonfarm_c6*(LOG(IvtNonfarm[1])-LOG(IvtNonfarm[2])) + IvtNonfarm_c7*(LOG(IvtNonfarm[2])-LOG(IvtNonfarm[3])) + IvtNonfarm_c8*(LOG(Ygdp[1])-LOG(Ygdp[2])) )",
+"IvtNonfarm = IvtNonfarm[1]*EXP( IvtNonfarm_c1 + IvtNonfarm_c2*(LOG(IvtNonfarm[1]) - LOG(Ygdp[1]) + IvtNonfarm_c3*TrendIvt + IvtNonfarm_c4*TrendIvt*TrendIvt + IvtNonfarm_c5*TrendIvt*TrendIvt*TrendIvt) + IvtNonfarm_c6*(LOG(IvtNonfarm[1])-LOG(IvtNonfarm[2])) + IvtNonfarm_c7*(LOG(IvtNonfarm[2])-LOG(IvtNonfarm[3])) + IvtNonfarm_c8*(LOG(Ygdp[1])-LOG(Ygdp[2])) )",
 
 "Tcit = Tcit[1]*EXP( Tcit_c1 + Tcit_c2*(LOG(Tcit[1]) - LOG(Ygoa[1]) - Tcit_c5*LOG(Ptot[1])) + Tcit_c6*(LOG(Ygoa)-LOG(Ygoa[1])) + Tcit_c7*((LOG(Fpcom)-LOG(Fpcom[1]))-(LOG(ABS(Pgdp))-LOG(Pgdp[1]))) )",
 
@@ -112,7 +112,7 @@ mdl_equations <- function() { c(
 
 mdl_identities <- function() { c(
 "GapAvh = (Lur - LurHpf)/Lur",
-"Ivt = IvtFar + IvtNonfarm",
+"Ivt = IvtFar + IvtNonfarm - IvtNonfarm[1]",
 "Iotc = RatioIotc*Idwell",
 "Xagr = ShareXagr*Ygdp",
 "Xtot = Xmin + Xagr + Xoth + Xsvc + ResidXtot",
@@ -567,6 +567,7 @@ build_ts_database <- function(data, exo, model, shocks, origin = forecast_origin
   q <- dates
   det <- list(
     Trend = seq_len(n) - 1,
+    TrendIvt = pmin(seq_len(n) - 1, nh - 1),
     TrendPiret = seq_len(n) - 1 + 8,
     Trend98 = cumsum(q >= as.Date("1998-03-01")),
     Trend01 = cumsum(q >= as.Date("2001-03-01")),
@@ -673,9 +674,9 @@ build_ts_database <- function(data, exo, model, shocks, origin = forecast_origin
   resid_xtotnom <- v("XtotNom")[i] - (v("XminNom")[i] + v("XagrNom")[i] +
     v("XothNom")[i] + xsvc_nom[i])
   sumexp <- v("Cpr") + v("Cgov") + v("Idwell") + v("Iotc") + v("Imin") + v("Inonmin") +
-    v("Igov") + v("Ipubent") + v("IvtFar") + v("IvtNonfarm") + v("Xtot") - v("Mtot")
+    v("Igov") + v("Ipubent") + v("Ivt") + v("Xtot") - v("Mtot")
   sumgne <- v("Cpr") + v("Cgov") + v("Idwell") + v("Iotc") + v("Imin") + v("Inonmin") +
-    v("Igov") + v("Ipubent") + v("IvtFar") + v("IvtNonfarm")
+    v("Igov") + v("Ipubent") + v("Ivt")
   i <- last_common(v("Ygdp"), sumexp); resid_ygdp <- v("Ygdp")[i] - sumexp[i]
   i <- last_common(v("Ygne"), sumgne); resid_ygne <- v("Ygne")[i] - sumgne[i]
   gne_nom <- v("CprNom") + v("CgovNom") + v("IdwellNom") + v("IotcNom") +

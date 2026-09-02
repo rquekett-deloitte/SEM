@@ -89,7 +89,9 @@ data <- data %>%
 data <- data %>%
   mutate(
     # ---- Expenditure and trade aggregates --------------------------------
-    Ivt      = IvtFar + IvtNonfarm,
+    # Farm inventories are already a quarterly flow; non-farm inventories are
+    # a stock and enter expenditure as their quarterly change.
+    Ivt      = IvtFar + IvtNonfarm - lag(IvtNonfarm),
     Xmin     = Xmet + Xccb + Xomf,
     XminNom  = XmetNom + XccbNom + XomfNom,
     Xoth     = Xmex + Xmac + Xtrn + Xotm + Xonr + Xgpr,

@@ -19,6 +19,7 @@ if (length(missing_packages) > 0) {
 }
 
 suppressPackageStartupMessages(library(tidyverse))
+source(file.path(project_root, "R", "model_constants.R"))
 source(file.path(project_root, "R", "forecast_model.R"))
 source(file.path(project_root, "R", "model_outputs.R"))
 
@@ -39,5 +40,6 @@ simulation <- run_bimets_forecast(
   show_progress = FALSE
 )
 forecast <- extract_forecast(simulation, origin, horizon)
+validate_forecast(forecast, model_data)
 readr::write_csv(forecast, file.path(output_dir, "forecast.csv"), na = "")
 cat("Scenario complete:", nrow(forecast), "quarters\n")

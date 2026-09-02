@@ -2,13 +2,58 @@
 
 ## Scenario Economic Model frontend
 
-Double-click `start_sem.cmd` to start the local API and React frontend,
-then open the Scenario Economic Model at `http://localhost:5173`. The launcher installs Node
-dependencies on first use and checks that both Node.js and R are available.
+The project includes a local React interface for creating and comparing macroeconomic scenarios. It runs alongside a local Express API, which starts the R scenario model and keeps a complete record of each run.
 
-Scenario runs are stored under `scenario-runs/<run-id>/` with their input
-snapshots, metadata, logs and forecast output. This directory is ignored by
-Git.
+### Requirements
+
+- Node.js, available on `PATH`
+- R with `Rscript`, available on `PATH`
+- The R packages required by the model, including the packages used by `run_model.R`
+
+### Start the application
+
+For the simplest local start-up, double-click `start_sem.cmd`. The launcher verifies that Node.js and R are available, installs Node dependencies if `node_modules/` is absent, starts the API and frontend, then opens the application at `http://localhost:5173`.
+
+Alternatively, from the project root run:
+
+```text
+npm install
+npm run dev
+```
+
+`npm run dev` starts both services:
+
+- React and Vite frontend: `http://localhost:5173`
+- Express scenario API: `http://localhost:4174`
+
+Vite proxies `/api` requests from the frontend to the local API. To run either service separately, use `npm run dev:web` or `npm run dev:api`.
+
+### Use the frontend
+
+The **Results** view compares the selected scenario with the central forecast for real GDP, unemployment, CPI inflation and the short-term interest rate. Use **Build a scenario** to name a scenario, add one or more adjustments, select their inclusive forecast-quarter range, and run the model.
+
+The available adjustments are:
+
+- World oil price
+- Net overseas migration
+- Government consumption
+- Short-term interest rate
+- NAIRU
+
+Oil, migration and government consumption adjustments are entered as percentage changes and converted to log innovations. Interest-rate adjustments are percentage points and NAIRU adjustments use percentage units. See the Model guide in the application and `VARIABLES.md` for model definitions and shock conventions.
+
+The **Scenario library** lists stored runs and their status. A completed scenario can be reopened to compare it with the central forecast. Runs execute asynchronously; the frontend polls the API until a run completes or fails.
+
+### Frontend development
+
+The React application is in `src/`, with `src/App.tsx` providing the scenario workspace and `src/api.ts` providing the API client. The local API is implemented in `server/index.mjs`. Run the following checks before shipping frontend changes:
+
+```text
+npm run lint
+npm run build
+```
+
+Scenario runs are stored under `scenario-runs/<run-id>/` with input snapshots, metadata, stdout and stderr logs, and forecast output. This directory is ignored by Git. Each run has its own copies of the exogenous forecast and shocks, so it does not modify the checked-in baseline inputs.
 
 The model has two production inputs:
 

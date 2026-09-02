@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Activity, BarChart3, BookOpen, ChevronDown, CircleHelp, Clock3, Database, Download, Gauge, Menu, Play, Plus, RotateCcw, Settings2, TrendingDown, TrendingUp, X } from 'lucide-react'
+import { Activity, BarChart3, BookOpen, ChevronDown, CircleHelp, Clock3, Database, Gauge, Menu, Play, Plus, RotateCcw, Settings2, X } from 'lucide-react'
 import { api } from './api'
 import type { Adjustment, ForecastRow, Scenario } from './types'
+import { variableLabel } from './variables'
 
 const controls = [
   { variable: 'Fpoil', label: 'Oil price', unit: '%', step: 1, factor: (v: number) => Math.log(1 + v / 100), description: 'World oil price path' },
@@ -11,33 +12,64 @@ const controls = [
   { variable: 'Ustar', label: 'NAIRU', unit: 'pp', step: 0.1, factor: (v: number) => v, description: 'Long-run unemployment anchor' },
 ]
 
-const metrics = [
-  { variable: 'Ygdp', label: 'Real GDP', format: 'growth' },
-  { variable: 'Lur', label: 'Unemployment rate', format: 'percent' },
-  { variable: 'Pcpi', label: 'CPI inflation', format: 'growth' },
-  { variable: 'R90d', label: 'Short-term rate', format: 'percent' },
-] as const
+const initialVariable = 'Ygdp'
+const rateVariables = new Set(['Lpar', 'Lur', 'R90d', 'R10y', 'Rmort', 'EqYield', 'R90dReal', 'R10yReal', 'RmortReal', 'RmortRealExgst', 'Fr10y', 'Fr10yReal', 'Rdif10y', 'Rbiz', 'RbizReal', 'RmortRealHpf', 'InflExp', 'Fr10yUs', 'Fr10yJp', 'Fr10yDe', 'Fr10yUk'])
+type DisplayMode = 'quarterly-change' | 'annual-change' | 'level'
 
 const quarter = (date: string) => `${date.slice(0, 4)} Q${Math.floor((Number(date.slice(5, 7)) - 1) / 3) + 1}`
+const adjustmentValue = (adjustment: Adjustment) => {
+  const value = adjustment.displayValue
+  const formatted = new Intl.NumberFormat('en-AU', { maximumFractionDigits: 4 }).format(Math.abs(value))
+  return `${value > 0 ? '+' : value < 0 ? '-' : ''}${formatted}${adjustment.unit === '%' ? '%' : ` ${adjustment.unit}`}`
+}
 const getValue = (row: ForecastRow, variable: string) => Number(row[variable])
-const metricValue = (rows: ForecastRow[], variable: string, format: string, index = rows.length - 1) => {
-  const current = getValue(rows[index], variable)
-  if (format === 'growth') {
-    const previous = getValue(rows[Math.max(0, index - 4)], variable)
-    return 100 * (current / previous - 1)
+const measureLabel = (variable: string, mode: DisplayMode) => {
+  if (mode === 'quarterly-change') return 'Quarterly percentage change'
+  if (mode === 'annual-change') return 'Annual percentage change'
+  if (rateVariables.has(variable)) return 'Per cent'
+  return 'Model level'
+}
+const metricValue = (rows: ForecastRow[], variable: string, mode: DisplayMode, index = rows.length - 1) => {
+  if (!rows[index]) return null
+  const publishedGrowth = Number(rows[index][`${variable}AnnualGrowth`])
+  if (mode === 'annual-change') {
+    if (Number.isFinite(publishedGrowth)) return publishedGrowth
+    if (index < 4) return null
+    const current = getValue(rows[index], variable)
+    const previous = getValue(rows[index - 4], variable)
+    const growth = 100 * (current / previous - 1)
+    return Number.isFinite(growth) ? growth : null
   }
-  return 100 * current
+  if (mode === 'quarterly-change') {
+    if (index < 1) return null
+    const current = getValue(rows[index], variable)
+    const previous = getValue(rows[index - 1], variable)
+    const growth = 100 * (current / previous - 1)
+    return Number.isFinite(growth) ? growth : null
+  }
+  const current = getValue(rows[index], variable)
+  const value = rateVariables.has(variable) ? 100 * current : current
+  return Number.isFinite(value) ? value : null
 }
 
-function LineChart({ baseline, scenario, variable, format }: { baseline: ForecastRow[]; scenario: ForecastRow[]; variable: string; format: string }) {
+const comparisonPoints = (baseline: ForecastRow[], scenario: ForecastRow[], variable: string, mode: DisplayMode) => {
+  const scenarioIndexes = new Map(scenario.map((row, index) => [row.date, index]))
+  return baseline.flatMap((row, baselineIndex) => {
+    const scenarioIndex = scenarioIndexes.get(row.date)
+    if (scenarioIndex === undefined) return []
+    const baselineValue = metricValue(baseline, variable, mode, baselineIndex)
+    const scenarioValue = metricValue(scenario, variable, mode, scenarioIndex)
+    if (baselineValue === null || scenarioValue === null) return []
+    return [{ date: row.date, baseline: baselineValue, scenario: scenarioValue }]
+  })
+}
+
+function LineChart({ baseline, scenario, variable, mode }: { baseline: ForecastRow[]; scenario: ForecastRow[]; variable: string; mode: DisplayMode }) {
   const width = 820
-  const height = 286
-  const padding = { top: 22, right: 30, bottom: 35, left: 54 }
-  const points = baseline.map((_, index) => ({
-    date: baseline[index].date,
-    baseline: metricValue(baseline, variable, format, index),
-    scenario: metricValue(scenario, variable, format, index),
-  }))
+  const height = 330
+  const padding = { top: 26, right: 34, bottom: 54, left: 82 }
+  const points = comparisonPoints(baseline, scenario, variable, mode)
+  if (points.length < 2) return <div className="chart-empty">No comparable forecast data is available for this metric.</div>
   const values = points.flatMap((point) => [point.baseline, point.scenario])
   let min = Math.min(...values)
   let max = Math.max(...values)
@@ -48,12 +80,17 @@ function LineChart({ baseline, scenario, variable, format }: { baseline: Forecas
   const y = (value: number) => padding.top + (max - value) * ((height - padding.top - padding.bottom) / (max - min))
   const pathFor = (key: 'baseline' | 'scenario') => points.map((point, index) => `${index ? 'L' : 'M'} ${x(index).toFixed(1)} ${y(point[key]).toFixed(1)}`).join(' ')
   const ticks = Array.from({ length: 5 }, (_, index) => min + ((max - min) * index) / 4)
+  const dateTicks = Array.from(new Set(Array.from({ length: 5 }, (_, index) => Math.round(index * (points.length - 1) / 4))))
+  const percentage = measureLabel(variable, mode) !== 'Model level'
+  const formatTick = (value: number) => percentage
+    ? `${value.toFixed(1)}%`
+    : new Intl.NumberFormat('en-AU', { notation: 'compact', maximumFractionDigits: 1 }).format(value)
 
   return (
     <div className="chart-wrap">
-      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${variable} forecast comparison`}>
-        {ticks.map((tick) => <g key={tick}><line className="grid-line" x1={padding.left} x2={width - padding.right} y1={y(tick)} y2={y(tick)} /><text className="axis-label" x={padding.left - 10} y={y(tick) + 4} textAnchor="end">{tick.toFixed(1)}%</text></g>)}
-        {[0, 11, 23, 35, 47].map((index) => <text key={index} className="axis-label" x={x(index)} y={height - 9} textAnchor={index === 0 ? 'start' : index === 47 ? 'end' : 'middle'}>{quarter(points[index].date).replace(' Q1', '')}</text>)}
+      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`${variableLabel(variable)} forecast comparison`}>
+        {ticks.map((tick) => <g key={tick}><line className="grid-line" x1={padding.left} x2={width - padding.right} y1={y(tick)} y2={y(tick)} /><text className="axis-label" x={padding.left - 14} y={y(tick) + 7} textAnchor="end">{formatTick(tick)}</text></g>)}
+        {dateTicks.map((index) => <text key={index} className="axis-label" x={x(index)} y={height - 12} textAnchor={index === 0 ? 'start' : index === points.length - 1 ? 'end' : 'middle'}>{quarter(points[index].date).replace(' Q1', '')}</text>)}
         <path className="baseline-line" d={pathFor('baseline')} />
         <path className="scenario-line" d={pathFor('scenario')} />
       </svg>
@@ -66,7 +103,7 @@ function App() {
   const [baseline, setBaseline] = useState<Scenario | null>(null)
   const [scenarios, setScenarios] = useState<Scenario[]>([])
   const [selected, setSelected] = useState<Scenario | null>(null)
-  const [activeMetric, setActiveMetric] = useState<(typeof metrics)[number]>(metrics[0])
+  const [selectedVariable, setSelectedVariable] = useState(initialVariable)
   const [name, setName] = useState('')
   const [notes, setNotes] = useState('')
   const [adjustments, setAdjustments] = useState<Adjustment[]>([])
@@ -74,26 +111,50 @@ function App() {
   const [error, setError] = useState('')
   const [mobileNav, setMobileNav] = useState(false)
   const [scenarioMenuOpen, setScenarioMenuOpen] = useState(false)
+  const [reloadKey, setReloadKey] = useState(0)
 
   useEffect(() => {
-    api.bootstrap().then((data) => {
-      setBaseline(data.baseline)
-      setScenarios(data.scenarios)
-      setSelected(data.baseline)
-    }).catch((reason) => setError(reason.message))
-  }, [])
+    let active = true
+    const refresh = async () => {
+      try {
+        const data = await api.bootstrap()
+        if (!active) return
+        setBaseline(data.baseline)
+        setScenarios(data.scenarios)
+        setSelected((current) => !current || current.id === 'baseline' ? data.baseline : current)
+        setError('')
+      } catch (reason) {
+        if (active) setError(reason instanceof Error ? reason.message : 'Could not load the model workspace.')
+      }
+    }
+    void refresh()
+    const timer = window.setInterval(refresh, 30_000)
+    const refreshWhenVisible = () => { if (document.visibilityState === 'visible') void refresh() }
+    document.addEventListener('visibilitychange', refreshWhenVisible)
+    return () => {
+      active = false
+      window.clearInterval(timer)
+      document.removeEventListener('visibilitychange', refreshWhenVisible)
+    }
+  }, [reloadKey])
 
   useEffect(() => {
     if (!selected || selected.status !== 'running') return
-    const timer = window.setInterval(async () => {
-      const updated = await api.scenario(selected.id)
-      setSelected(updated)
-      if (updated.status !== 'running') {
-        setRunning(false)
-        const data = await api.bootstrap()
-        setBaseline(data.baseline)
-        setScenarios(data.scenarios)
-      }
+    const timer = window.setInterval(() => {
+      void (async () => {
+        try {
+          const updated = await api.scenario(selected.id)
+          setSelected(updated)
+          if (updated.status !== 'running') {
+            setRunning(false)
+            const data = await api.bootstrap()
+            setBaseline(data.baseline)
+            setScenarios(data.scenarios)
+          }
+        } catch (reason) {
+          setError(reason instanceof Error ? reason.message : 'Could not refresh the scenario status.')
+        }
+      })()
     }, 1800)
     return () => window.clearInterval(timer)
   }, [selected])
@@ -126,7 +187,9 @@ function App() {
   const showScenario = async (scenario: Scenario) => {
     setError('')
     try {
-      setSelected(await api.scenario(scenario.id))
+      const updated = await api.scenario(scenario.id)
+      if (updated.id === 'baseline') setBaseline(updated)
+      setSelected(updated)
       setActiveView('results')
     } catch (reason) { setError(reason instanceof Error ? reason.message : 'Could not load this scenario.') }
   }
@@ -136,10 +199,14 @@ function App() {
     setMobileNav(false)
   }
 
-  if (!baseline || !selected) return <div className="loading-screen"><span className="brand-dot" /> Loading model workspace</div>
+  if (!baseline || !selected) return <div className="loading-screen"><span className="brand-dot" />{error ? <><span>{error}</span><button onClick={() => setReloadKey((key) => key + 1)}>Try again</button></> : 'Loading model workspace'}</div>
   const resultRows = selected.results || baseline.results || []
   const baselineRows = baseline.results || []
   const endDate = resultRows.at(-1)?.date || '2036-12-01'
+  const availableVariables = Object.keys(baselineRows[0] || {})
+    .filter((variable) => variable !== 'date' && !variable.endsWith('AnnualGrowth'))
+    .sort((left, right) => variableLabel(left).localeCompare(variableLabel(right)))
+  const baselineVintageMismatch = selected.id !== 'baseline' && selected.baselineVersion && selected.baselineVersion !== baseline.version
 
   return (
     <div className="app-shell">
@@ -174,24 +241,48 @@ function App() {
               </div></div>
               <div className={`run-badge ${selected.status}`}><span />{selected.status === 'baseline' ? 'Published baseline' : selected.status}</div>
             </div>
+            {baseline.isStale && <div className="data-warning" role="status"><strong>Central forecast needs regeneration.</strong> The published forecast predates updated {baseline.staleSources?.join(', ')}. Run <code>Rscript run_model.R</code> before relying on these results.</div>}
+            {baselineVintageMismatch && <div className="data-warning" role="status"><strong>Baseline vintage changed.</strong> This scenario was run against an earlier central forecast, so comparisons are not like-for-like.</div>}
 
-            <div className="metric-strip">
-              {metrics.map((metric) => {
-                const value = metricValue(resultRows, metric.variable, metric.format)
-                const base = metricValue(baselineRows, metric.variable, metric.format)
-                const delta = value - base
-                return <button key={metric.variable} className={activeMetric.variable === metric.variable ? 'metric active' : 'metric'} onClick={() => setActiveMetric(metric)}>
-                  <span>{metric.label}</span><strong>{value.toFixed(1)}%</strong><small>{delta === 0 ? 'Baseline' : <>{delta > 0 ? <TrendingUp size={13} /> : <TrendingDown size={13} />}{delta > 0 ? '+' : ''}{delta.toFixed(2)} pp</>}</small>
-                </button>
-              })}
-            </div>
+            <section className="applied-shocks" aria-labelledby="applied-shocks-heading">
+              <div className="applied-shocks-head">
+                <div><h2 id="applied-shocks-heading">Applied shocks</h2><p>{selected.id === 'baseline' ? 'The published central forecast has no scenario shocks.' : `${selected.adjustments.length} ${selected.adjustments.length === 1 ? 'shock' : 'shocks'} stored with this run.`}</p></div>
+                {selected.id !== 'baseline' && <span className="mono">{selected.id}</span>}
+              </div>
+              {selected.notes && <p className="scenario-notes"><strong>Scenario notes</strong>{selected.notes}</p>}
+              {selected.adjustments.length > 0 ? <ul className="shock-list">
+                {selected.adjustments.map((adjustment) => <li key={adjustment.id}>
+                  <span className="shock-name"><strong>{adjustment.label}</strong><small>{adjustment.variable}</small></span>
+                  <strong className="shock-value">{adjustmentValue(adjustment)}</strong>
+                  <span className="shock-period">{quarter(adjustment.start)} to {quarter(adjustment.end)}</span>
+                </li>)}
+              </ul> : <div className="no-shocks">No shocks applied</div>}
+            </section>
 
-            <article className="chart-section">
-              <div className="chart-header"><div><h2>{activeMetric.label}</h2><p>{activeMetric.format === 'growth' ? 'Annual percentage change' : 'Per cent'} &middot; {quarter(resultRows[0].date)} to {quarter(endDate)}</p></div><button className="icon-button" aria-label="Download chart"><Download size={18} /></button></div>
-              <div className="legend"><span><i className="legend-scenario" />{selected.name}</span><span><i className="legend-baseline" />Central forecast</span></div>
-              <LineChart baseline={baselineRows} scenario={resultRows} variable={activeMetric.variable} format={activeMetric.format} />
-              <p className="chart-note">Source: Deloitte Access Economics macro scenario model. Forecast from 2025 Q1.</p>
-            </article>
+            <section className="chart-workspace" aria-labelledby="results-charts-heading">
+              <div className="chart-toolbar">
+                <div><h2 id="results-charts-heading">{variableLabel(selectedVariable)}</h2><p>Quarterly, annual and level views for the selected variable</p></div>
+                <div className="chart-controls">
+                  <label className="measure-control"><span>Measure</span><select value={selectedVariable} onChange={(event) => setSelectedVariable(event.target.value)}>{availableVariables.map((variable) => <option value={variable} key={variable}>{variableLabel(variable)} ({variable})</option>)}</select></label>
+                </div>
+              </div>
+
+              <div className="chart-grid">
+                {(['quarterly-change', 'annual-change', 'level'] as DisplayMode[]).map((displayMode) => {
+                  const points = comparisonPoints(baselineRows, resultRows, selectedVariable, displayMode)
+                  const chartStartDate = points[0]?.date || resultRows[0]?.date
+                  const latest = points.at(-1)
+                  const percentage = measureLabel(selectedVariable, displayMode) !== 'Model level'
+                  const latestValue = latest ? (percentage ? `${latest.scenario.toFixed(1)}%` : new Intl.NumberFormat('en-AU', { notation: 'compact', maximumFractionDigits: 2 }).format(latest.scenario)) : 'Not available'
+                  return <article className="chart-section" key={displayMode}>
+                    <div className="chart-header"><div><h3>{displayMode === 'quarterly-change' ? 'Quarterly' : displayMode === 'annual-change' ? 'Annual' : 'Level'} <span>{selectedVariable}</span></h3><p>{measureLabel(selectedVariable, displayMode)} &middot; {chartStartDate ? quarter(chartStartDate) : 'No data'} to {quarter(endDate)}</p></div><div className="chart-latest"><span>Latest</span><strong>{latestValue}</strong></div></div>
+                    <div className="legend"><span><i className="legend-scenario" />{selected.name}</span><span><i className="legend-baseline" />Central forecast</span></div>
+                    <LineChart baseline={baselineRows} scenario={resultRows} variable={selectedVariable} mode={displayMode} />
+                  </article>
+                })}
+              </div>
+              <p className="chart-source">Source: Deloitte Access Economics macro scenario model. Central forecast generated {baseline.createdAt ? new Date(baseline.createdAt).toLocaleString('en-AU', { dateStyle: 'medium', timeStyle: 'short' }) : 'date unavailable'} &middot; Version <span className="mono">{baseline.version || 'unknown'}</span>.</p>
+            </section>
 
             <section className="library">
               <div className="section-header"><div><h2>Recent scenarios</h2><p>Stored runs and their latest status</p></div><button className="text-button" onClick={() => document.getElementById('scenario-name')?.focus()}>New scenario <Plus size={16} /></button></div>

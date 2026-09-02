@@ -19,6 +19,10 @@ export type Scenario = {
   createdAt: string | null
   completedAt: string | null
   adjustments: Adjustment[]
+  version?: string
+  baselineVersion?: string
+  isStale?: boolean
+  staleSources?: string[]
   results?: ForecastRow[]
   error?: string
 }

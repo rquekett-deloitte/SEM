@@ -1,7 +1,5 @@
 library(tidyverse)
 
-RCASH_IMPOSED <- c(c1 = 0.3, c2 = -2, c3 = 1, c4 = -1)
-
 build_lhrs_frame <- function(data, end_date) {
   data %>%
     mutate(

@@ -27,6 +27,7 @@ suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(seasonal))
 
 source("R/calculate_estimation_data.R")
+source("R/model_constants.R")
 source("R/estimation.R")
 source("R/forecast_model.R")
 source("R/model_outputs.R")
@@ -65,6 +66,7 @@ forecast_model <- run_bimets_forecast(
   show_progress = model_settings$show_bimets_progress
 )
 forecast <- extract_forecast(forecast_model, origin, horizon)
+validate_forecast(forecast, model_data)
 
 dir.create("outputs", showWarnings = FALSE)
 

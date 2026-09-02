@@ -105,5 +105,60 @@ extract_forecast <- function(simulated_model, origin, horizon) {
       extract_window(find_series(source, variable), variable)
     }) %>%
     stats::setNames(variables)
+  annual_growth <- function(variable) {
+    series <- find_series(simulation, variable)
+    current <- extract_window(series, variable)
+    previous <- as.numeric(stats::window(
+      series,
+      start = c(lubridate::year(origin) - 1L, lubridate::quarter(origin)),
+      end = c(lubridate::year(horizon) - 1L, lubridate::quarter(horizon))
+    ))
+    if (length(previous) != length(dates) || any(!is.finite(previous))) {
+      stop("Annual growth comparison has the wrong history: ", variable)
+    }
+    100 * (current / previous - 1)
+  }
+  values$YgdpAnnualGrowth <- annual_growth("Ygdp")
+  values$PcpiAnnualGrowth <- annual_growth("Pcpi")
   tibble::as_tibble(c(list(date = dates), values))
+}
+
+validate_forecast <- function(forecast, history, tolerance = 1e-6) {
+  required <- c(
+    "Ygdp", "Cpr", "Cgov", "Idwell", "Iotc", "Imin", "Inonmin",
+    "Igov", "Ipubent", "Ivt", "IvtFar", "IvtNonfarm", "Xtot", "Mtot",
+    "YgdpAnnualGrowth", "PcpiAnnualGrowth"
+  )
+  missing <- setdiff(required, names(forecast))
+  if (length(missing) > 0) {
+    stop("Forecast is missing validation fields: ", paste(missing, collapse = ", "))
+  }
+  if (nrow(forecast) == 0 || any(!is.finite(as.matrix(forecast[required])))) {
+    stop("Forecast validation fields must be finite and non-empty")
+  }
+
+  previous_stock <- c(
+    tail(history$IvtNonfarm[is.finite(history$IvtNonfarm)], 1),
+    head(forecast$IvtNonfarm, -1)
+  )
+  expected_inventory_flow <- forecast$IvtFar + forecast$IvtNonfarm - previous_stock
+  inventory_error <- max(abs(forecast$Ivt - expected_inventory_flow))
+  inventory_scale <- max(1, abs(expected_inventory_flow))
+  if (inventory_error > tolerance * inventory_scale) {
+    stop("Inventory flow identity failed; maximum error = ", inventory_error)
+  }
+
+  expenditure <- with(
+    forecast,
+    Cpr + Cgov + Idwell + Iotc + Imin + Inonmin + Igov + Ipubent +
+      Ivt + Xtot - Mtot
+  )
+  accounting_residual <- forecast$Ygdp - expenditure
+  residual_drift <- max(abs(accounting_residual - accounting_residual[[1]]))
+  residual_scale <- max(1, abs(forecast$Ygdp))
+  if (residual_drift > tolerance * residual_scale) {
+    stop("Real GDP accounting residual is not constant; maximum drift = ", residual_drift)
+  }
+
+  invisible(forecast)
 }
