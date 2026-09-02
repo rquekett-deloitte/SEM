@@ -196,3 +196,30 @@ input.
   1974Q3 to 2036Q4, period-marked Actual/Forecast) and the coefficient
   comparisons above. `Rscript R/run_residual_demo.R` writes the carry-forward
   on/off comparison to `outputs/residual_demo/`.
+
+## Backtest, Shiny dashboard and Coredata export (2026-09-02, later)
+
+- `R/run_backtest.R`: within-sample historical tracking (default 2010Q1 to
+  the final data quarter) driven by the actual exogenous paths, with the
+  observed COVID corrections (ShockGst, DumTsfTot) applied inside the
+  simulation window via the new `observed` argument of
+  `build_ts_database()`/`run_bimets_forecast()`. Outputs in
+  `outputs/backtest_2010Q1/`. Full-sample coefficients (a pre-2020
+  re-estimation is blocked: COVID-dummy regressors are unidentified on
+  earlier samples); the frozen-trend closures drive most of the rate and
+  unemployment drift.
+- The React + Express frontend, `start_sem.cmd` and the npm toolchain were
+  removed; `dashboard/` (Shiny) is the only frontend. The intended users have
+  R but not Node.js. Launch with `start_dashboard.cmd`. Scenario metadata now
+  carries completion in `scenario-runs/<id>/status.txt` (the runner wrapper
+  writes it; cmd.exe mangles quoted multi-argument shell command lines, so
+  the spawn uses system2/`runner_template.R` instead of shell chaining).
+  `Ustar` is no longer offered as an adjustment because it is no longer a
+  scenario input.
+- `R/coredata_export.R` maps SEM variables onto the national Coredata naming
+  conventions (`data-raw/sem_to_coredata.csv`; 50 Coredata variables covered:
+  28 exported, 4 flagged for review, 18 with no SEM counterpart) and writes
+  `outputs/sem_coredata.xlsx` in the Coredata RAW orientation. Rates and
+  ratios are decimal fractions in both conventions. A variable registry
+  extracted from the reference workbook is in
+  `outputs/coredata_variable_registry.csv`.
