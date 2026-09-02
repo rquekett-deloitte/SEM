@@ -52,12 +52,22 @@ feedback block uses a 10 per cent damped Gauss-Seidel update, which changes the
 iteration path but not the fixed-point equations. Forecast closures, units and
 scenario-provenance handling are documented in `VARIABLES.md`.
 
-`Data.xlsx` currently ends in 2024Q4, so the forecast begins in 2025Q1.
-Estimation windows, the forecast origin and the residual conditioning quarter
-all follow the data end, so extending `Data.xlsx` re-estimates the equations to
-the new quarter and re-forecasts from the following quarter without code
-changes. No observed data beyond the final `Data.xlsx` quarter enter
-estimation, conditioning, filtering or simulation.
+`Data.xlsx` is ragged after a download run (quarterly national accounts,
+monthly rates and the derived series end at different quarters), so the
+forecast origin and the residual conditioning quarter are derived from the
+last quarter in which every residual-calibration input is observed
+(`CONDITIONING_INPUTS` in `R/forecast_model.R`). Observations beyond the
+conditioning quarter enter estimation (each equation NA-drops to its own
+end) and comparison, never conditioning. The origin advances automatically
+as releases land: today it is bound by the publication lags of quarterly
+net overseas migration (`Lnom`, with the ERP releases) and the labour
+account hours (`Lhrs`), so the forecast runs from the quarter after the
+last quarter those two reach. `Phouse` (the transfer-weighted median
+derivation from the Total Value of Dwellings Table 2, validated to
+reproduce the workbook history exactly), `Lnom` and the capital-stock
+carry convention are implemented in `R/update_data.R`; the all-zero shocks
+baseline realigns itself to the forecast window (a baseline with scenario
+values is never rewritten).
 
 ## Run directly
 
@@ -161,18 +171,15 @@ executes data preparation, estimation and forecasting. It writes:
   time series tables, and RBA series come from the statistical-table CSVs -
   applies the transformation noted in the workbook's `Variables` sheet
   (quarterly as published; monthly series take a three-month average, with
-  the noted divide-by-100) and writes `outputs/data_download_validation.csv`
-  (the source-correctness check: every downloaded series compared with the
-  existing history and graded, with the new quarters counted) plus
-  `data-raw/Data_updated.xlsx`, a candidate workbook with the new quarters
-  appended. Existing history is never rewritten by the script; revisions
-  are quantified in the validation report for a separate decision. Review
-  the candidate, then promote it by replacing `data-raw/Data.xlsx` and
-  re-running the model. Downloaded tables are cached under
-  `data-raw/downloads/` (git-ignored). Variables without a directly
-  downloadable series ID (the Masterdata-sourced series, internal
-  calibrations and the annual interpolations) are listed in the report with
-  the reason.
+  the noted divide-by-100) and updates `data-raw/Data.xlsx` in place with
+  the new quarters appended. Git is the review and revert mechanism:
+  `outputs/data_download_validation.csv` grades every downloaded series
+  against the existing history (the source-correctness check), records
+  rescalings and the worst quarter, and lists skipped variables with
+  reasons. Existing history is extended, never rewritten, except for the
+  documented rebenchmarked series in `ADOPT_CURRENT_VINTAGE` inside the
+  script. Downloaded tables are cached under `data-raw/downloads/`
+  (git-ignored).
 
 ## Residual carry-forward
 

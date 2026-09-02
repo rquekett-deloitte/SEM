@@ -8,14 +8,16 @@
 #   - RBA: the statistical-table CSVs (f1.1, f2.1, f5, f11 monthly).
 # The transformation noted in the workbook's Variables sheet is applied
 # (quarterly as published; monthly series take a three-month average, with
-# the noted divide-by-100; multiple-series sources are summed). The result is
-# validated against the existing Data.xlsx history - the source-correctness
-# check - and a candidate updated workbook is written with the new quarters
-# appended. Existing history is never rewritten by this script: revisions are
-# quantified in the validation report for a separate decision.
+# the noted divide-by-100; multiple-series sources are summed). Every series
+# is validated against the existing history - the source-correctness check -
+# and Data.xlsx is updated in place with the new quarters appended. Existing
+# history is extended, never rewritten, except for the documented rebench-
+# marked series in ADOPT_CURRENT_VINTAGE; routine revisions are quantified
+# in the validation report, not adopted. Git is the review and revert
+# mechanism; outputs/data_download_validation.csv is the review artifact.
 #
 # Run from the project root:  Rscript R/update_data.R
-# Outputs: data-raw/Data_updated.xlsx (candidate, review then promote),
+# Outputs: data-raw/Data.xlsx (updated in place; git diff is the review,
 #          outputs/data_download_validation.csv,
 #          data-raw/downloads/ (table cache, git-ignored).
 
@@ -37,7 +39,9 @@ options(timeout = 300)
 download_dir <- file.path("data-raw", "downloads")
 dir.create(download_dir, showWarnings = FALSE, recursive = TRUE)
 WORKBOOK <- "data-raw/Data.xlsx"
-CANDIDATE <- "data-raw/Data_updated.xlsx"
+# The pipeline writes Data.xlsx directly: git is the review and revert
+# mechanism, and outputs/data_download_validation.csv is the review artifact.
+CANDIDATE <- "data-raw/Data.xlsx"
 UA <- "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 
 variables_sheet <- read.xlsx(WORKBOOK, sheet = "Variables")
@@ -53,6 +57,71 @@ RBA_TABLES <- c(
   FIRMMBAB90 = "f1.1", FCMYGBAG10 = "f2.1", FCMYGBAGI = "f2.1",
   FXRUSD = "f11", FXRTWI = "f11", FILRHLBVS = "f5"
 )
+
+# Series the statistical agency has rebenchmarked since the workbook's
+# vintage. The workbook's values are superseded, so the candidate workbook
+# ADOPTS the current official series over the whole overlapping span instead
+# of extending only. Everything else stays extend-only: routine revisions
+# are quantified in the validation report, not adopted.
+ADOPT_CURRENT_VINTAGE <- c("LhrsPub", "Wfor")
+
+# Documented derivation conventions. Phouse is the transfer-weighted median
+# of the 30 median-price series (established houses and attached dwellings,
+# eight capitals and seven rest-of-state) in the ABS Total Value of
+# Dwellings Table 2 - the continuation of the ceased 6432.0 Table 2
+# derivation, validated to reproduce the workbook history exactly
+# (92 quarters, zero drift). The capital stocks have no new 5204.0
+# benchmark in the current release, so beyond the last observation their
+# final quarterly increment continues (KOther's level holds) - the same
+# convention the workbook itself used past its final benchmark.
+DERIVED_PHOUSE_URL <- paste0(
+  "https://www.abs.gov.au/statistics/economy/",
+  "price-indexes-and-inflation/total-value-dwellings/",
+  "latest-release/643202.xlsx")
+CARRY_TREND <- c("KMin", "KBiz", "KDwell", "KTotal")
+CARRY_HOLD <- c("KOther")
+
+fetch_phouse <- function() {
+  dest <- file.path(download_dir, basename(DERIVED_PHOUSE_URL))
+  if (!file.exists(dest)) {
+    ok <- tryCatch({
+      download.file(DERIVED_PHOUSE_URL, dest, quiet = TRUE, mode = "wb")
+      TRUE
+    }, error = function(e) FALSE)
+    if (!ok) return(NULL)
+  }
+  sheets <- getSheetNames(dest)
+  data_sheet <- grep("^Data", sheets, value = TRUE)[1]
+  n <- nrow(read.xlsx(dest, sheet = data_sheet, colNames = FALSE, cols = 1))
+  head <- read.xlsx(dest, sheet = data_sheet, colNames = FALSE,
+                    rows = seq_len(min(14, n)))
+  id_row <- which(apply(head, 1, function(r)
+    any(grepl("Series ID", r, fixed = TRUE))))[1]
+  ids <- as.character(unlist(head[id_row, ]))
+  descs <- as.character(unlist(head[1, ]))
+  body <- read.xlsx(dest, sheet = data_sheet, colNames = FALSE,
+                    rows = (id_row + 1):n, detectDates = FALSE)
+  dates <- as.Date(as.numeric(body[[1]]), origin = "1899-12-30")
+  median_cols <- which(!is.na(ids) &
+    grepl("Median Price of", descs, fixed = TRUE))
+  transfer_cols <- which(!is.na(ids) &
+    grepl("Number of", descs, fixed = TRUE))
+  if (length(median_cols) == 0 || length(transfer_cols) != length(median_cols)) {
+    stop("Unexpected Total Value of Dwellings table structure")
+  }
+  num <- rep(0, length(dates))
+  den <- rep(0, length(dates))
+  for (k in seq_along(median_cols)) {
+    med <- as.numeric(body[[median_cols[k]]])
+    tr <- as.numeric(body[[transfer_cols[k]]])
+    ok <- is.finite(med) & is.finite(tr)
+    num[ok] <- num[ok] + med[ok] * tr[ok]
+    den[ok] <- den[ok] + tr[ok]
+  }
+  tibble(date = repo_quarter(dates),
+         value = ifelse(den > 0, num / den, NA_real_))
+}
+DERIVED_SOURCES <- list(Phouse = fetch_phouse)
 
 abs_series_ids <- function(source) {
   unique(unlist(regmatches(source, gregexpr(ABS_ID, source))))
@@ -74,13 +143,18 @@ route <- variables_sheet %>%
   mutate(
     skip_reason = case_when(
       map_int(abs_ids, length) + map_int(rba_ids, length) == 0 &
+        !variable %in% names(DERIVED_SOURCES) &
         !is.na(source) & nzchar(source) & !grepl("Exogenous", source) ~
         "no directly downloadable series ID (internal or derived source)",
-      map_int(abs_ids, length) + map_int(rba_ids, length) == 0 ~
+      map_int(abs_ids, length) + map_int(rba_ids, length) == 0 &
+        !variable %in% names(DERIVED_SOURCES) ~
         "exogenous scenario series (maintained via exogenous_forecast.csv)",
       is.na(source) | !nzchar(source) ~ "no documented source",
       variable == "Rbiz" ~
-        "RBA D8/F7 splice definition needs a confirmed series code",
+        paste0("investigated: the documented D8/F7 splice matches no published ",
+               "RBA series - F5's weighted-average business rates ended with ",
+               "D8 and no F7 series reproduces the workbook's continuation; ",
+               "the original derivation is needed"),
       TRUE ~ ""
     )
   )
@@ -247,9 +321,13 @@ read_rba_table <- function(table_code) {
   ids_df <- utils::read.csv(text = ids_row, header = FALSE,
                            check.names = FALSE, na.strings = "")
   ids <- as.character(ids_df[1, ])
+  # col.names pins the column count to the Series ID row: without it,
+  # read.csv infers the width from the first data row and silently
+  # truncates later series.
   body <- utils::read.csv(path, skip = id_line[1], header = FALSE,
                           check.names = FALSE, na.strings = c("", "NA"),
-                          colClasses = "character")
+                          colClasses = "character", fill = TRUE,
+                          col.names = paste0("V", seq_along(ids)))
   parsed <- parse_rba_date(as.character(body[[1]]))
   keep <- is.finite(parsed)
   body <- body[keep, , drop = FALSE]
@@ -292,8 +370,12 @@ apply_transform <- function(series, frequency, transformation) {
     series <- series %>%
       transmute(date = repo_quarter(date), value)
   }
-  if (grepl("divided by 100", transformation, fixed = TRUE)) {
-    series <- series %>% mutate(value = value / 100)
+  if (grepl("divided by ", transformation, fixed = TRUE)) {
+    divisor <- as.numeric(sub(".*divided by ([0-9]+).*", "\\1",
+                              transformation))
+    if (is.finite(divisor) && divisor > 0) {
+      series <- series %>% mutate(value = value / divisor)
+    }
   }
   series
 }
@@ -367,7 +449,17 @@ process_variable <- function(variable, source, transformation,
     return(empty %>% mutate(status = "skipped", note = skip_reason))
   }
   series <- NULL
-  if (length(abs_ids)) series <- fetch_abs_variable(abs_ids, transformation)
+  if (variable %in% names(DERIVED_SOURCES)) {
+    series <- tryCatch(DERIVED_SOURCES[[variable]](),
+                       error = function(e) {
+                         message("Derived source failed for ", variable, ": ",
+                                 conditionMessage(e))
+                         NULL
+                       })
+  }
+  if (is.null(series) && length(abs_ids)) {
+    series <- fetch_abs_variable(abs_ids, transformation)
+  }
   if (is.null(series) && length(rba_ids)) {
     series <- fetch_rba_variable(rba_ids, transformation)
   }
@@ -403,7 +495,13 @@ process_variable <- function(variable, source, transformation,
   worst <- if (nrow(overlap) && any(is.finite(pct))) {
     format(overlap$date[which.max(abs(pct))])
   } else ""
-  new_data <- filter(series, date > existing_end, is.finite(value))
+  # The workbook is ragged after a partial update: "new" means any finite
+  # official value for a cell that is currently missing - beyond the
+  # workbook end or inside a not-yet-filled column - never an overwrite.
+  cell_values <- data_sheet[[variable]][match(series$date, data_sheet$date)]
+  new_data <- series %>%
+    mutate(cell = cell_values) %>%
+    filter(is.finite(value), is.na(cell))
   verdict <- case_when(
     !is.finite(median_diff) ~ "no comparable overlap",
     median_diff < 0.5 ~ "source confirmed",
@@ -412,7 +510,10 @@ process_variable <- function(variable, source, transformation,
   )
   # Cache the fully transformed series for the extension step.
   series_cache[[variable]] <- series
-  tibble(
+  if (variable %in% ADOPT_CURRENT_VINTAGE) {
+    verdict <- "current official vintage adopted (rebenchmarked series)"
+  }
+  result <- tibble(
     variable = variable,
     status = "downloaded",
     note = paste0(scale_note, length(c(abs_ids, rba_ids)),
@@ -427,6 +528,12 @@ process_variable <- function(variable, source, transformation,
     n_new = nrow(new_data),
     new_end = if (nrow(new_data)) format(max(new_data$date)) else ""
   )
+  if (variable %in% c(CARRY_TREND, CARRY_HOLD)) {
+    result$note <- paste0(result$note,
+                          "; no new benchmark - extended by the carry ",
+                          "convention")
+  }
+  result
 }
 
 fail_row <- function(variable, message) {
@@ -455,25 +562,72 @@ new_quarters <- sort(unique(unlist(results$new_end[
     nzchar(results$new_end)])))
 if (length(new_quarters)) {
   quarter_ends <- as.Date(new_quarters)
-  extended_dates <- seq(from = seq(existing_end, by = "quarter",
-                                  length.out = 2)[2],
-                        to = max(quarter_ends), by = "quarter")
+  from <- seq(existing_end, by = "quarter", length.out = 2)[2]
+  # The date column only grows when a series extends beyond the current
+  # workbook end; ragged fills inside the span need no new rows.
+  extended_dates <- if (max(quarter_ends) >= from) {
+    seq(from, max(quarter_ends), by = "quarter")
+  } else {
+    NULL
+  }
 } else {
   extended_dates <- NULL
 }
 
-if (length(extended_dates)) {
+# Merge one column under an explicit policy:
+#   "fill"        - write official values into missing cells only
+#   "adopt"       - the official series replaces the whole overlapping span
+#   "carry-trend" - continue the final observed quarterly increment
+#   "carry-hold"  - hold the final observed level
+merge_column <- function(existing, all_dates, series, policy) {
+  col <- as.numeric(existing)
+  if (policy %in% c("fill", "adopt")) {
+    idx <- match(series$date, all_dates)
+    hit <- !is.na(idx) & is.finite(series$value)
+    if (policy == "adopt") {
+      col[idx[hit]] <- series$value[hit]
+    } else {
+      write <- hit & is.na(col[idx])
+      col[idx[write]] <- series$value[write]
+    }
+  } else {
+    finite <- which(is.finite(col))
+    last <- if (length(finite)) finite[length(finite)] else NA
+    if (!is.na(last) && last < length(col)) {
+      if (policy == "carry-trend") {
+        step <- if (last > 1 && is.finite(col[last - 1])) {
+          col[last] - col[last - 1]
+        } else 0
+        for (k in (last + 1):length(col)) col[k] <- col[k - 1] + step
+      } else {
+        for (k in (last + 1):length(col)) col[k] <- col[last]
+      }
+    }
+  }
+  col
+}
+
+merge_policy <- function(variable) {
+  if (variable %in% ADOPT_CURRENT_VINTAGE) "adopt" else
+  if (variable %in% CARRY_TREND) "carry-trend" else
+  if (variable %in% CARRY_HOLD) "carry-hold" else "fill"
+}
+
+anything_downloaded <- any(results$status == "downloaded")
+if (anything_downloaded) {
   updated <- data_sheet
   for (d in extended_dates) updated[nrow(updated) + 1, "date"] <- d
+  all_dates <- updated$date
   for (i in seq_len(nrow(results))) {
     r <- results[i, ]
-    if (r$status != "downloaded" || r$n_new == 0 || !nzchar(r$new_end)) next
     variable <- r$variable
+    if (r$status != "downloaded") next
+    if (r$n_new == 0 && !(variable %in% c(CARRY_TREND, CARRY_HOLD)) &&
+        !(variable %in% ADOPT_CURRENT_VINTAGE)) next
     series <- series_cache[[variable]]
-    new_data <- filter(series, date > existing_end, is.finite(value))
-    for (k in seq_len(nrow(new_data))) {
-      updated[updated$date == new_data$date[k], variable] <- new_data$value[k]
-    }
+    if (is.null(series)) next
+    updated[[variable]] <- merge_column(updated[[variable]], all_dates,
+                                        series, merge_policy(variable))
   }
   wb <- loadWorkbook(WORKBOOK)
   removeWorksheet(wb, "Data")
@@ -484,10 +638,15 @@ if (length(extended_dates)) {
   worksheetOrder(wb) <- match(c("Data",
                                 setdiff(order, "Data")), order)
   saveWorkbook(wb, CANDIDATE, overwrite = TRUE)
-  cat("\nCandidate workbook written to", CANDIDATE, "- extended to",
-      format(max(extended_dates)), "\n")
+  cat("\nWorkbook updated:", CANDIDATE,
+      if (length(extended_dates)) {
+        paste0(" - date column extended to ",
+               format(max(extended_dates)))
+      } else {
+        " - ragged columns filled within the existing span"
+      }, "\n")
 } else {
-  cat("\nNo new quarters found; no candidate workbook written.\n")
+  cat("\nNo downloadable series produced data; workbook not touched.\n")
 }
 
 dir.create("outputs", showWarnings = FALSE)

@@ -250,3 +250,38 @@ input.
   prepared-data column is used) and `outputs/exogenous_assumptions.csv`
   (effective endpoints joined to the sources map) are written by
   run_model.R again, closing the gap between VARIABLES.md and the repo.
+
+## Conditioning, derived sources and origin advance (2026-09-02, final)
+
+- The forecast origin now derives from data completeness instead of the
+  workbook's date end: the conditioning quarter is the last quarter in
+  which every residual-calibration input is observed
+  (CONDITIONING_INPUTS in R/forecast_model.R). The workbook is ragged
+  after a download run, and observations beyond the conditioning quarter
+  feed estimation and comparison only. The all-zero shocks baseline
+  realigns itself to the forecast window; a baseline with scenario
+  values is never rewritten.
+- Three former blockers resolved as documented pipeline conventions,
+  each validated against the workbook history: Phouse is the
+  transfer-weighted median of the 30 median-price series in the ABS
+  Total Value of Dwellings Table 2 (continues the 6432.0 Table 2
+  derivation, which ceased in 2021; 92 quarters reproduced with zero
+  drift); Lnom is ABS 3101.0 series A2060785W divided by 1000; the
+  capital stocks continue their final quarterly increment past the last
+  5204.0 benchmark (the workbook's own past-benchmark convention; no new
+  benchmark exists in the current release). Variables-sheet sources
+  updated accordingly, and Whh's stale multiplied-by-100 note corrected
+  to multiplied by 1000 (the release now publishes $bn).
+- update_data.R merges under explicit per-variable policies (fill /
+  adopt / carry-trend / carry-hold): official values fill missing cells
+  only, rebenchmarked series are adopted over the span (LhrsPub, Wfor),
+  and carriers extend from the last finite row. Direct write to
+  Data.xlsx - git diff is the review, the validation CSV the artifact.
+- The forecast advanced from 2025Q1 to 2025Q4 (conditioning 2025Q3,
+  residual carry-forward re-exported). It is now bound only by the
+  publication lags of quarterly NOM and the labour-account hours, and
+  advances automatically as releases land. Forecast-versus-observed
+  check at 2026Q1: GDP +0.9%, CPI -0.2%.
+- Rbiz investigated: the documented D8/F7 splice matches no published
+  RBA series and needs the original derivation; skipped with that
+  finding recorded.

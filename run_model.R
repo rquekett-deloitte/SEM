@@ -65,6 +65,7 @@ coefficients <- extract_coefficients(model)
 horizon <- as.Date("2036-12-01")
 origin <- forecast_origin(model_data)
 exogenous <- parse_exogenous_csv(origin = origin, horizon = horizon)
+align_baseline_shocks(model_settings$shocks_path, origin, horizon)
 shocks <- parse_shocks_csv(model_settings$shocks_path, origin, horizon)
 
 # Standalone residual step: calculate the final-quarter equation residuals

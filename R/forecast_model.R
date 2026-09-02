@@ -399,9 +399,19 @@ aux_regressors <- function(model, data) {
 
 # ---- forecast contracts ---------------------------------------------------------
 
+# The residual-calibration inputs that must be observed at the conditioning
+# quarter. The workbook's data end is ragged after an update (quarterly
+# national accounts, monthly rates and skipped series end at different
+# quarters), so the model conditions at the last quarter where all of these
+# are finite - the original design's "later rows are for comparison only"
+# rule, generalised.
+CONDITIONING_INPUTS <- c(
+  "Pcpi", "Ppcd", "PcpiRent", "PhouseHpf", "RmortRealHpf", "Lnom", "Lwge",
+  "R90d", "Lur", "LurHpf", "d93", "Lhrs", "KTotal", "Ygdp", "YgdpHpf",
+  "Pgdp", "trend"
+)
+
 forecast_origin <- function(data) {
-  # The forecast starts one quarter after the final observed historical
-  # quarter, so an updated Data.xlsx moves the origin with the data.
   dates <- as.Date(data$date)
   if (anyNA(dates) || anyDuplicated(dates) > 0L) {
     stop("Model data dates must be complete and unique")
@@ -414,7 +424,16 @@ forecast_origin <- function(data) {
   if (!all(diff(quarters) == 1L)) {
     stop("Model data dates must be consecutive quarters")
   }
-  seq(max(dates), by = "quarter", length.out = 2L)[2L]
+  missing <- setdiff(CONDITIONING_INPUTS, names(data))
+  if (length(missing)) {
+    stop("Model data is missing conditioning inputs: ",
+         paste(missing, collapse = ", "))
+  }
+  complete <- Reduce(`&`, lapply(data[CONDITIONING_INPUTS],
+                                 function(x) is.finite(as.numeric(x))))
+  if (!any(complete)) stop("No quarter has complete conditioning inputs")
+  conditioning <- max(dates[complete])
+  seq(conditioning, by = "quarter", length.out = 2L)[2L]
 }
 
 mdl_exogenous_contract <- function() {
@@ -796,6 +815,35 @@ parse_exogenous_csv <- function(path = "data-raw/exogenous_forecast.csv",
     }
   }
   raw
+}
+
+# The all-zero baseline shocks file must carry exactly one row per forecast
+# quarter. When the forecast origin moves (an updated Data.xlsx), realign the
+# baseline automatically - but only while it is provably the all-zero
+# baseline; a file with scenario values is the user's and must never be
+# rewritten.
+align_baseline_shocks <- function(path, origin, horizon) {
+  shocks <- readr::read_csv(path, show_col_types = FALSE,
+                            col_types = readr::cols(.default = "character"))
+  expected <- format(seq(as.Date(origin), as.Date(horizon), by = "quarter"))
+  if (identical(as.character(shocks$date), expected)) return(invisible())
+  values <- as.matrix(shocks[, setdiff(names(shocks), "date"), drop = FALSE])
+  if (any(values != "0" & !is.na(values) & nzchar(values))) {
+    stop("The baseline shocks file does not match the forecast window (",
+         format(origin), " to ", format(horizon),
+         ") and contains non-zero values. Rebuild it before running.")
+  }
+  aligned <- cbind(
+    data.frame(date = expected),
+    matrix(0, nrow = length(expected),
+           ncol = ncol(shocks) - 1,
+           dimnames = list(NULL, setdiff(names(shocks), "date")))
+  )
+  names(aligned) <- names(shocks)
+  readr::write_csv(aligned, path, na = "")
+  message("Baseline shocks realigned to the forecast window: ",
+          length(expected), " quarters from ", format(origin))
+  invisible()
 }
 
 parse_shocks_csv <- function(path = "data-raw/shocks.csv",

@@ -137,10 +137,18 @@ validate_forecast <- function(forecast, history, tolerance = 1e-6) {
     stop("Forecast validation fields must be finite and non-empty")
   }
 
-  previous_stock <- c(
-    tail(history$IvtNonfarm[is.finite(history$IvtNonfarm)], 1),
-    head(forecast$IvtNonfarm, -1)
-  )
+  # The inventory identity lags the stock by one quarter. The workbook may
+  # now carry observations beyond the forecast origin (estimation and
+  # comparison only), so the lag must come from the conditioning quarter -
+  # the quarter before the origin - not from the last observed value.
+  conditioning <- seq(as.Date(forecast$date[[1]]), by = "-3 months",
+                      length.out = 2)[2]
+  conditioning_stock <- history$IvtNonfarm[as.Date(history$date) == conditioning]
+  if (!length(conditioning_stock) || !is.finite(conditioning_stock)) {
+    stop("Inventory validation needs the conditioning-quarter stock at ",
+         format(conditioning))
+  }
+  previous_stock <- c(conditioning_stock, head(forecast$IvtNonfarm, -1))
   expected_inventory_flow <- forecast$IvtFar + forecast$IvtNonfarm - previous_stock
   inventory_error <- max(abs(forecast$Ivt - expected_inventory_flow))
   inventory_scale <- max(1, abs(expected_inventory_flow))
