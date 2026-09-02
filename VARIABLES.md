@@ -17,7 +17,7 @@ history is documented in `data-raw/VARIABLE_CHANGES.md`.
 - `Nom` = current-price counterpart of a volume series (`CprNom`); `Real` =
   real counterpart of a nominal rate (`R90dReal`). The pair is symmetric.
 - `Hpf` = HP-filtered trend (`YgdpHpf`). Equilibrium levels carry no suffix:
-  `Ustar` (NAIRU, in per cent), `Rstar` (neutral rate).
+  `Rstar` (neutral rate).
 - Frequency conversion (annual/monthly to quarterly) happens at the documented
   workbook-normalisation boundary; the model receives quarterly series under a
   single name (`GovDebt`, `IntStu`, the `K` stocks).
@@ -147,7 +147,6 @@ through 2026Q1 (some series are shorter). `date` is the quarter index.
 | DumTsfTot | Transfers equation COVID correction (EViews DUMMY_TSFTOT) | Scenario model residuals (Temp/Masterdata.xlsx sheet Master(SEM)) |
 | Peq |  |  |
 | LavhMkt | Market-sector average hours actually worked per quarter, per employed person (hours) | ABS 6291.0.55.001 detailed labour force, market-sector aggregate, via Temp/Masterdata.xlsx sheet 'Master(SEM)' column AvHrsMar (built on sheet 'Average HW' from the industry hours and 'Employment - market'); this is the AVHRSMAR variable of the EViews SEM |
-| Ustar | Non-accelerating-inflation rate of unemployment (NAIRU), per cent | Deloitte Access Economics SEM, via Temp/Masterdata.xlsx sheet 'Master(SEM)' column Ustar - this is the LUR_STAR variable of the EViews SEM |
 | Tpit | Personal income tax | ABS 5206.0 (A2302733F + A2302779L) |
 | IntStu | International student enrolments, new to Australia | Department of Education, International students.xlsx |
 | PcpiExGst | CPI excluding GST effects | AEM PCPIUX via validated reference workbook |
@@ -243,8 +242,8 @@ contract. The permitted scenario columns are:
 
 Missing columns, unexpected columns, invalid dates, non-consecutive quarters,
 non-numeric cells, and blank forecast-quarter cells are errors.
-`LurHpf` is the model's NAIRU in the forecast; it is no longer supplied as an
-exogenous `Ustar` path. `GovDef` is also endogenous. There is no implicit
+`LurHpf` is the model's NAIRU in the forecast (the unused Ustar series was
+removed from the workbook in September 2026). `GovDef` is also endogenous. There is no implicit
 last-actual carry in the production forecast path.
 
 The forecast origin is fixed at `2025-03-01`. The simulation database admits

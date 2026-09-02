@@ -235,6 +235,16 @@ rba_series_ids <- function(source) {
     grepl(id, source, fixed = TRUE), logical(1))]
 }
 
+# The scenario-maintained series: exogenous by design (world drivers, the
+# farm-inventory neutral closure and the policy-capped student series).
+# This mirrors mdl_exogenous_contract() in R/forecast_model.R; the contract
+# is the authoritative list. Everything else in the workbook is data that
+# must be sourced.
+EXOGENOUS_MAINTAINED <- c(
+  "Fpcpi", "Fpoil", "Fpcom", "Fpagr", "FcGdp", "FcPpp",
+  "Fr10yUs", "Fr10yJp", "Fr10yDe", "Fr10yUk", "IvtFar", "IntStu"
+)
+
 route <- variables_sheet %>%
   transmute(
     variable = Name,
@@ -245,24 +255,27 @@ route <- variables_sheet %>%
   ) %>%
   filter(variable %in% data_columns) %>%
   mutate(
+    category = if_else(variable %in% EXOGENOUS_MAINTAINED,
+                       "exogenous", "sourced"),
     skip_reason = case_when(
+      category == "exogenous" ~
+        "exogenous by design - maintained via exogenous_forecast.csv",
+      variable %in% CARRY_HOLD ~
+        "constant - held at its final level (see source note)",
+      variable %in% names(POSTMERGE_DERIVED) ~
+        "derived - computed from its parents after the merge",
+      variable == "Rbiz" ~
+        paste0("sourcing open: the documented D8/F7 splice matches no ",
+               "published RBA series - F5's weighted-average business rates ",
+               "ended with D8 and no F7 series reproduces the workbook's ",
+               "continuation; the original derivation is needed"),
+      variable %in% c("PeRatio", "EqEarn", "LavhMkt", "PcpiExGst", "ShockGst",
+                      "GovDef", "GovDebt", "Lhh", "KdepRate") ~
+        paste0("sourcing open: owner derivation required - see the source ",
+               "note for what was tested"),
       map_int(abs_ids, length) + map_int(rba_ids, length) == 0 &
         !variable %in% names(DERIVED_SOURCES) &
-        !is.na(source) & nzchar(source) & !grepl("Exogenous", source) ~
-        "no directly downloadable series ID (internal or derived source)",
-      map_int(abs_ids, length) + map_int(rba_ids, length) == 0 &
-        !variable %in% names(DERIVED_SOURCES) ~
-        "exogenous scenario series (maintained via exogenous_forecast.csv)",
-      is.na(source) | !nzchar(source) ~ "no documented source",
-      variable %in% CARRY_HOLD ~
-        "constant series - held at its final level (see source note)",
-      variable %in% names(POSTMERGE_DERIVED) ~
-        "internal derivation - computed from its parents after the merge",
-      variable == "Rbiz" ~
-        paste0("investigated: the documented D8/F7 splice matches no published ",
-               "RBA series - F5's weighted-average business rates ended with ",
-               "D8 and no F7 series reproduces the workbook's continuation; ",
-               "the original derivation is needed"),
+        is.na(source) | !nzchar(source) ~ "sourcing open: no documented source",
       TRUE ~ ""
     )
   )
@@ -543,12 +556,13 @@ cat("Downloading ABS and RBA series for variables with a clear source...\n\n")
 series_cache <- new.env(parent = emptyenv())
 
 process_variable <- function(variable, source, transformation,
-                              abs_ids, rba_ids, skip_reason) {
+                              abs_ids, rba_ids, skip_reason, category) {
   # Route list-columns arrive as lists; normalise to plain (possibly empty)
   # character vectors.
   abs_ids <- unlist(abs_ids)
   rba_ids <- unlist(rba_ids)
-  empty <- tibble(variable = variable, status = "x", note = "",
+  empty <- tibble(variable = variable, category = category, status = "x",
+                  note = "",
                   n_overlap = NA_integer_, median_abs_pct_diff = NA_real_,
                   mean_abs_pct_diff = NA_real_, max_abs_pct_diff = NA_real_,
                   worst_quarter = "", verdict = "n/a",
@@ -623,6 +637,7 @@ process_variable <- function(variable, source, transformation,
   }
   result <- tibble(
     variable = variable,
+    category = category,
     status = "downloaded",
     note = paste0(scale_note, length(c(abs_ids, rba_ids)),
                   " series; overlap ends ",
@@ -645,7 +660,7 @@ process_variable <- function(variable, source, transformation,
 }
 
 fail_row <- function(variable, message) {
-  tibble(variable = variable, status = "failed",
+  tibble(variable = variable, category = "sourced", status = "failed",
          note = paste0("error: ", substr(message, 1, 160)),
          n_overlap = NA_integer_, median_abs_pct_diff = NA_real_,
          mean_abs_pct_diff = NA_real_, max_abs_pct_diff = NA_real_,
@@ -769,9 +784,14 @@ if (anything_downloaded) {
 dir.create("outputs", showWarnings = FALSE)
 write_csv(results, "outputs/data_download_validation.csv")
 
-cat("\n=== Validation summary ===\n")
-print(count(results, verdict), n = Inf)
-cat("\n=== Skipped variables ===\n")
-skipped <- results[results$status != "downloaded", c("variable", "note")]
-print(as.data.frame(skipped), row.names = FALSE)
+cat("\n=== Sourcing map ===\n")
+print(count(results, category), n = Inf)
+cat("\n=== Sourced detail ===\n")
+print(count(results[results$category == "sourced", ], verdict), n = Inf)
+cat("\n=== Exogenous (maintained via the scenario file) ===\n")
+print(results$variable[results$category == "exogenous"])
+cat("\n=== Sourcing still open (owner derivation required) ===\n")
+open_items <- results[grepl("^sourcing open", results$note),
+                      c("variable", "note")]
+print(as.data.frame(open_items), row.names = FALSE)
 cat("\nFull report: outputs/data_download_validation.csv\n")

@@ -114,7 +114,6 @@ KdepRate,FALSE,FALSE,FALSE,FALSE,TRUE,data-preparation input
 DumTsfTot,TRUE,TRUE,FALSE,FALSE,FALSE,behavioural equation variable
 Peq,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
 LavhMkt,TRUE,TRUE,TRUE,FALSE,FALSE,behavioural equation variable
-Ustar,FALSE,FALSE,FALSE,FALSE,FALSE,unused by the model
 Tpit,TRUE,TRUE,TRUE,FALSE,TRUE,behavioural equation variable
 IntStu,TRUE,TRUE,FALSE,TRUE,TRUE,exogenous scenario input
 PcpiExGst,FALSE,FALSE,TRUE,FALSE,TRUE,identity-defined

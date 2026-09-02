@@ -343,3 +343,35 @@ Reverse-engineering the workbook's own patterns resolved more of them:
   Cloudflare-gated, the RBA share-market tables were discontinued in
   2011, and Yahoo/FRED carry no P/E. Remains LSEG/Refinitiv via
   Masterdata, with the full test record in the source note.
+
+## Two-category sourcing map; Ustar removed; last no-ID columns sourced (2026-09-02)
+
+Every workbook column is now exactly one of two categories:
+- exogenous (12): the scenario-maintained series - the world/foreign
+  drivers, IvtFar's neutral closure and the policy-capped IntStu. This set
+  mirrors mdl_exogenous_contract(); the contract stays the authoritative
+  list (18 members - the workbook's 12 plus the six scenario-driven
+  domestic series that are downloaded data: Lpop, Lpop15Plus, Cgov, Igov,
+  Ipubent, Lnom).
+- sourced (109): everything else. 93 download and validate against their
+  official source, three are exact internal derivations (KNbiz, KOther,
+  EqEarn), three are constants held by documented rule (TcorpRate, the ATO
+  statutory 0.30 since 2001-02; KdepRate, derived from 5204.0 consumption
+  of fixed capital; DumTsfTot, zero after the correction period), and
+  nine have open derivations the owner must supply or approve (PeRatio,
+  EqEarn's upstream, LavhMkt, PcpiExGst, ShockGst, GovDef, GovDebt, Lhh,
+  Rbiz, KdepRate's vintage) - each with the full test record in its
+  Variables-sheet source note.
+- Ustar removed: it was used by no equation or identity (LurHpf is the
+  model's NAIRU); deleted from the Data and Variables sheets.
+- The nine nominal export components are now sourced: ABS 5302.0 Table 6
+  current price (A3534882W/A3534883X/A3534884A/A3533787F/A3533847W/
+  A3533749T/A3533729J/A3533770K-class/A3535395R-class); XonrNom is the
+  "other non-rural excluding sugar and beverages" series (reproduces the
+  workbook exactly).
+- KdepRate derivation identified but not wired: (non-financial
+  corporations consumption of fixed capital less mining) over (business
+  stock less mining stock), chain volume - reproduces the workbook's
+  recent years to 0.3-1.2% but the early history differs (owner vintage);
+  recorded in the source note for approval.
+- TcorpRate stays sourced data (a legislated fact), not exogenous.
