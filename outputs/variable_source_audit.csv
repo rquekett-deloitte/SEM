@@ -1,0 +1,123 @@
+"variable","documented","definition","source","source_category","clear_source"
+"Lune",TRUE,"Unemployed total ;  Persons ; (Seasonally Adjusted, Thousands)","ABS 6202.0 (A84423046K)","official with identifier",TRUE
+"Lhh",TRUE,"All households ;","6224.0.55.001 Labour Force Status of Families, June 2025","official with identifier",TRUE
+"Lpar",TRUE,"Participation rate ;  Persons ; (Seasonally Adjusted, Percent)","ABS 6202.0 (A84423051C)","official with identifier",TRUE
+"Pcpi",TRUE,"Index Numbers ;  All groups CPI, seasonally adjusted ;  Australia ;","ABS 6401.0 (A3604506F), backfilled 1974Q3-1986Q3 from validated AEM PceCpi splice","official with identifier",TRUE
+"Ygdp",TRUE,"GROSS DOMESTIC PRODUCT ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2304402X)","official with identifier",TRUE
+"YgdpNom",TRUE,"GROSS DOMESTIC PRODUCT ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2304418T)","official with identifier",TRUE
+"SavHh",TRUE,"Households ;  Net saving ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2302837X)","official with identifier",TRUE
+"Cpr",TRUE,"Households ;  Final consumption expenditure ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2304081W)","official with identifier",TRUE
+"Idwell",TRUE,"Private ;  Gross fixed capital formation - Dwellings - Total ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2304098T)","official with identifier",TRUE
+"Iotc",TRUE,"Private ;  Gross fixed capital formation - Ownership transfer costs ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2304099V)","official with identifier",TRUE
+"Ygne",TRUE,"Gross national expenditure ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2304113C)","official with identifier",TRUE
+"Xtot",TRUE,"Exports of goods and services ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2304114F)","official with identifier",TRUE
+"Mtot",TRUE,"Imports of goods and services ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2304115J)","official with identifier",TRUE
+"CprNom",TRUE,"Households ;  Final consumption expenditure ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2304037L)","official with identifier",TRUE
+"XtotNom",TRUE,"Exports of goods and services ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2303824F)","official with identifier",TRUE
+"MtotNom",TRUE,"Imports of goods and services ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2303825J)","official with identifier",TRUE
+"Ywss",TRUE,"Compensation of employees ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2303359K)","official with identifier",TRUE
+"Yhdi",TRUE,"GROSS DISPOSABLE INCOME ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2302939L)","official with identifier",TRUE
+"Lwge",TRUE,"Average compensation per employee: Current prices ; (Seasonally Adjusted, Dollars)","ABS 5206.0 (A2302606R)","official with identifier",TRUE
+"Pulc",TRUE,"Unit labour cost - Nominal - Non-farm ; (Seasonally Adjusted, Index Numbers)","ABS 5206.0 (A2433074L)","official with identifier",TRUE
+"Tprl",TRUE,"Payroll taxes ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2302778K)","official with identifier",TRUE
+"Tgst",TRUE,"Goods and services tax","ABS 5206.0 (A2302784F)","official with identifier",TRUE
+"Ttot",TRUE,"TOTAL TAXES ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2302794K)","official with identifier",TRUE
+"Imin",TRUE,"Gross fixed capital formation - Mining private business investment: Chain volume measures ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A85222698X)","official with identifier",TRUE
+"IminNom",TRUE,"Gross fixed capital formation - Mining private business investment: Current prices ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A85125298V)","official with identifier",TRUE
+"Inonmin",TRUE,"Gross fixed capital formation - Non-mining private business investment: Chain volume measures ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A85222699A)","official with identifier",TRUE
+"InonminNom",TRUE,"Gross fixed capital formation - Non-mining private business investment: Current prices ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A85125299W)","official with identifier",TRUE
+"Xmet",TRUE,"Chain Volume Measures ;  Metal ores and minerals ; (Seasonally Adjusted, $ Millions)","ABS 5302.0 (A3535047K)","official with identifier",TRUE
+"Xccb",TRUE,"Chain Volume Measures ;  Coal, coke and briquettes ; (Seasonally Adjusted, $ Millions)","ABS 5302.0 (A3535048L)","official with identifier",TRUE
+"Xomf",TRUE,"Chain Volume Measures ;  Other mineral fuels ; (Seasonally Adjusted, $ Millions)","ABS 5302.0 (A3535049R)","official with identifier",TRUE
+"Xagr",TRUE,"Chain Volume Measures ;  Rural goods ; (Seasonally Adjusted, $ Millions)","ABS 5302.0 (A3535041W)","official with identifier",TRUE
+"XagrNom",TRUE,"Current Prices ;  Rural goods ; (Seasonally Adjusted, $ Millions)","ABS 5302.0 (A3535191C)","official with identifier",TRUE
+"Wfor",TRUE,"Position at end of period ;  NET INTERNATIONAL INVESTMENT POSITION ; (Original, $ Millions)","ABS 5302.0 (A3484240C)","official with identifier",TRUE
+"KMin",TRUE,"Mining sector net capital stock (real), annual end-June benchmark","ABS 5204.0 (A3347284T)","official with identifier",TRUE
+"KBiz",TRUE,"Total business net capital stock (real), annual end-June benchmark","ABS 5204.0 (A2422581A)","official with identifier",TRUE
+"KDwell",TRUE,"Dwellings net capital stock (real), annual end-June benchmark","ABS 5204.0 (A2422532F)","official with identifier",TRUE
+"PcpiRent",TRUE,"Index Numbers ;  Rents ;  Australia ; (Original)","ABS 6401.0 (A2331876F)","official with identifier",TRUE
+"Xsvc",TRUE,"Chain Volume Measures ;  Services credits ; (Seasonally Adjusted, $ Millions)","ABS 5302.0 (A3535093X)","official with identifier",TRUE
+"Pxsvc",TRUE,"Implicit Price Deflators ;  Services credits ; (Seasonally Adjusted, Index Numbers)","ABS 5302.0 (A3534945V)","official with identifier",TRUE
+"Xmex",TRUE,"Chain Volume Measures ;  Metals (excl. non-monetary gold) ; (Seasonally Adjusted, $ Millions)","ABS 5302.0 (A3535050X)","official with identifier",TRUE
+"Xmac",TRUE,"Chain Volume Measures ;  Machinery ; (Seasonally Adjusted, $ Millions)","ABS 5302.0 (A3535051A)","official with identifier",TRUE
+"Xtrn",TRUE,"Chain Volume Measures ;  Transport equipment ; (Seasonally Adjusted, $ Millions)","ABS 5302.0 (A3535052C)","official with identifier",TRUE
+"Xotm",TRUE,"Chain Volume Measures ;  Other manufactures ; (Seasonally Adjusted, $ Millions)","ABS 5302.0 (A3535053F)","official with identifier",TRUE
+"Xonr",TRUE,"Chain Volume Measures ;  Other non-rural (incl. sugar and beverages) ; (Seasonally Adjusted, $ Millions)","ABS 5302.0 (A3535054J)","official with identifier",TRUE
+"Xgpr",TRUE,"Chain Volume Measures ;  Goods procured in ports by carriers ; (Seasonally Adjusted, $ Millions)","ABS 5302.0 (A3535058T)","official with identifier",TRUE
+"R10y",TRUE,"Australian Government 10 year bond (Per cent per annum)","RBA (FCMYGBAG10)","official with identifier",TRUE
+"R90d",TRUE,"3-month BABs/NCDs (Percent)","RBA (FIRMMBAB90)","official with identifier",TRUE
+"Rusd",TRUE,"A$1=USD","RBA (FXRUSD)","official with identifier",TRUE
+"RtwiNom",TRUE,"Trade-weighted Index May 1970 = 100 (Index Numbers)","RBA (FXRTWI)","official with identifier",TRUE
+"R10yReal",TRUE,"Australian Government Indexed Bond (Per cent per annum)","RBA (FCMYGBAGI)","official with identifier",TRUE
+"Rmort",TRUE,"Lending rates; Housing loans; Banks; Variable; Standard; Owner-occupier (Per cent per annum)","RBA (FILRHLBVS)","official with identifier",TRUE
+"Whh",TRUE,"Houshousehold net worth; (Original, $ Millions)","ABS 5232.0 (A83722648X)","official with identifier",TRUE
+"IdwellNom",TRUE,"Private ;  Gross fixed capital formation - Dwellings - Total ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2304054R)","official with identifier",TRUE
+"IotcNom",TRUE,"Private ;  Gross fixed capital formation - Ownership transfer costs ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2304055T)","official with identifier",TRUE
+"Cgov",TRUE,"General government ;  Final consumption expenditure ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2304080V)","official with identifier",TRUE
+"CgovNom",TRUE,"General government ;  Final consumption expenditure ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2304036K)","official with identifier",TRUE
+"Ygoa",TRUE,"All sectors ;  Gross operating surplus ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2303375K)","official with identifier",TRUE
+"Lsup",TRUE,"Labour force total ;  Persons ; (Seasonally Adjusted, Thousands)","ABS 6202.0 (A84423047L)","official with identifier",TRUE
+"Lpop",TRUE,"Estimated Resident Population (ERP) ;  Australia ; (Original, Thousands)","ABS 3101.0 (A2133251W)","official with identifier",TRUE
+"IvtNonfarm",TRUE,"Private non-farm inventory levels: Chain volume measures ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2302597X)","official with identifier",TRUE
+"Tcit",TRUE,"Corporate income tax","ABS 5206.0 (A2323407R + A2323360T)","official with identifier",TRUE
+"Ytsf",TRUE,"General government ;  Total personal benefits payments ; (Original, $ Millions)","ABS 5206.0 (A2301976F)","official with identifier",TRUE
+"Ygdw",TRUE,"Dwellings owned by persons ;  Gross operating surplus ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2303373F)","official with identifier",TRUE
+"LempPub",TRUE,"Public Administration and Safety ;  Employed total ; (Seasonally Adjusted, Thousands)","ABS 6291.0.55.001 (A84090242C)","official with identifier",TRUE
+"LempEdu",TRUE,"Education and Training ;  Employed total ; (Seasonally Adjusted, Thousands)","ABS 6291.0.55.001 (A84090231W)","official with identifier",TRUE
+"LempHlt",TRUE,"Health Care and Social Assistance ;  Employed total ; (Seasonally Adjusted, Thousands)","ABS 6291.0.55.001 (A84090235F)","official with identifier",TRUE
+"BizLns",TRUE,NA,NA,"other",FALSE
+"BizBnd",TRUE,NA,NA,"other",FALSE
+"Ygmi",TRUE,NA,NA,"other",FALSE
+"YprpR",TRUE,NA,NA,"other",FALSE
+"YprpP",TRUE,NA,NA,"other",FALSE
+"Lemp",TRUE,"Employed total ;  Persons ; (Seasonally Adjusted, Thousands)","ABS 6202.0 (A84423043C)","official with identifier",TRUE
+"LhrsAll",TRUE,"Volume; Labour Account hours actually worked in all jobs ;  Australia ;  Total all industries ; (Seasonally Adjusted, 000 Hours)","6150.0.55.003 (A85389483J)","official with identifier",TRUE
+"LhrsPub",TRUE,"Volume; Labour Account hours actually worked in all jobs ;  Australia ;  Public administration and safety (O) ; (Seasonally Adjusted, 000 Hours)","6150.0.55.003 (A85392872W)","official with identifier",TRUE
+"LhrsEdu",TRUE,"Volume; Labour Account hours actually worked in all jobs ;  Australia ;  Education and training (P)  ; (Seasonally Adjusted, 000 Hours)","6150.0.55.003 (A85393092A)","official with identifier",TRUE
+"LhrsHlt",TRUE,"Volume; Labour Account hours actually worked in all jobs ;  Australia ;  Health care and social assistance (Q)  ; (Seasonally Adjusted, 000 Hours)","6150.0.55.003 (A85393382X)","official with identifier",TRUE
+"Igov",TRUE,"General government ;  Gross fixed capital formation ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2304108K)","official with identifier",TRUE
+"Ipubent",TRUE,"Public corporations ;  Gross fixed capital formation ; (Seasonally Adjusted, $ Millions)","ABS 5206.0 (A2304103X)","official with identifier",TRUE
+"Pgne",TRUE,"Gross national expenditure implicit price deflator, index (base 100)","ABS 5206.0","official with identifier",TRUE
+"Phouse",TRUE,"Median price of established dwelling transfers, transfer-weighted ; (Original, $'000)","ABS 6432.0 (Table 2, derived from Median Price & Number of Transfers series)","official with identifier",TRUE
+"IvtFar",TRUE,"Farm inventories","Exogenous","exogenous scenario series",TRUE
+"Fpcpi",TRUE,"World consumer prices","Exogenous","exogenous scenario series",TRUE
+"Fpoil",TRUE,"World oil price, USD","Exogenous scenario series","exogenous scenario series",TRUE
+"Fpcom",TRUE,"World commodity price index (real)","Exogenous","exogenous scenario series",TRUE
+"Fpagr",TRUE,"World agricultural commodity price index, USD","Exogenous scenario series","exogenous scenario series",TRUE
+"Fr10yUs",TRUE,"United States 10-year government bond yield, decimal annual rate","Exogenous scenario series","exogenous scenario series",TRUE
+"Fr10yJp",TRUE,"Japan 10-year government bond yield, decimal annual rate","Exogenous scenario series","exogenous scenario series",TRUE
+"Fr10yDe",TRUE,"Germany 10-year government bond yield, decimal annual rate","Exogenous scenario series","exogenous scenario series",TRUE
+"Fr10yUk",TRUE,"United Kingdom 10-year government bond yield, decimal annual rate","Exogenous scenario series","exogenous scenario series",TRUE
+"FcGdp",TRUE,"China real GDP","Exogenous scenario series","exogenous scenario series",TRUE
+"FcPpp",TRUE,"China implied PPP conversion rate","Exogenous scenario series","exogenous scenario series",TRUE
+"KTotal",TRUE,"Total economy net capital stock (real), annual end-June benchmark","ABS 5204.0 (A2422574C)","official with identifier",TRUE
+"PeRatio",TRUE,"ASX All Ordinaries P/E ratio (Calculated PE Ratio)","LSEG / Refinitiv (via Temp/Masterdata.xlsx sheet 'PEratio')","via Masterdata (internal workbook)",FALSE
+"EqEarn",TRUE,"Listed-company earnings (ASX 200 earnings)","LSEG / Refinitiv (via Temp/Masterdata.xlsx sheet 'Master(SEM)')","via Masterdata (internal workbook)",FALSE
+"Lnom",TRUE,"Net overseas migration, thousands of persons per quarter","ABS / exogenous scenario series","official without identifier",FALSE
+"XmetNom",TRUE,"Nominal exports component, $m (identity input)","ABS 5206.0","official with identifier",TRUE
+"XccbNom",TRUE,"Nominal exports component, $m (identity input)","ABS 5206.0","official with identifier",TRUE
+"XomfNom",TRUE,"Nominal exports component, $m (identity input)","ABS 5206.0","official with identifier",TRUE
+"XmexNom",TRUE,"Nominal exports component, $m (identity input)","ABS 5206.0","official with identifier",TRUE
+"XmacNom",TRUE,"Nominal exports component, $m (identity input)","ABS 5206.0","official with identifier",TRUE
+"XtrnNom",TRUE,"Nominal exports component, $m (identity input)","ABS 5206.0","official with identifier",TRUE
+"XotmNom",TRUE,"Nominal exports component, $m (identity input)","ABS 5206.0","official with identifier",TRUE
+"XonrNom",TRUE,"Nominal exports component, $m (identity input)","ABS 5206.0","official with identifier",TRUE
+"XgprNom",TRUE,"Nominal exports component, $m (identity input)","ABS 5206.0","official with identifier",TRUE
+"CconsRentNom",TRUE,"Nominal household consumption of rent, $m","ABS 5206.0","official with identifier",TRUE
+"CconsRent",TRUE,"Real household consumption of rent, $m","ABS 5206.0","official with identifier",TRUE
+"GovDef",TRUE,"Public-sector deficit, quarterly $bn, deficit positive","Derived from annual fiscal balance","internal derivation / calibration",FALSE
+"GovDebt",TRUE,"Public-sector net debt, $bn","Public-sector fiscal data","internal derivation / calibration",FALSE
+"Rbiz",TRUE,"Bank lending to business; weighted-average interest rate on credit outstanding; total (Per cent per annum)","RBA D8 (DBLWAT) to 2019Q3; RBA F7 weighted average thereafter","official with identifier",TRUE
+"BizEq",TRUE,NA,NA,"other",FALSE
+"TcorpRate",TRUE,"Statutory company income tax rate","ATO","official with identifier",TRUE
+"KdepRate",TRUE,"Non-mining capital depreciation rate","Capital-stock calibration","internal derivation / calibration",FALSE
+"DumTsfTot",TRUE,"Transfers equation COVID correction (EViews DUMMY_TSFTOT)","Scenario model residuals (Temp/Masterdata.xlsx sheet Master(SEM))","via Masterdata (internal workbook)",FALSE
+"Peq",TRUE,NA,NA,"other",FALSE
+"LavhMkt",TRUE,"Market-sector average hours actually worked per quarter, per employed person (hours)","ABS 6291.0.55.001 detailed labour force, market-sector aggregate, via Temp/Masterdata.xlsx sheet 'Master(SEM)' column AvHrsMar (built on sheet 'Average HW' from the industry hours and 'Employment - market'); this is the AVHRSMAR variable of the EViews SEM","via Masterdata (internal workbook)",FALSE
+"Ustar",TRUE,"Non-accelerating-inflation rate of unemployment (NAIRU), per cent","Deloitte Access Economics SEM, via Temp/Masterdata.xlsx sheet 'Master(SEM)' column Ustar - this is the LUR_STAR variable of the EViews SEM","via Masterdata (internal workbook)",FALSE
+"Tpit",TRUE,"Personal income tax","ABS 5206.0 (A2302733F + A2302779L)","official with identifier",TRUE
+"IntStu",TRUE,"International student enrolments, new to Australia","Department of Education, International students.xlsx","official with identifier",TRUE
+"PcpiExGst",TRUE,"CPI excluding GST effects","AEM PCPIUX via validated reference workbook","internal derivation / calibration",FALSE
+"ShockGst",TRUE,"GST/other-tax COVID correction; zero outside the historical shock period","Scenario model correction series","internal derivation / calibration",FALSE
+"KNbiz",TRUE,NA,NA,"other",FALSE
+"KOther",TRUE,"Residual non-business, non-dwelling net capital stock (real)","ABS 5204.0, derived residual","official with identifier",TRUE
